@@ -1,0 +1,606 @@
+const DATA = window.PORTFOLIO;
+const { images, sections, contact } = DATA;
+// the magazine follows the order of the sections
+const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section === sec && !p.hidden));
+const pad = (n) => String(n).padStart(2, "0");
+const FIRST = 2; // spread 0 = cover · 1 = masthead · 2… = projects
+const pageOf = (k) => (FIRST + k) * 2;
+const titleLen = (t) => Math.max(...t.split(" ").map((w) => w.length));
+const $ = (s) => document.querySelector(s);
+const MAGS = []; // magazine blocks on the current page (for the fullscreen viewer)
+
+$("[data-cv]").href = contact.cv;
+
+/* =====================================================================
+   PAGE TEMPLATES — every page is a <div class="pg">.
+   Inside pages, sizes use cqw/cqh so everything scales with the magazine.
+   ===================================================================== */
+function pg(side, inner, { num, label = "", cls = "", style = "" } = {}) {
+  const foot = num == null ? "" : side === "l"
+    ? `<footer class="pg__foot"><span>${num}</span><span>Amy Grindau</span></footer>`
+    : `<footer class="pg__foot"><span>${label}</span><span>${num}</span></footer>`;
+  return `<div class="pg pg--${side} ${cls}"${style ? ` style="${style}"` : ""}>${inner}${foot}</div>`;
+}
+const bg = (src, cls = "", style = "") => `<div class="bg ${cls}" style="--src:url('${src}');${style}"></div>`;
+
+// Front cover: your own design (images.cover) or a plain pink page. Tapping it opens the magazine.
+const coverPage = () => pg("r", images.cover ? bg(images.cover, "bg--cover") : "", { cls: "pg--cover pg--pink" });
+
+// Masthead: year, short contents, credits ↔ portrait with the pinned editor's letter
+const mastLeft = () => pg("l", `
+  <div class="runhead"><span>Contents</span><span>Munich & Seoul</span></div>
+  <h2 class="mast__year serif">2026</h2>
+  <div class="mast__toc">
+    ${sections.map((sec) => `
+      <div class="mast__sec">
+        <p class="mast__sechead">${sec}</p>
+        ${projects.map((p, k) => p.section !== sec ? "" : `<a href="#/${p.id}"><span>${p.title}</span><span>${pad(pageOf(k))}</span></a>`).join("")}
+      </div>`).join("")}
+  </div>
+  <dl class="mast__credits">${DATA.credits.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+`, { num: pad(2), cls: "pg--mast" });
+
+const mastRight = () => pg("r", `
+  ${bg(images.face, "mast__face")}
+  <button class="pinned" data-letter aria-label="Read the editor's letter">
+    <span class="pinned__clip" aria-hidden="true"></span>
+    <span class="pinned__kicker">Editor's letter</span>
+    <span class="pinned__title serif">Hi, I'm Amy.</span>
+    <span class="pinned__text">${DATA.letter[0]}</span>
+    <span class="pinned__more">Read →</span>
+  </button>
+`, { num: pad(3), label: "Editor's letter", cls: "pg--pink" });
+
+// Project spread — left: information, right: key visual. Two layouts alternate.
+function projectLeft(p, k) {
+  const no = projects.filter((x, i) => x.section === p.section && i <= k).length;
+  return pg("l", `
+    <div class="runhead"><span>${p.section}</span><span>No. ${pad(no)}</span></div>
+    <div class="project__head">
+      <h2 class="project__title serif" style="--chars:${titleLen(p.title)}">${p.title}</h2>
+      <p class="project__hook serif">${p.hook}</p>
+    </div>
+    <dl class="meta">
+      <dt>Year</dt><dd>${p.year}</dd>
+      <dt>Format</dt><dd>${p.kind}${p.team ? " · group project" : ""}</dd>
+      <dt>Context</dt><dd>${p.context}</dd>
+      <dt>Role</dt><dd>${p.role}</dd>
+      ${p.award ? `<dt>Award</dt><dd>${p.award}</dd>` : ""}
+    </dl>
+  `, { num: pad(pageOf(k)), cls: `pg--project v${k % 2}` });
+}
+
+function projectRight(p, k) {
+  const num = pad(pageOf(k) + 1), label = p.section;
+  const play = (p.poster || p.still)
+    ? `<button class="play" data-play="${p.id}">${p.video ? "▶ Play film" : "Film coming soon"}</button>` : "";
+  if (p.poster) return pg("r", `${bg(p.poster, "bg--poster")}${play}`, { num, label, cls: "pg--black pg--film" });
+  if (p.still) return pg("r", `${bg(p.still, "bg--screen")}${play}`, { num, label, cls: "pg--black pg--film", style: p.pageBg ? `background:${p.pageBg}` : "" });
+  if (p.key.collage) {
+    return pg("r", `<div class="collage">${p.key.collage.map((src, n) => `<img class="collage__item c${n}" src="${src}" alt="">`).join("")}</div>`,
+      { num, label, cls: "pg--pink" });
+  }
+  const { src, fit = "cover", zoom, pos, bg: color = "white", blend } = p.key;
+  const style = (zoom ? `background-size:${zoom * 100}% auto;background-position:${pos || "center"};` : "")
+    + (blend ? `mix-blend-mode:${blend};` : "");
+  return pg("r", bg(src, `bg--${fit}`, style), { num, label, cls: `pg--${color}` });
+}
+
+// "On my desk" — the current project, as a small moodboard
+const cur = DATA.current;
+const currentLeft = (num) => pg("l", `
+  <div class="runhead"><span>On my desk</span><span>${cur.kind}</span></div>
+  <div class="project__head">
+    <p class="current__kicker">${cur.kind}</p>
+    <h2 class="project__title serif" style="--chars:${titleLen(cur.title)}">${cur.title}</h2>
+    <p class="project__hook serif">${cur.hook}</p>
+  </div>
+  <div class="current__text">${cur.text.map((t) => `<p>${t}</p>`).join("")}</div>
+`, { num: pad(num), cls: "pg--project pg--current" });
+
+const currentRight = (num) => pg("r", cur.image ? bg(cur.image, "bg--cover") : "", { num: pad(num), label: "In progress", cls: "pg--pink" });
+
+// Back cover: mission, contact, colophon — the magazine closes
+const backCover = () => pg("l", `
+  <div class="runhead"><span>Mission</span><span>Contact</span></div>
+  <p class="back__mission serif">${DATA.mission}</p>
+  <div class="back__grid">
+    <p><b>Contact</b>
+      <a href="mailto:${contact.email}">${contact.email}</a>
+      <a href="${contact.linkedin}" target="_blank" rel="noopener">LinkedIn</a>
+      ${contact.instagram ? `<a href="${contact.instagram}" target="_blank" rel="noopener">Instagram</a>` : ""}
+      <a href="${contact.cv}" download>Download CV ↓</a></p>
+    <p><b>Colophon</b>Editor, design, text &amp; photography: Amy Grindau. Made between Munich and Seoul.
+      <button data-legal-open="privacy">Datenschutz</button></p>
+  </div>
+  <p class="back__end serif">End.</p>
+`, { cls: "pg--back" });
+
+/* =====================================================================
+   BUILD THE MAGAZINE
+   ===================================================================== */
+const curPage = pageOf(projects.length);
+const spreads = [
+  { id: "cover", title: "Cover", left: null, right: coverPage() },
+  { id: "masthead", title: "Masthead", left: mastLeft(), right: mastRight() },
+  ...projects.map((p, k) => ({ id: p.id, title: p.title, project: p, left: projectLeft(p, k), right: projectRight(p, k) })),
+  { id: "current", title: "On my desk", left: currentLeft(curPage), right: currentRight(curPage + 1) },
+  { id: "contact", title: "Contact", left: backCover(), right: null },
+];
+const indexOf = (id) => spreads.findIndex((s) => s.id === id);
+
+// Preload every image used on the pages → no flicker when a page lands
+const preloaded = new Set();
+spreads.forEach((s) => `${s.left || ""}${s.right || ""}`.replace(/url\('([^']+)'\)|src="([^"]+)"/g, (_, a, b) => {
+  const src = a || b;
+  if (preloaded.has(src)) return;
+  preloaded.add(src);
+  const im = new Image();
+  im.src = src;
+  im.decode?.().catch(() => {});
+}));
+
+const count = $("[data-count]"), hint = $("[data-hint]"), more = $("[data-more]");
+const prevBtn = $("[data-prev]"), nextBtn = $("[data-next]");
+const tocSheet = $("[data-toc]"), tocTab = $("[data-toc-tab]");
+const bookEl = $("[data-book]");
+
+const startId = location.hash.replace("#/", ""); // read before the book rewrites the hash
+const book = new Book(bookEl, spreads, {
+  onSwipe: (d) => turn(book.i + d),
+  onChange(i, s) {
+    history.replaceState(null, "", `#/${s.id}`);
+    count.textContent = `${pad(i + 1)} / ${pad(spreads.length)}`;
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === spreads.length - 1;
+    document.body.dataset.spread = i === 0 ? "first" : i === spreads.length - 1 ? "last" : "";
+    hint.hidden = !s.project && s.id !== "current";
+    renderMore(s.id === "current" ? "current" : s.project);
+    tocSheet.querySelectorAll("a").forEach((a) => a.classList.toggle("is-current", a.dataset.id === s.id));
+  },
+});
+
+// Edge zones: hover the magazine's edge → soft shadow + "Next" / "Back"
+book.inner.insertAdjacentHTML("beforeend", `
+  <button class="edge edge--prev" data-edge="-1" aria-label="Previous page"><span>Back</span></button>
+  <button class="edge edge--next" data-edge="1" aria-label="Next page"><span>Next</span></button>`);
+
+/* =====================================================================
+   NAVIGATION
+   ===================================================================== */
+const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+const turn = (i) => {
+  if (scrollY > 40) toTop();
+  toc.close();
+  book.go(i);
+};
+prevBtn.addEventListener("click", () => turn(book.i - 1));
+nextBtn.addEventListener("click", () => turn(book.i + 1));
+
+document.addEventListener("click", (e) => {
+  const edge = e.target.closest("[data-edge]");
+  if (edge) return turn(book.i + Number(edge.dataset.edge));
+  if (e.target.closest("[data-top]")) { e.preventDefault(); return toTop(); }
+  // tap the closed cover to open (only the main magazine, not the small viewers)
+  if (book.i === 0 && e.target.closest(".book__page--right")?.closest(".book") === bookEl) turn(1);
+});
+
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { closeOverlays(); toc.close(); return; }
+  if (e.key === " " && !lightbox.hidden && togglePlay()) { e.preventDefault(); return; }
+  if (document.querySelector(".overlay:not([hidden]), .lightbox:not([hidden])")) return;
+  if (e.target.closest?.("input, textarea, [contenteditable]")) return;
+  if (e.key === "ArrowRight") turn(book.i + 1);
+  if (e.key === "ArrowLeft") turn(book.i - 1);
+});
+
+function route() {
+  const id = location.hash.replace("#/", "") || "cover";
+  if (id === "contents") { toc.open(); return history.replaceState(null, "", `#/${spreads[book.i].id}`); }
+  if (id === "letter") { openLetter(); return history.replaceState(null, "", `#/${spreads[book.i].id}`); }
+  const i = indexOf(id);
+  if (i >= 0 && i !== book.i) turn(i);
+}
+addEventListener("hashchange", route);
+
+/* =====================================================================
+   CONTENTS — tracing paper pulled down over one page
+   ===================================================================== */
+$("[data-toc-list]").innerHTML = sections.map((sec) => `
+  <section class="sheet__sec">
+    <p class="sheet__sechead">${sec}</p>
+    ${projects.map((p, k) => p.section !== sec ? "" : `
+      <a href="#/${p.id}" data-id="${p.id}">
+        <span class="sheet__t serif">${p.title}</span>
+        <span class="sheet__k">${p.kind}, ${p.year}</span>
+        <span class="sheet__p">${pad(pageOf(k))}</span>
+      </a>`).join("")}
+  </section>`).join("") + `
+  <section class="sheet__sec sheet__sec--end">
+    <a href="#/masthead" data-id="masthead"><span class="sheet__t serif">Editor's letter</span><span class="sheet__k">About</span><span class="sheet__p">02</span></a>
+    <a href="#/current" data-id="current"><span class="sheet__t serif">On my desk</span><span class="sheet__k">Current project</span><span class="sheet__p">${pad(curPage)}</span></a>
+    <a href="#/contact" data-id="contact"><span class="sheet__t serif">Contact</span><span class="sheet__k">Back cover</span><span class="sheet__p"></span></a>
+  </section>`;
+
+const toc = {
+  isOpen: false,
+  set(p, animate = true) {
+    tocSheet.style.transition = animate ? "" : "none";
+    tocSheet.style.setProperty("--pull", p);
+  },
+  open() { this.isOpen = true; this.set(1); document.body.classList.add("toc-open"); tocTab.textContent = "Contents ↑"; },
+  close() { this.isOpen = false; this.set(0); document.body.classList.remove("toc-open"); tocTab.textContent = "Contents ↓"; },
+  toggle() { this.isOpen ? this.close() : this.open(); },
+};
+
+// pull the sheet down by its tab — or just click
+let pull = null;
+tocTab.addEventListener("pointerdown", (e) => {
+  tocTab.setPointerCapture(e.pointerId);
+  pull = { y: e.clientY, h: tocSheet.offsetHeight, moved: false, from: toc.isOpen ? 1 : 0 };
+});
+tocTab.addEventListener("pointermove", (e) => {
+  if (!pull) return;
+  const dy = e.clientY - pull.y;
+  if (Math.abs(dy) > 4) pull.moved = true;
+  if (pull.moved) toc.set(Math.min(1, Math.max(0, pull.from + dy / pull.h)), false);
+});
+tocTab.addEventListener("pointerup", (e) => {
+  if (!pull) return;
+  const p = pull.from + (e.clientY - pull.y) / pull.h;
+  if (!pull.moved) toc.toggle(); else p > 0.3 ? toc.open() : toc.close();
+  pull = null;
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-toc-open]")) { e.preventDefault(); toc.open(); }
+  if (e.target.closest("[data-toc-close]")) toc.close();
+  const link = e.target.closest("[data-toc] a, .mast__toc a");
+  if (link) { e.preventDefault(); turn(indexOf(link.getAttribute("href").replace("#/", ""))); }
+});
+
+/* =====================================================================
+   SCROLL DOWN — the rest of the story
+   ===================================================================== */
+const img = (src, alt = "", cls = "") => `<img class="${cls}" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
+
+function renderMore(p) {
+  MAGS.length = 0;
+  if (!p) { more.innerHTML = ""; return; }
+  if (p === "current") return renderCurrent();
+  const films = [
+    p.video && (p.poster || p.still) ? `<button class="btn" data-play="${p.id}">▶ Play the film</button>` : "",
+    ...(p.extras || []).map((x, n) => `<button class="btn btn--line" data-extra="${p.id}:${n}">▶ ${x.label}</button>`),
+    ...(p.links || []).map((l) => `<a class="btn btn--line" href="${l.url}" ${l.download ? "download" : 'target="_blank" rel="noopener"'}>${l.download ? "↓" : "↗"} ${l.label}</a>`),
+  ].join("");
+  more.innerHTML = `
+    <div class="more__inner">
+      <div class="more__text">
+        <div class="more__lead">${p.text.map((t) => `<p>${t}</p>`).join("")}</div>
+        ${p.team ? `<p class="more__team">${p.team}</p>` : ""}
+        ${films ? `<div class="more__films">${films}</div>` : ""}
+        ${p.process ? `
+          <details class="process">
+            <summary><span>The process</span><span class="process__icon" aria-hidden="true">+</span></summary>
+            <div class="process__body">${p.process.map((t) => `<p>${t}</p>`).join("")}</div>
+          </details>` : ""}
+        ${p.quote ? `<blockquote class="serif">${p.quote}</blockquote>` : ""}
+      </div>
+      ${p.blocks.map((b) => block(p, b)).join("")}
+      <button class="more__back" data-top>↑ Back to the spread</button>
+    </div>`;
+  more.querySelectorAll("[data-mini]").forEach((el, n) => { MAGS[n].book = mountMagazine(el, MAGS[n]); });
+  const pt = more.querySelector("[data-pt]");
+  if (pt) mountPostcards(pt, p.blocks.find((b) => b.type === "specimens").items);
+  reveal();
+}
+
+// images fade in and rise a little as they scroll into view (short, slightly staggered)
+// images and text: titles, paragraphs, buttons and the process box
+const REVEAL = "figure, .flip, .mini-wrap, .mini, .pin, .loose__media, video, iframe, h4, p, blockquote, details, .more__films, .more__back";
+let revealer;
+function reveal() {
+  revealer?.disconnect();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const els = [...more.querySelectorAll(REVEAL)].filter((el) => !el.parentElement.closest(REVEAL) && !el.closest(".pt"));
+  revealer = new IntersectionObserver((entries) => {
+    entries.filter((e) => e.isIntersecting).forEach((e, n) => {
+      e.target.style.transitionDelay = `${Math.min(n, 4) * 140}ms`;
+      e.target.classList.add("is-in");
+      revealer.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px" });
+  els.forEach((el) => { el.classList.add("reveal"); revealer.observe(el); });
+}
+
+// "On my desk": text and a pinboard below the spread
+function renderCurrent() {
+  const pins = cur.projects.map((c, n) => `
+    <figure class="pin p${n}">
+      ${c.src ? `<img src="${c.src}" alt="${c.title}" loading="lazy">` : `<span class="pin__ph"></span>`}
+      <figcaption><span class="pin__title serif">${c.title}</span>${c.note ? `<span class="pin__note">${c.note}</span>` : ""}</figcaption>
+    </figure>`).join("");
+  more.innerHTML = `
+    <div class="more__inner">
+      <div class="more__text"><div class="more__lead">${cur.text.map((t) => `<p>${t}</p>`).join("")}</div></div>
+      <section class="block"><h4 class="block__title">Pinboard</h4><div class="pinboard">${pins}<span class="tape t1"></span><span class="tape t2"></span><span class="tape t3"></span></div></section>
+      <button class="more__back" data-top>↑ Back to the spread</button>
+    </div>`;
+  reveal();
+}
+
+const flip = (front, back, alt = "") => `
+  <button class="flip" data-flip aria-label="Turn over">
+    <span class="flip__inner">${img(front, alt, "flip__f")}${img(back, alt, "flip__b")}</span>
+  </button>`;
+
+function block(p, b) {
+  const head = b.title ? `<h4 class="block__title">${b.title}</h4>` : "";
+  const note = b.note ? `<p class="block__note">${b.note}</p>` : "";
+  switch (b.type) {
+    case "specimens":
+      return `<section class="block">${head}<div class="pt" data-pt></div></section>`;
+    case "pairs":
+      return `<section class="block">${head}<div class="pairs">${b.items.map((it) => `
+        <figure class="pair"><div class="pair__imgs">${img(it.a, "Photograph")}${img(it.b, "Transformation")}</div><figcaption>${it.caption}</figcaption></figure>`).join("")}</div></section>`;
+    case "posters":
+      return `<section class="block">${head}<div class="posters">${b.items.map((s) => img(s, "Poster")).join("")}</div></section>`;
+    case "magazine":
+      MAGS.push(b);
+      return `<section class="block">${head}<div class="mini-wrap at-start"><button class="mini-start" data-start="${MAGS.length - 1}">← To the beginning</button><button class="mini-full" data-full="${MAGS.length - 1}" aria-label="Fullscreen">⤢</button><div class="mini" data-mini></div></div><p class="block__note block__note--mini">Click the right page to turn, the left page to go back.</p></section>`;
+    case "concept":
+      return `<section class="block">${head}<div class="concept">
+        <div class="concept__left">
+          <p class="concept__statement serif">${b.statement}</p>
+          <ol class="concept__steps">${b.steps.map((s) => `<li>${s}</li>`).join("")}</ol>
+          <p class="concept__infl">${b.influences}</p>
+        </div>
+        <table class="concept__table">
+          <thead><tr><th>Driver</th><th>Source data</th><th>Bound to</th></tr></thead>
+          <tbody>${b.table.map((r) => `<tr>${r.map((c, n) => n === 0 ? `<td class="serif">${c}</td>` : `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>
+        </table>
+      </div></section>`;
+    case "symbols":
+      return `<section class="block">${head}<div class="symbols">${b.items.map((s) => `
+        <figure class="symbol">${s.src ? img(s.src, s.label) : `<span class="symbol__ph"></span>`}<figcaption>${s.label}</figcaption></figure>`).join("")}</div></section>`;
+    case "imageText":
+      return `<section class="block">${head}<div class="imgtext">
+        <div class="imgtext__text">${b.text.map((t) => `<p>${t}</p>`).join("")}</div>
+        <figure class="imgtext__img">${img(b.src, b.title)}</figure>
+      </div></section>`;
+    case "image":
+      return `<section class="block">${head}<figure class="single ${b.wide ? "single--wide" : ""}">${img(b.src, b.title)}</figure></section>`;
+    case "origin":
+      return `<section class="block">${head}<div class="origin ${b.small ? "origin--small" : ""} ${b.stack ? "origin--stack" : ""}">
+        ${b.framesFirst ? "" : `<div class="origin__paper">${b.paper.map((s) => img(s, "Storyboard")).join("")}</div>`}
+        <div class="origin__frames">${b.frames.map((s) => img(s, "Film still")).join("")}</div>
+        ${b.framesFirst ? `<div class="origin__paper">${b.paper.map((s) => img(s, "Storyboard")).join("")}</div>` : ""}
+      </div></section>`;
+    case "gallery": {
+      const cls = (b.wide ? "gallery--wide" : `gallery--sq n${b.items.length}${b.feature !== undefined ? " has-feature" : ""}`)
+        + (b.portrait ? " gallery--portrait" : "") + (b.small ? " gallery--small" : "") + (b.large ? " gallery--large" : "") + (b.centered ? " gallery--centered" : "");
+      return `<section class="block">${head}<div class="gallery ${cls}">${b.items.map((it, n) => `
+        <figure class="${n === b.feature ? "is-feature" : ""}">${img(it.src, it.caption || p.title)}${it.caption ? `<figcaption>${it.caption}</figcaption>` : ""}</figure>`).join("")}</div></section>`;
+    }
+    case "video":
+      return `<section class="block">${head}<button class="videocard" data-play="${p.id}"><span>▶ Play</span></button></section>`;
+    case "logos":
+      return `<section class="block">${head}
+        <div class="logos">${b.items.map((s, n) => `<figure>${img(s, `Logo iteration ${n + 1}`)}<figcaption>Iteration ${pad(n + 1)}</figcaption></figure>`).join("")}</div>
+        <div class="logo-scale">${[160, 96, 56, 32, 18].map((w) => `<figure><img src="${b.scale}" alt="" style="width:${w}px"><figcaption>${w} px</figcaption></figure>`).join("")}</div>
+      </section>`;
+    case "flip":
+      return `<section class="block">${head}${note}<div class="flip-wrap">${flip(b.front, b.back, b.title)}</div></section>`;
+    case "loose":
+      return `<section class="block"><div class="loose">${b.items.map((it) => `
+        <article class="loose__item">
+          <div class="loose__media">${it.front ? flip(it.front, it.back, it.title) : img(it.src, it.title)}</div>
+          <div class="loose__text">
+            <p class="loose__kind">${it.kind}</p>
+            <h4 class="loose__title serif">${it.title}</h4>
+            <p>${it.text}</p>
+          </div>
+        </article>`).join("")}</div></section>`;
+    default:
+      return "";
+  }
+}
+
+document.addEventListener("click", (e) => {
+  const f = e.target.closest("[data-flip]");
+  if (f) f.classList.toggle("is-flipped");
+});
+
+// Magazine viewer — the same Book component, smaller, in the right page format.
+// spreads = one image per double page · pairs = two single-page images
+function mountMagazine(el, b) {
+  const { cover, spreads: wide = [], pairs = [], back } = b.pages;
+  // a transparent sheet between two pages: first it lies over the right page,
+  // after turning it (mirrored, like real tracing paper) over the left one
+  const sheet = (src, mirrored) => `<div class="bg bg--cover bg--sheet ${mirrored ? "is-mirrored" : ""}" style="--src:url('${src}')"></div>`;
+  const fromPairs = pairs.flatMap(([l, r, t], n) => !t
+    ? [{ id: `p${n}`, left: pg("l", bg(l, "bg--cover")), right: pg("r", bg(r, "bg--cover")) }]
+    : [
+        { id: `p${n}a`, left: pg("l", bg(l, "bg--cover")), right: pg("r", bg(r, "bg--cover") + sheet(t, false)) },
+        { id: `p${n}b`, left: pg("l", bg(l, "bg--cover") + sheet(t, true)), right: pg("r", bg(r, "bg--cover")) },
+      ]);
+  return new Book(el, [
+    { id: "c", left: null, right: pg("r", bg(cover, "bg--cover")) },
+    ...wide.map((src, n) => ({ id: `w${n}`, left: pg("l", bg(src, "bg--half-l")), right: pg("r", bg(src, "bg--half-r")) })),
+    ...fromPairs,
+    { id: "b", left: pg("l", bg(back, "bg--cover")), right: null },
+  ], {
+    clickToTurn: true, duration: 1050, ratio: b.ratio,
+    // the "To the beginning" button only shows once you have turned a page
+    onChange: (i) => el.closest(".mini-wrap, .lightbox__frame")?.classList.toggle("at-start", i === 0),
+  });
+}
+
+// "fullscreen" for the magazine viewers: the same dark overlay as the films
+document.addEventListener("click", (e) => {
+  const f = e.target.closest("[data-full]");
+  if (!f) return;
+  const b = MAGS[Number(f.dataset.full)];
+  openLightbox(`<button class="mini-start" data-start-big>← To the beginning</button><div class="mini mini--lb"></div>`, "is-mag");
+  frame.style.setProperty("--ratio", b.ratio || 0.75);
+  const big = mountMagazine(frame.querySelector(".mini"), b);
+  big.show(b.book.i);                  // open on the page you were looking at
+  openMag = { small: b.book, big };
+});
+
+document.addEventListener("click", (e) => {
+  const s = e.target.closest("[data-start]");
+  if (s) MAGS[Number(s.dataset.start)].book.go(0);
+  if (e.target.closest("[data-start-big]")) openMag?.big.go(0);
+  if (e.target.closest("[data-start-main]")) turn(0);
+});
+
+/* =====================================================================
+   LIGHTBOX — films (never autoplay on the page)
+   ===================================================================== */
+const lightbox = $("[data-lightbox]"), frame = $("[data-frame]");
+
+function playerFor(v, title, poster) {
+  const yt = (v || "").match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);
+  const vimeo = (v || "").match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (yt) return `<iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&vq=hd1080&enablejsapi=1" allow="autoplay; fullscreen" allowfullscreen title="${title}"></iframe>`;
+  if (vimeo) return `<iframe src="https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&quality=1080p&api=1" allow="autoplay; fullscreen" allowfullscreen title="${title}"></iframe>`;
+  if (v) return `<video src="${v}" controls autoplay playsinline preload="auto" ${poster ? `poster="${poster}"` : ""}></video>`;
+  return `<p class="lightbox__note">${title}, the film will be online soon.</p>`;
+}
+
+// Space pauses and plays the film: local video directly, YouTube and Vimeo through their player APIs.
+// The players report their state back, so the toggle stays right after clicking their own controls.
+let playing = true;
+function togglePlay() {
+  const v = frame.querySelector("video");
+  if (v) { v.paused ? v.play() : v.pause(); return true; }
+  const f = frame.querySelector("iframe");
+  if (!f) return false;
+  const yt = f.src.includes("youtube");
+  const msg = yt
+    ? { event: "command", func: playing ? "pauseVideo" : "playVideo", args: [] }
+    : { method: playing ? "pause" : "play" };
+  f.contentWindow.postMessage(JSON.stringify(msg), "*");
+  playing = !playing;
+  return true;
+}
+addEventListener("message", (e) => {
+  if (!/youtube|vimeo/.test(e.origin)) return;
+  let d; try { d = typeof e.data === "string" ? JSON.parse(e.data) : e.data; } catch { return; }
+  if (d?.info?.playerState !== undefined) playing = d.info.playerState === 1; // YouTube: 1 = playing
+  if (d?.event === "play" || d?.event === "playProgress") playing = true;      // Vimeo
+  if (d?.event === "pause" || d?.event === "finish") playing = false;
+});
+function listenToPlayer() {
+  const f = frame.querySelector("iframe");
+  if (!f) return;
+  playing = true;
+  f.addEventListener("load", () => {
+    if (f.src.includes("youtube")) f.contentWindow.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
+    else ["play", "pause", "finish"].forEach((v) => f.contentWindow.postMessage(JSON.stringify({ method: "addEventListener", value: v }), "*"));
+  });
+}
+
+function openLightbox(html, cls = "") {
+  frame.className = `lightbox__frame ${cls}`;
+  frame.innerHTML = html;
+  lightbox.hidden = false;
+  listenToPlayer();
+  lightbox.querySelector("[data-close]").focus();
+}
+
+document.addEventListener("click", (e) => {
+  const play = e.target.closest("[data-play]");
+  if (play) {
+    const p = projects.find((x) => x.id === play.dataset.play);
+    return openLightbox(playerFor(p.video, p.title, p.poster));
+  }
+  const extra = e.target.closest("[data-extra]");
+  if (extra) {
+    const [id, n] = extra.dataset.extra.split(":");
+    const x = projects.find((p) => p.id === id).extras[n];
+    return openLightbox(playerFor(x.url, x.label));
+  }
+  if (e.target.closest("[data-close]")) closeOverlays();
+});
+
+/* =====================================================================
+   EDITOR'S LETTER + LEGAL PAGES
+   ===================================================================== */
+const letter = $("[data-letter-sheet]"), legal = $("[data-legal]");
+
+function openLetter() {
+  letter.querySelector(".letter__paper").innerHTML = `
+    <button class="overlay__close" data-close>Close ✕</button>
+    <p class="kicker">Editor's letter</p>
+    <h2 class="letter__title serif">Hi, I'm Amy.</h2>
+    ${DATA.letter.map((t) => `<p>${t}</p>`).join("")}
+    <p class="letter__mission serif">${DATA.mission}</p>
+    <ol class="letter__timeline">${DATA.timeline.map(([y, w]) => `<li><span>${y}</span><span>${w}</span></li>`).join("")}</ol>
+    <p class="letter__sign serif">Amy</p>
+    <a class="btn" href="${contact.cv}" download>Download CV ↓</a>`;
+  letter.hidden = false;
+}
+
+// A private, non-commercial portfolio (no services offered), so there is no Impressum, only the privacy notice.
+// If you ever offer work for clients on this site, an Impressum with a postal address becomes necessary.
+const LEGAL = {
+  privacy: `
+    <p class="kicker">Datenschutz</p>
+    <h2 class="serif">Datenschutzerklärung</h2>
+    <p><b>Über diese Website</b><br>Dies ist eine private, nicht-kommerzielle Portfolio-Website. Sie zeigt meine Arbeiten aus Studium und eigenen Projekten und bietet keine Dienstleistungen an.</p>
+    <p><b>Verantwortlich</b><br>Amy Grindau, E-Mail: <a href="mailto:${contact.email}">${contact.email}</a></p>
+    <p><b>Hosting</b><br>Diese Website wird über GitHub Pages gehostet (GitHub Inc., 88 Colin P. Kelly Jr. St., San Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten wie die IP-Adresse in Server-Logfiles, um die Seite sicher auszuliefern (Art. 6 Abs. 1 lit. f DSGVO). GitHub ist unter dem EU-US Data Privacy Framework zertifiziert. Mehr: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
+    <p><b>Keine Cookies, kein Tracking</b><br>Diese Website setzt keine Cookies und verwendet keine Analyse-Tools.</p>
+    <p><b>Schriften</b><br>Alle Schriften sind lokal auf diesem Server gespeichert. Es wird keine Verbindung zu Google oder anderen Anbietern aufgebaut.</p>
+    <p><b>Videos</b><br>Videos von YouTube werden über youtube-nocookie.com und erst nach einem Klick geladen; dabei werden Daten an Google übertragen.</p>
+    <p><b>Kontakt per E-Mail</b><br>Wenn du mir schreibst, verarbeite ich deine Angaben nur zur Beantwortung deiner Anfrage.</p>
+    <p><b>Deine Rechte</b><br>Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Beschwerde bei einer Aufsichtsbehörde.</p>
+    <p class="legal__small">Alle Inhalte (Texte, Bilder, Filme, Gestaltung) © Amy Grindau bzw. die jeweiligen Teams, sofern nicht anders angegeben.</p>`,
+};
+
+function openLegal(which) {
+  legal.querySelector(".legal__paper").innerHTML = `<button class="overlay__close" data-close>Close ✕</button>${LEGAL[which]}`;
+  legal.hidden = false;
+}
+
+let openMag = null;
+function closeLightbox() {
+  if (openMag) { openMag.small.show(openMag.big.i); openMag = null; } // …and close on the page you were looking at
+  lightbox.hidden = true; frame.innerHTML = "";
+}
+function closeLetter() { letter.hidden = true; }
+function closeOverlays() { closeLightbox(); closeLetter(); legal.hidden = true; }
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-letter]")) openLetter();
+  const l = e.target.closest("[data-legal-open]");
+  if (l) openLegal(l.dataset.legalOpen);
+  if (e.target === letter || e.target === legal) closeOverlays();
+});
+
+/* =====================================================================
+   FOOTER — contact, privacy
+   ===================================================================== */
+$("[data-foot]").innerHTML = `
+  <div class="foot__inner">
+    <p class="foot__name serif">Amy Grindau</p>
+    <div class="foot__col">
+      <p class="kicker">Contact</p>
+      <a href="mailto:${contact.email}">${contact.email}</a>
+      <a href="${contact.linkedin}" target="_blank" rel="noopener">LinkedIn</a>
+      ${contact.instagram ? `<a href="${contact.instagram}" target="_blank" rel="noopener">Instagram</a>` : ""}
+    </div>
+    <div class="foot__col">
+      <p class="kicker">Info</p>
+      <button data-legal-open="privacy">Datenschutz</button>
+      <a href="${contact.cv}" download>CV ↓</a>
+    </div>
+    <p class="foot__copy">© 2026 Amy Grindau, Munich & Seoul</p>
+  </div>`;
+
+/* ---------- start on the page in the URL ---------- */
+if (indexOf(startId) > 0) book.show(indexOf(startId));
+if (startId === "contents") toc.open();
+if (startId === "letter") openLetter();

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Amy Grindau, Portfolio</title>
+  <meta name="description" content="Amy Grindau, creative direction, film, editorial design and creative technology. Munich & Seoul.">
+  <link href="fonts/fonts.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=31">
+</head>
+<body>
+
+  <header class="bar" id="top">
+    <a href="#/cover" class="bar__name">Amy Grindau</a>
+    <span class="bar__edition">Munich &amp; Seoul</span>
+  </header>
+
+  <main class="desk">
+    <div class="stage">
+      <div data-book></div>
+
+      <!-- Contents: a sheet of tracing paper pulled down over one page -->
+      <div class="sheet-clip">
+        <aside class="sheet" data-toc aria-label="Contents">
+          <div class="sheet__head">
+            <h2 class="sheet__title">Contents</h2>
+            <button class="sheet__close" data-toc-close>Close ↑</button>
+          </div>
+          <div class="sheet__list" data-toc-list></div>
+        </aside>
+      </div>
+
+      <!-- Tabs stuck to the top edge of the magazine -->
+      <nav class="tabs" aria-label="Magazine tabs">
+        <button class="tab tab--pink" data-toc-tab>Contents ↓</button>
+        <button class="tab" data-letter>Editor's letter</button>
+        <a class="tab" data-cv download>CV ↓</a>
+        <a class="tab tab--black" href="#/contact">Contact</a>
+      </nav>
+    </div>
+
+    <nav class="under" aria-label="Pages">
+      <button class="mini-start" data-start-main>← To the beginning</button>
+      <button class="under__btn" data-prev aria-label="Previous page">←</button>
+      <span class="under__count" data-count></span>
+      <button class="under__btn" data-next aria-label="Next page">→</button>
+      <p class="hint" data-hint>Scroll for more ↓</p>
+    </nav>
+  </main>
+
+  <!-- Scroll down = the rest of the story -->
+  <section class="more" data-more></section>
+
+  <footer class="foot" data-foot></footer>
+
+  <!-- Overlays -->
+  <div class="overlay letter" data-letter-sheet hidden>
+    <article class="letter__paper" role="dialog" aria-modal="true" aria-label="Editor's letter"></article>
+  </div>
+  <div class="overlay legal" data-legal hidden>
+    <article class="legal__paper" role="dialog" aria-modal="true"></article>
+  </div>
+  <div class="lightbox" data-lightbox hidden>
+    <button class="lightbox__close" data-close>Close ✕</button>
+    <div class="lightbox__frame" data-frame></div>
+  </div>
+
+  <script src="data.js?v=31"></script>
+  <script src="book.js?v=31"></script>
+  <script src="postcards.js?v=31"></script>
+  <script src="main.js?v=31"></script>
+</body>
+</html>

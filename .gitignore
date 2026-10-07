@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Only assets/web goes online. Originals and large videos stay on the Mac only.
+/assets/*
+!/assets/web/
+
+# hidden project (AI Treasure Chest), not shown on the website
+/assets/web/treasurechest/
