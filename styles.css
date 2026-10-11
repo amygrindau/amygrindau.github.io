@@ -25,7 +25,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--white); color: var(--ink); font: 400 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--white); color: var(--ink); font: 400 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; font-variant-emoji: text; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 img { display: block; max-width: 100%; }
@@ -704,4 +704,37 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 /* landscape screens: the magazine sits in the vertical middle of the window */
 @media (orientation: landscape) and (min-width: 761px) {
   .desk { justify-content: center; }
+}
+
+/* ---------- phone held sideways: the magazine gets the full height ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root { --book-w: min(calc(100vw - 280px), calc((100svh - 20px) * 1.5)); }
+  .bar { display: none; }
+  .desk { min-height: 100svh; padding: 10px 0; justify-content: center; }
+  /* tabs: a column on the left */
+  .tabs { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); flex-direction: column; align-items: stretch; gap: 6px; }
+  .tab { height: 28px; padding: 0 10px; font-size: 10px; justify-content: center; }
+  .tab:hover { transform: none; }
+  /* counter and arrows: a column on the right */
+  .under { position: fixed; right: 12px; top: 50%; transform: translateY(-50%); width: auto; margin: 0; flex-direction: column; gap: 10px; }
+  .under .mini-start { position: static; transform: none; font-size: 9px; text-align: center; max-width: 90px; line-height: 1.3; }
+  .under .hint { display: none; }
+  .under__btn { width: 32px; height: 32px; }
+  .more__inner { padding-top: 32px; }
+}
+
+/* ---------- editor's letter on the phone: straight paper, more room ---------- */
+@media (max-width: 760px) {
+  .overlay { padding: 12px 10px 24px; }
+  .letter__paper { transform: none; padding: 52px 22px 28px; }
+  .letter__title { margin: 14px 0 14px; font-size: 46px; }
+  .letter__paper > p:not([class]) { font-size: 15px; line-height: 1.6; }
+  .letter__mission { font-size: 22px; margin: 22px 0; }
+  .letter__timeline li { grid-template-columns: 62px 1fr; }
+  .letter__sign { font-size: 30px; }
+}
+
+/* phone: the postcard panel (name, flip, save) only appears once a card is picked up */
+@media (max-width: 760px) {
+  .pt:not(.is-picked) .pt__panel { display: none; }
 }

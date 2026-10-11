@@ -25,7 +25,19 @@ const TABLE = [
   [11, 96, -86], [42, 94, 9], [70, 97, -6], [92, 95, 83],
   [25, 65, 6],
 ];
-const CARD_W = 0.19;           // card width on the table, as part of the table width
+// Phone: the table is upright (3:4), so the cards lie in five loose rows and are larger
+const TABLE_PHONE = [
+  [12, 13, -8], [38, 12, 86], [63, 14, -5], [89, 12, 9],
+  [24, 32, 6], [50, 31, -87], [77, 33, -11], [100, 30, 82],
+  [10, 51, 88], [37, 52, -4], [64, 50, 7], [90, 52, -84],
+  [22, 70, -9], [78, 69, 12],
+  [11, 88, 5], [37, 87, -86], [63, 89, 10], [89, 87, -7],
+  [50, 70, -3],
+];
+const phone = matchMedia("(max-width: 760px)");
+const layout = () => (phone.matches ? TABLE_PHONE : TABLE);
+const cardW = () => (phone.matches ? 0.3 : 0.19);
+const CARD_W = 0.19;           // card width on the table, as part of the table width (desktop)
 const CARD_RATIO = 297 / 419;  // A6 postcard, the same on both sides
 // measured on the original fronts: image window + caption line
 const WIN = { l: 0.0911, r: 0.0922, t: 0.067, b: 0.108 };
@@ -342,7 +354,7 @@ function mountPostcards(root, cards) {
   const canvas = ownEl.querySelector("canvas");
 
   const S = els.map((_, i) => ({
-    x: new Spring(TABLE[i][0]), y: new Spring(TABLE[i][1]), r: new Spring(TABLE[i][2]),
+    x: new Spring(layout()[i][0]), y: new Spring(layout()[i][1]), r: new Spring(layout()[i][2]),
     s: new Spring(0.3), lift: new Spring(0, 140, 20), flip: new Spring(0, 95, 13),
   }));
   let picked = -1, hover = -1, flipped = false, sheet = false, running = false, lastT = 0;
@@ -353,12 +365,12 @@ function mountPostcards(root, cards) {
     const H = table.clientHeight, W = table.clientWidth;
     bigW = Math.min(H * 0.86 * CARD_RATIO, W * 0.6);
     els.forEach((el) => { el.style.width = `${bigW}px`; el.style.height = `${bigW / CARD_RATIO}px`; });
-    rest = (W * CARD_W) / bigW;
+    rest = (W * cardW()) / bigW;
   }
 
   function targets() {
     els.forEach((el, i) => {
-      const s = S[i], [x, y, r] = TABLE[i];
+      const s = S[i], [x, y, r] = layout()[i];
       if (i === picked) {
         s.x.t = 50; s.y.t = 48; s.r.t = 0; s.s.t = 1; s.lift.t = 1; s.flip.t = flipped ? 180 : 0;
       } else {

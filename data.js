@@ -50,7 +50,8 @@ window.PORTFOLIO = {
     "I work at the intersection of creative direction, media, technology and culture, exploring how visual storytelling shapes the way we experience ideas, brands and society.",
 
   letter: [
-    "I'm Amy, an interdisciplinary creative studying Art & Multimedia at LMU Munich, currently on exchange at Seoul National University.",
+    // continues the title "Hi, I'm Amy,"
+    "an interdisciplinary creative studying Art & Multimedia at LMU Munich, back from a year on exchange at Seoul National University.",
     "I like turning ideas into things you can hold, watch or walk through: magazines, films, artist books, brands and installations. Most of my work lives in two places at once, between image and text, analogue and digital, Munich and Seoul.",
   ],
 

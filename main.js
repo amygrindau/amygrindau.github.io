@@ -26,7 +26,7 @@ const bg = (src, cls = "", style = "") => `<div class="bg ${cls}" style="--src:u
 // Front cover: your own design (images.cover) or a plain pink page. Tapping it opens the magazine.
 const coverPage = () => pg("r", images.cover ? bg(images.cover, "bg--cover") : "", { cls: "pg--cover pg--pink" });
 
-// Masthead: year, short contents, credits ↔ portrait with the pinned editor's letter
+// Masthead: year, short contents, credits ↔︎ portrait with the pinned editor's letter
 const mastLeft = () => pg("l", `
   <div class="runhead"><span>Contents</span><span>Munich & Seoul</span></div>
   <h2 class="mast__year serif">2026</h2>
@@ -45,7 +45,7 @@ const mastRight = () => pg("r", `
   <button class="pinned" data-letter aria-label="Read the editor's letter">
     <span class="pinned__clip" aria-hidden="true"></span>
     <span class="pinned__kicker">Editor's letter</span>
-    <span class="pinned__title serif">Hi, I'm Amy.</span>
+    <span class="pinned__title serif">Hi, I'm Amy,</span>
     <span class="pinned__text">${DATA.letter[0]}</span>
     <span class="pinned__more">Read →</span>
   </button>
@@ -73,7 +73,7 @@ function projectLeft(p, k) {
 function projectRight(p, k) {
   const num = pad(pageOf(k) + 1), label = p.section;
   const play = (p.poster || p.still)
-    ? `<button class="play" data-play="${p.id}">${p.video ? "▶ Play film" : "Film coming soon"}</button>` : "";
+    ? `<button class="play" data-play="${p.id}">${p.video ? "▶︎ Play film" : "Film coming soon"}</button>` : "";
   if (p.poster) return pg("r", `${bg(p.poster, "bg--poster")}${play}`, { num, label, cls: "pg--black pg--film" });
   if (p.still) return pg("r", `${bg(p.still, "bg--screen")}${play}`, { num, label, cls: "pg--black pg--film", style: p.pageBg ? `background:${p.pageBg}` : "" });
   if (p.key.collage) {
@@ -146,14 +146,17 @@ const tocSheet = $("[data-toc]"), tocTab = $("[data-toc-tab]");
 const bookEl = $("[data-book]");
 
 const startId = location.hash.replace("#/", ""); // read before the book rewrites the hash
+// On phones the closed cover is skipped: the magazine opens on the contents spread
+const phoneMQ = matchMedia("(max-width: 760px)");
+const first = () => (phoneMQ.matches ? 1 : 0);
 const book = new Book(bookEl, spreads, {
   onSwipe: (d) => turn(book.i + d),
   onChange(i, s) {
     history.replaceState(null, "", `#/${s.id}`);
     count.textContent = `${pad(i + 1)} / ${pad(spreads.length)}`;
-    prevBtn.disabled = i === 0;
+    prevBtn.disabled = i <= first();
     nextBtn.disabled = i === spreads.length - 1;
-    document.body.dataset.spread = i === 0 ? "first" : i === spreads.length - 1 ? "last" : "";
+    document.body.dataset.spread = i <= first() ? "first" : i === spreads.length - 1 ? "last" : "";
     hint.hidden = !s.project && s.id !== "current";
     renderMore(s.id === "current" ? "current" : s.project);
     tocSheet.querySelectorAll("a").forEach((a) => a.classList.toggle("is-current", a.dataset.id === s.id));
@@ -170,6 +173,7 @@ book.inner.insertAdjacentHTML("beforeend", `
    ===================================================================== */
 const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 const turn = (i) => {
+  i = Math.max(i, first());
   if (scrollY > 40) toTop();
   toc.close();
   book.go(i);
@@ -269,9 +273,9 @@ function renderMore(p) {
   if (!p) { more.innerHTML = ""; return; }
   if (p === "current") return renderCurrent();
   const films = [
-    p.video && (p.poster || p.still) ? `<button class="btn" data-play="${p.id}">▶ Play the film</button>` : "",
-    ...(p.extras || []).map((x, n) => `<button class="btn btn--line" data-extra="${p.id}:${n}">▶ ${x.label}</button>`),
-    ...(p.links || []).map((l) => `<a class="btn btn--line" href="${l.url}" ${l.download ? "download" : 'target="_blank" rel="noopener"'}>${l.download ? "↓" : "↗"} ${l.label}</a>`),
+    p.video && (p.poster || p.still) ? `<button class="btn" data-play="${p.id}">▶︎ Play the film</button>` : "",
+    ...(p.extras || []).map((x, n) => `<button class="btn btn--line" data-extra="${p.id}:${n}">▶︎ ${x.label}</button>`),
+    ...(p.links || []).map((l) => `<a class="btn btn--line" href="${l.url}" ${l.download ? "download" : 'target="_blank" rel="noopener"'}>${l.download ? "↓" : "↗︎"} ${l.label}</a>`),
   ].join("");
   more.innerHTML = `
     <div class="more__inner">
@@ -347,7 +351,7 @@ function block(p, b) {
       return `<section class="block">${head}<div class="posters">${b.items.map((s) => img(s, "Poster")).join("")}</div></section>`;
     case "magazine":
       MAGS.push(b);
-      return `<section class="block">${head}<div class="mini-wrap at-start"><button class="mini-start" data-start="${MAGS.length - 1}">← To the beginning</button><button class="mini-full" data-full="${MAGS.length - 1}" aria-label="Fullscreen">⤢</button><div class="mini" data-mini></div></div><p class="block__note block__note--mini">Click the right page to turn, the left page to go back.</p></section>`;
+      return `<section class="block">${head}<div class="mini-wrap at-start"><button class="mini-start" data-start="${MAGS.length - 1}">← To the beginning</button><button class="mini-full" data-full="${MAGS.length - 1}" aria-label="Fullscreen">⤢︎</button><div class="mini" data-mini></div></div><p class="block__note block__note--mini">Click the right page to turn, the left page to go back.</p></section>`;
     case "concept":
       return `<section class="block">${head}<div class="concept">
         <div class="concept__left">
@@ -383,7 +387,7 @@ function block(p, b) {
         <figure class="${n === b.feature ? "is-feature" : ""}">${img(it.src, it.caption || p.title)}${it.caption ? `<figcaption>${it.caption}</figcaption>` : ""}</figure>`).join("")}</div></section>`;
     }
     case "video":
-      return `<section class="block">${head}<button class="videocard" data-play="${p.id}"><span>▶ Play</span></button></section>`;
+      return `<section class="block">${head}<button class="videocard" data-play="${p.id}"><span>▶︎ Play</span></button></section>`;
     case "logos":
       return `<section class="block">${head}
         <div class="logos">${b.items.map((s, n) => `<figure>${img(s, `Logo iteration ${n + 1}`)}<figcaption>Iteration ${pad(n + 1)}</figcaption></figure>`).join("")}</div>
@@ -534,7 +538,7 @@ function openLetter() {
   letter.querySelector(".letter__paper").innerHTML = `
     <button class="overlay__close" data-close>Close ✕</button>
     <p class="kicker">Editor's letter</p>
-    <h2 class="letter__title serif">Hi, I'm Amy.</h2>
+    <h2 class="letter__title serif">Hi, I'm Amy,</h2>
     ${DATA.letter.map((t) => `<p>${t}</p>`).join("")}
     <p class="letter__mission serif">${DATA.mission}</p>
     <ol class="letter__timeline">${DATA.timeline.map(([y, w]) => `<li><span>${y}</span><span>${w}</span></li>`).join("")}</ol>
@@ -602,5 +606,7 @@ $("[data-foot]").innerHTML = `
 
 /* ---------- start on the page in the URL ---------- */
 if (indexOf(startId) > 0) book.show(indexOf(startId));
+if (book.i < first()) book.show(first());
+phoneMQ.addEventListener("change", () => { if (book.i < first()) book.show(first()); });
 if (startId === "contents") toc.open();
 if (startId === "letter") openLetter();
