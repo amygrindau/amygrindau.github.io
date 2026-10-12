@@ -738,3 +738,10 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 @media (max-width: 760px) {
   .pt:not(.is-picked) .pt__panel { display: none; }
 }
+
+/* the name in the header is the page's main heading (H1) on the start page; it looks like before */
+.bar__h1 { margin: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; }
+
+/* only visible when JavaScript is switched off (and for search engines that do not run it) */
+.seo-fallback { max-width: 760px; margin: 40px auto; padding: 0 16px; }
+.seo-fallback h1 { font: 400 48px/1 var(--serif); margin: 0 0 12px; }
