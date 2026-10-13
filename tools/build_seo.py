@@ -187,7 +187,7 @@ def noscript_project(p, others):
 def noscript_home(data, projects):
     links = "".join(f'<li><a href="/work/{p["id"]}/">{e(p["title"])}</a>, {e(p["kind"])}, {e(p["year"])}</li>' for p in projects)
     return (f'<noscript><article class="seo-fallback"><p>{e(data["mission"])}</p>'
-            f'<h2>Projects</h2><ul>{links}</ul></article></noscript>')
+            f'<p><a href="/about/">About Amy Grindau</a></p><h2>Projects</h2><ul>{links}</ul></article></noscript>')
 
 
 def fill(template, marker, content):
@@ -225,6 +225,23 @@ def main():
         os.makedirs(out, exist_ok=True)
         open(os.path.join(out, "index.html"), "w", encoding="utf-8").write(page)
 
+    # about page = the editor's letter, for people searching the name
+    about_url = f"{SITE}/about/"
+    about_desc = ("Amy Grindau is a multidisciplinary creative studying Art & Multimedia at LMU Munich, "
+                  "working across creative direction, film, editorial design and creative technology.")
+    profile = {"@type": "ProfilePage", "@id": f"{about_url}#page", "url": about_url, "name": "About Amy Grindau",
+               "mainEntity": {"@id": PERSON_ID}, "isPartOf": {"@id": WEBSITE_ID}}
+    page = fill(template, "head", head("About Amy Grindau, Multidisciplinary Creative", about_desc, about_url,
+                                       f"{SITE}/og-image.jpg", "Amy Grindau, Portfolio: name in serif type next to a portrait on pink",
+                                       [person(data), website(), profile], base=True, og_type="profile"))
+    letter = "".join(f"<p>{e(t)}</p>" for t in data["letter"])
+    timeline = "".join(f"<li>{e(y)}: {e(w)}</li>" for y, w in data["timeline"])
+    page = fill(page, "noscript", f'<noscript><article class="seo-fallback"><h1>Hi, I\'m Amy Grindau</h1>{letter}'
+                                  f'<p>{e(data["mission"])}</p><ul>{timeline}</ul><p><a href="/">Portfolio</a></p></article></noscript>')
+    page = page.replace('<h1 class="bar__h1">', '<p class="bar__h1">', 1).replace("</a></h1>", "</a></p>", 1)
+    os.makedirs(os.path.join(ROOT, "about"), exist_ok=True)
+    open(os.path.join(ROOT, "about", "index.html"), "w", encoding="utf-8").write(page)
+
     # remove pages of projects that no longer exist or are hidden
     work_dir = os.path.join(ROOT, "work")
     for d in os.listdir(work_dir):
@@ -233,7 +250,7 @@ def main():
                 os.remove(os.path.join(work_dir, d, f))
             os.rmdir(os.path.join(work_dir, d))
 
-    urls = [f"{SITE}/"] + [f"{SITE}/work/{p['id']}/" for p in projects]
+    urls = [f"{SITE}/", f"{SITE}/about/"] + [f"{SITE}/work/{p['id']}/" for p in projects]
     open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "".join(f"  <url><loc>{u}</loc><lastmod>{TODAY}</lastmod></url>\n" for u in urls) + "</urlset>\n")

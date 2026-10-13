@@ -167,7 +167,8 @@ const tocSheet = $("[data-toc]"), tocTab = $("[data-toc-tab]");
 const bookEl = $("[data-book]");
 
 // read before the book rewrites the address: /work/nexus/ or the older #/nexus
-const startId = (location.pathname.match(/\/work\/([^/]+)/) || [])[1] || location.hash.replace("#/", "");
+const startId = /^\/about\/?$/.test(location.pathname) ? "letter"   // /about/ = the editor's letter
+  : (location.pathname.match(/\/work\/([^/]+)/) || [])[1] || location.hash.replace("#/", "");
 // On phones the closed cover is skipped: the magazine opens on the contents spread
 const phoneMQ = matchMedia("(max-width: 760px)");
 const first = () => (phoneMQ.matches ? 1 : 0);
@@ -647,4 +648,4 @@ if (indexOf(startId) > 0) book.show(indexOf(startId));
 if (book.i < first()) book.show(first());
 phoneMQ.addEventListener("change", () => { if (book.i < first()) book.show(first()); });
 if (startId === "contents") toc.open();
-if (startId === "letter") openLetter();
+if (startId === "letter") { book.show(indexOf("masthead")); openLetter(); history.replaceState(null, "", "/about/"); document.title = "About Amy Grindau"; }
