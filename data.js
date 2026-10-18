@@ -111,7 +111,7 @@ window.PORTFOLIO = {
         detail: {
           kind: "Creative direction, content strategy, community growth, creator acquisition, 2026",
           image: `${W}/current/brewinsight.jpg`,
-          intro: "Brewinsight is a coffee intelligence platform: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés.",
+          intro: "Brewinsight is a coffee intelligence platform, already live as a viable product: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés. We are now in the growth phase, building the audience and the first creator sign-ups.",
           points: [
             "Positioning: “coffee magazine meets local culture platform”, editorial, local, human and curious, while keeping the existing identity",
             { text: "Five content pillars:", sub: ["Coffee culture", "Creator culture", "Café × creator collaborations", "Coffee intelligence", "Community engagement"] },
@@ -366,6 +366,7 @@ window.PORTFOLIO = {
       team: "Directed by Pamela Brzoza, Julie Flemming, Amy Grindau, Nina Menzl, Lara Remmelberger, Josefine T. Schmid & Louis Zimmermann",
       poster: `${W}/poster-pulse.jpg`,
       video: "https://youtu.be/fbkOTVymdUk?si=jB_2hSNOJC_Msvlh",
+      links: [{ label: "Exhibition, TU Kenya Conference on AI", url: "https://www.explore-vc.org/en/galleries-content/ai-lmu-etal.html" }],
       extras: [
         { label: "Trailer", url: "https://youtu.be/BLfj2PR6qgk?si=MgnFHE9vKI9ZQE-k" },
         { label: "Interview", url: "https://youtu.be/IM1rYukr6NM?si=sLRuh9wA5csErwQd" },
@@ -446,18 +447,42 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "treasurechest", hidden: true, // removed for now, until there are better photos and video
-      section: "Interaction", title: "AI Treasure Chest", kind: "Installation", year: "2025",
+      id: "treasurechest", section: "Interaction", title: "AI Treasure Chest", kind: "Interactive Installation", year: "2025",
       hook: "A chest that closes when you come closer.",
-      context: "Practical Interactive Media, LMU × Deutsches Museum",
-      role: "Concept, interaction design, hardware, exhibit",
+      context: "Practical Interactive Media, LMU Munich × Deutsches Museum",
+      role: "Concept, interaction design, fabrication, GenAI-assisted ornament, hardware",
       team: "Group project with Louis Zimmermann",
-      key: { src: `${W}/treasurechest/photo-2.jpg`, fit: "cover" },
+      key: { src: `${W}/treasurechest/photo-1.jpg`, fit: "cover" },
       video: `${W}/treasurechest/film.mp4`,
       text: [
-        "An antique-style chest that shuts as visitors approach, a tangible metaphor for the black box of artificial intelligence.",
+        "This exhibit uses a powerful metaphor to address the lack of transparency in AI algorithms. As you approach, the antique-style chest, labelled \"AI\", closes its lid completely. The visible treasure is immediately hidden from view.",
+        "This physical action prompts reflection on AI's black box nature: a system whose attractive promise and complex decision-making processes remain deliberately opaque and hidden, challenging us to consider what we can and cannot know about the technology that shapes our lives.",
       ],
-      blocks: [],
+      process: [
+        "The chest is inspired by a historical exhibit from the Deutsches Museum, an old suitcase in the shape of a chest from around 1880. In keeping with the museum's mission, it brings together past, present and future.",
+        "The \"AI content\" is the chest's behaviour itself: a programmed, non-transparent denial of access to its inner workings. The lid is never fully open, a mysterious glow comes from inside, and the closer you get, the more cryptic the message becomes.",
+        "Designed for a museum: no sound, no data recording and a touchless interaction, so it works for every visitor through visual impressions alone. It prescribes no narrative; visitors draw their own conclusions.",
+        "Laser-cut wood, painted and sprayed. Generative AI was part of the craft: text-to-image designs became 3D-printed ornamental knobs, and AI reference images were hand-painted onto the chest. Inside, a Raspberry Pi Pico W reads three distance sensors and drives a stepper motor, an LED strip and a display.",
+      ],
+      blocks: [
+        { type: "gallery", title: "The build", items: [
+          { src: `${W}/treasurechest/build-1.jpg`, caption: "Laser-cut wooden box" },
+          { src: `${W}/treasurechest/build-2.jpg`, caption: "Painted and sprayed" },
+          { src: `${W}/treasurechest/build-3.jpg`, caption: "The finished chest" },
+        ] },
+        { type: "pairs", title: "Generative AI × craftsmanship", items: [
+          { a: `${W}/treasurechest/knobs-print.jpg`, b: `${W}/treasurechest/knobs-final.jpg`, caption: "Ornamental knobs: designed with text-to-image tools, then 3D-printed",
+            alt: ["AI Treasure Chest, ornamental knobs designed with text-to-image tools, ready for 3D printing", "AI Treasure Chest, 3D-printed ornamental knob on the finished chest"] },
+          { a: `${W}/treasurechest/motif-ai.jpg`, b: `${W}/treasurechest/motif-painted.jpg`, caption: "Motifs: AI-generated reference, then hand-painted",
+            alt: ["AI Treasure Chest, AI-generated reference image with birds and flowers", "AI Treasure Chest, birds hand-painted onto the chest with gold leaf"] },
+        ] },
+        { type: "gallery", title: "Hardware", items: [
+          { src: `${W}/treasurechest/sketch.jpg`, caption: "First sketch: three distance sensors, Pico W, motor, LED and display" },
+          { src: `${W}/treasurechest/inside.jpg`, caption: "Final wiring inside the chest" },
+          { src: `${W}/treasurechest/lid.jpg`, caption: "The lid mechanism" },
+        ] },
+        { type: "video", title: "The mechanism" },
+      ],
     },
   ],
 };

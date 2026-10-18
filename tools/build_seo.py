@@ -33,6 +33,7 @@ KEYWORDS = {
     "pulse": ["Experimental filmmaking", "Artificial intelligence", "Cinematography", "Speculative design"],
     "nexus": ["Short film", "Experimental filmmaking", "Cinematography", "Film editing"],
     "smartscan": ["Creative technology", "AI prototype", "Accessibility", "User-centered design"],
+    "treasurechest": ["Interactive installation", "Artificial intelligence", "Physical computing", "Museum exhibit", "Generative AI"],
 }
 
 
@@ -48,6 +49,7 @@ DESCRIPTIONS = {
     "snu80": "Hand-animated congratulatory film for Seoul National University's 80th anniversary, where the number 8 becomes infinity. Excellence Award (Idea Award).",
     "pulse": "Speculative short film about artificial intelligence, ethics and identity, made at LMU Munich and screened at the 4th International TU Kenya Conference on AI.",
     "nexus": "Experimental short film about a gap that breaks the film itself into genres. Co-directed at LMU Munich, winner of two LMU Oscars incl. Best Movie.",
+    "treasurechest": "Interactive exhibit for the Deutsches Museum: an antique-style chest labelled AI that closes as you approach, a tangible metaphor for the AI black box.",
     "smartscan": "AI prototype with Digitale Hilfe München: a scanner that simplifies, enlarges and reads documents aloud, designed with older adults for accessibility.",
 }
 

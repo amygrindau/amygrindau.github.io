@@ -385,7 +385,7 @@ function block(p, b) {
       return `<section class="block">${head}<div class="pt" data-pt></div></section>`;
     case "pairs":
       return `<section class="block">${head}<div class="pairs">${b.items.map((it) => `
-        <figure class="pair"><div class="pair__imgs">${img(it.a, `${it.caption}, original flower photograph for ${p.title}`)}${img(it.b, `${it.caption}, generative TouchDesigner echo for ${p.title}`)}</div><figcaption>${it.caption}</figcaption></figure>`).join("")}</div></section>`;
+        <figure class="pair"><div class="pair__imgs">${img(it.a, it.alt?.[0] || `${it.caption}, original flower photograph for ${p.title}`)}${img(it.b, it.alt?.[1] || `${it.caption}, generative TouchDesigner echo for ${p.title}`)}</div><figcaption>${it.caption}</figcaption></figure>`).join("")}</div></section>`;
     case "posters":
       return `<section class="block">${head}<div class="posters">${b.items.map((s, n) => img(s, `${p.title} poster ${n + 1}`)).join("")}</div></section>`;
     case "magazine":
