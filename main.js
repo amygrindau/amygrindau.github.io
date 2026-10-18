@@ -359,7 +359,7 @@ function reveal() {
 // "On my desk": text and a pinboard below the spread
 function renderCurrent() {
   const pins = cur.projects.map((c, n) => `
-    <figure class="pin p${n}">
+    <figure class="pin p${n}${c.detail ? " pin--open" : ""}"${c.detail ? ` data-pin="${n}" role="button" tabindex="0" aria-label="${c.title}: read more"` : ""}>
       ${c.src ? `<img src="${c.src}" alt="${c.title}" loading="lazy">` : `<span class="pin__ph"></span>`}
       <figcaption><span class="pin__title serif">${c.title}</span>${c.note ? `<span class="pin__note">${c.note}</span>` : ""}</figcaption>
     </figure>`).join("");
@@ -602,6 +602,29 @@ const LEGAL = {
     <p><b>Deine Rechte</b><br>Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Beschwerde bei einer Aufsichtsbehörde.</p>
     <p class="legal__small">Alle Inhalte (Texte, Bilder, Filme, Gestaltung) © Amy Grindau bzw. die jeweiligen Teams, sofern nicht anders angegeben.</p>`,
 };
+
+// "On my desk": a pin opens a short description (same paper overlay as the legal pages)
+function openPin(n) {
+  const c = cur.projects[n], d = c.detail;
+  const li = (pt) => typeof pt === "string" ? `<li>${pt}</li>`
+    : `<li>${pt.text}<ul>${pt.sub.map((x) => `<li>${x}</li>`).join("")}</ul></li>`;
+  legal.querySelector(".legal__paper").innerHTML = `<button class="overlay__close" data-close>Close ✕</button>
+    <p class="kicker">On my desk</p>
+    <h2 class="serif">${c.title}</h2>
+    <p class="pindetail__kind">${d.kind}</p>
+    ${d.image ? `<img class="pindetail__img" src="${d.image}" alt="${c.title}, ${low(d.kind)}">` : ""}
+    <p>${d.intro}</p>
+    <ul class="pindetail__list">${d.points.map(li).join("")}</ul>`;
+  legal.hidden = false;
+}
+document.addEventListener("click", (e) => {
+  const pin = e.target.closest("[data-pin]");
+  if (pin) openPin(Number(pin.dataset.pin));
+});
+document.addEventListener("keydown", (e) => {
+  const pin = e.target.closest?.("[data-pin]");
+  if (pin && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openPin(Number(pin.dataset.pin)); }
+});
 
 function openLegal(which) {
   legal.querySelector(".legal__paper").innerHTML = `<button class="overlay__close" data-close>Close ✕</button>${LEGAL[which]}`;

@@ -92,9 +92,35 @@ window.PORTFOLIO = {
     ],
     // the pinboard below the spread: one pin per project. Add an image as `src` when you have one.
     projects: [
-      { title: "Botanical Bodies", note: "Human and nature through surreal, AI-generated imagery. Loop videos and a visual booklet." },
+      // `detail` = the overlay that opens when you click the pin (leave it out and the pin is not clickable)
+      { title: "Botanical Bodies", src: `${W}/current/botanical-bodies.jpg`,
+        note: "Human and nature through surreal, AI-generated imagery.",
+        detail: {
+          kind: "Visual research, AI-generated imagery, 2026",
+          image: `${W}/current/botanical-bodies.jpg`,
+          intro: "Exploring the relationship between humans and nature through surreal, AI-generated imagery.",
+          points: [
+            { text: "Three visual phases:", sub: ["Aesthetic Decoration", "Symbiotic Transformation", "Assimilation"] },
+            "Output: ultra-short loop videos (5 to 10 seconds) and a visual booklet",
+            "Focus on aesthetics, ecological questions and posthuman perspectives",
+          ],
+        } },
       { title: "Perfume Brand", note: "" },
-      { title: "Brew Inside", note: "" },
+      { title: "Brewinsight", src: `${W}/current/brewinsight.jpg`,
+        note: "Instagram content and community strategy for a coffee platform.",
+        detail: {
+          kind: "Creative direction, content strategy, community growth, creator acquisition, 2026",
+          image: `${W}/current/brewinsight.jpg`,
+          intro: "Brewinsight is a coffee intelligence platform: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés.",
+          points: [
+            "Positioning: “coffee magazine meets local culture platform”, editorial, local, human and curious, while keeping the existing identity",
+            { text: "Five content pillars:", sub: ["Coffee culture", "Creator culture", "Café × creator collaborations", "Coffee intelligence", "Community engagement"] },
+            "A content toolkit and posting rhythm that alternates data, cafés, creators, collaborations and community",
+            "A short-form video framework: hook, value, call to action",
+            "Creator acquisition on Threads and X: find creators, start conversations, drive sign-ups",
+            "A growth loop: every collaboration creates content, every piece of content creates discovery",
+          ],
+        } },
       { title: "Magazine Creation", note: "" },
     ],
   },
@@ -108,6 +134,7 @@ window.PORTFOLIO = {
       role: "Concept, photography, TouchDesigner, editorial design",
       award: "Pages, Fukuoka Art Book Fair 2026",
       key: { src: `${W}/florilegium/cards/ff-01.jpg`, fit: "contain", bg: "pink" },
+      links: [{ label: "Featured by SNU Design on Instagram", url: "https://www.instagram.com/p/DYd146jEo72/" }],
       text: [
         "An artist book that turns my personal flower photography into a metadata-based archive, where the invisible data becomes the narrative. 18 flowers, photographed across Seoul, Busan, Jeju, Tokyo and Okinawa over three years.",
       ],
@@ -336,7 +363,7 @@ window.PORTFOLIO = {
       context: "Seminar, LMU Munich",
       role: "Cinematography, co-direction, screenplay, acting, edit, sound design",
       award: "Shown at the 4th Int. TU Kenya Conference on AI",
-      team: "Directed by Pamela Brzoza, Julie Flemming, Amy J. M. Grindau, Nina Menzl, Lara Remmelberger, Josefine T. Schmid & Louis Zimmermann",
+      team: "Directed by Pamela Brzoza, Julie Flemming, Amy Grindau, Nina Menzl, Lara Remmelberger, Josefine T. Schmid & Louis Zimmermann",
       poster: `${W}/poster-pulse.jpg`,
       video: "https://youtu.be/fbkOTVymdUk?si=jB_2hSNOJC_Msvlh",
       extras: [
@@ -363,7 +390,7 @@ window.PORTFOLIO = {
       context: "Media Technology, LMU Munich",
       role: "Co-direction, main camera, edit, light, sound, acting",
       award: "2 LMU Oscars, Best Movie & Best Screenplay",
-      team: "Directed by Amy J. M. Grindau, Pamela Brzoza, Lara Remmelberger, Josefine T. Schmid & Louis Zimmermann",
+      team: "Directed by Amy Grindau, Pamela Brzoza, Lara Remmelberger, Josefine T. Schmid & Louis Zimmermann",
       poster: `${W}/poster-nexus.jpg`,
       video: "https://youtu.be/xfQ1zUqHuC0?si=J0dy-uHJvYWVRujS",
       extras: [

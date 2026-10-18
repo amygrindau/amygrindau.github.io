@@ -745,3 +745,14 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 /* only visible when JavaScript is switched off (and for search engines that do not run it) */
 .seo-fallback { max-width: 760px; margin: 40px auto; padding: 0 16px; }
 .seo-fallback h1 { font: 400 48px/1 var(--serif); margin: 0 0 12px; }
+
+/* "On my desk": pins with a description can be opened */
+.pin--open { cursor: pointer; transition: opacity .9s cubic-bezier(.25,.6,.3,1), translate .45s var(--soft); }
+.pin--open:hover { translate: 0 -4px; }
+.pin--open figcaption::after { content: "Read more →"; display: block; margin-top: 6px; font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--grey); }
+.pindetail__kind { margin: -6px 0 18px; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--grey); }
+.pindetail__img { display: block; width: 100%; margin: 0 0 20px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+.pindetail__list { margin: 0; padding-left: 18px; }
+.pindetail__list li { margin-bottom: 8px; }
+.pindetail__list ul { margin: 6px 0 0; padding-left: 18px; list-style: circle; }
+.pindetail__list ul li { margin-bottom: 2px; }
