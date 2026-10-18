@@ -20,7 +20,7 @@
   --soft: cubic-bezier(.22, .61, .36, 1);
   /* fits the window (header, tabs, counter and "Scroll for more" stay visible) and has a px limit,
      so Cmd + / Cmd − scale the magazine like everything else */
-  --book-w: min(92vw, calc((100svh - 120px) * 1.5), 1100px);
+  --book-w: min(92vw, calc((100svh - 130px) * 1.5), 1100px);
 }
 
 * { box-sizing: border-box; }
@@ -521,7 +521,7 @@ figcaption { margin-top: 8px; font-size: 12px; color: var(--grey); }
   .mini .book__page { aspect-ratio: 1 / 1.414; }
   .book__page.is-empty { display: none; }
   .book__leaf, .edge { display: none !important; }
-  .under__btn { display: inline-block; }
+  .under__btn { display: inline-flex; }
   .tab { padding: 0 8px; font-size: 10px; }
   .sheet-clip { position: fixed; inset: 44px 0 0; width: auto; left: 0 !important; }
   .sheet { left: 3%; right: 3%; }
@@ -697,7 +697,7 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 
 /* touch screens (phone and tablet): visible arrows instead of the hover edges */
 @media (hover: none) {
-  .under__btn { display: inline-block; }
+  .under__btn { display: inline-flex; }
   .edge { display: none !important; }
 }
 
@@ -756,3 +756,59 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 .pindetail__list li { margin-bottom: 8px; }
 .pindetail__list ul { margin: 6px 0 0; padding-left: 18px; list-style: circle; }
 .pindetail__list ul li { margin-bottom: 2px; }
+
+/* ---------- provisional typographic cover ---------- */
+.pg--covertype { padding: 0; background: var(--ink); color: var(--white); overflow: hidden; cursor: pointer; }
+.pg--covertype .pg__foot { display: none; }
+.cover__photo { inset: 0; background-size: cover; background-position: 52% 38%; }
+.cover__shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.42), rgba(0,0,0,0) 32%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55)); }
+.cover__name { position: absolute; left: 4.5cqw; right: 4cqw; top: 3.2cqw; margin: 0; font-size: 17.5cqw; line-height: .82; letter-spacing: -.03em; white-space: nowrap; }
+.cover__bar { position: absolute; left: 5cqw; right: 5cqw; top: 20.5cqw; display: flex; justify-content: space-between; padding-top: 1.4cqw; border-top: .25cqw solid currentColor;
+  font-size: 2.1cqw; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; }
+.cover__num { position: absolute; font-size: 44cqw; line-height: .78; font-style: italic; color: var(--pink); letter-spacing: -.04em; mix-blend-mode: normal; text-shadow: 0 .6cqw 2.4cqw rgba(0,0,0,.18); }
+.cover__num--a { left: 2cqw; top: 31cqw; }
+.cover__num--b { right: 2.5cqw; top: 68cqw; }
+.cover__lines { position: absolute; left: 5cqw; bottom: 5.5cqw; width: 58cqw; margin: 0; padding: 0; list-style: none; font-size: 2.2cqw; line-height: 1.3; }
+.cover__lines li { margin-top: 1.4cqw; padding-left: 2.6cqw; position: relative; }
+.cover__lines li::before { content: ""; position: absolute; left: 0; top: .5em; width: 1.2cqw; height: 1.2cqw; border-radius: 50%; background: var(--pink); }
+.cover__lines .serif { font-size: 1.75em; font-style: italic; letter-spacing: -.01em; }
+.cover__lines .cover__kicker { padding: 0; margin: 0 0 1cqw; font-size: 1.7cqw; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
+.cover__lines .cover__kicker::before { display: none; }
+.cover__open { position: absolute; right: 5cqw; bottom: 5.5cqw; font-size: 2cqw; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
+
+/* ---------- "coming soon" pins ---------- */
+.pin__ph--soon { display: grid; place-items: center; background: var(--pink); border: 0; }
+.pin__ph--soon span { font-size: 26px; font-style: italic; color: var(--ink); }
+
+/* hand-drawn SNU symbols sit on white */
+.symbol img { background: #fff; box-shadow: 0 0 0 1px var(--line); }
+
+/* ---------- contents page: format, year, award dot, positioning line ---------- */
+.mast__claim { margin: -2cqw 0 3.2cqw; font-size: 1.5cqw; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
+.mast__t { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .8cqw; padding-right: 1cqw; }
+.mast__t small { font-size: .78em; color: var(--grey); }
+.mast__dot { font-style: normal; color: var(--pink); font-size: .8em; }
+.mast__legend { grid-column: 1 / -1; margin: -1cqw 0 0; font-size: 1.35cqw; color: var(--grey); }
+.mast__toc a:hover .mast__t { color: var(--pink); }
+
+/* ---------- desktop: visible arrows, clearer "scroll for more" ---------- */
+.under__btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 15px; transition: background .25s var(--soft), color .25s var(--soft); }
+.under__btn:not(:disabled):hover { background: var(--ink); color: var(--white); }
+.hint { padding: 6px 0; border: 0; background: none; cursor: pointer; font: 500 11px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink); }
+.hint:hover { color: var(--pink); }
+.hint__arrow { display: inline-block; margin-left: 4px; animation: hint-bob 1.8s var(--soft) infinite; }
+@keyframes hint-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .hint__arrow { animation: none; } }
+
+/* ---------- phone: picture first, compact info page, arrows stay reachable ---------- */
+@media (max-width: 760px) {
+  .book__inner:has(.pg--project:not(.pg--current)) .book__page--right { order: -1; }
+  .book__page--left:has(.pg--project:not(.pg--current)) { aspect-ratio: 1 / 1; }
+  .under { position: sticky; bottom: 0; z-index: 30; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .94); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+}
+
+/* project story grid: Challenge · My role · Approach · Outcome · Reflection */
+.story { display: grid; grid-template-columns: 130px 1fr; gap: 14px 24px; margin: 32px 0 0; padding-top: 18px; border-top: 1px solid var(--ink); }
+.story dt { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; padding-top: 3px; }
+.story dd { margin: 0; font-size: 15px; line-height: 1.6; }
+@media (max-width: 760px) { .story { grid-template-columns: 1fr; gap: 4px; } .story dd { margin-bottom: 12px; } }

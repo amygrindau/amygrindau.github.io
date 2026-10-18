@@ -6,6 +6,10 @@ const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section
 const pad = (n) => String(n).padStart(2, "0");
 const FIRST = 2; // spread 0 = cover · 1 = masthead · 2… = projects
 const pageOf = (k) => (FIRST + k) * 2;
+const low = (t) => (t || "").toLowerCase();
+// "AI Prototype" → "AI prototype": lower case, but abbreviations stay
+const lowKind = (t) => (t || "").split(" ").map((w) => /^[A-Z0-9&×]{2,}$/.test(w) ? w : w.toLowerCase()).join(" ");
+const shortYear = (y) => /until today/.test(y) ? `since ${y.slice(0, 4)}` : y;
 const titleLen = (t) => Math.max(...t.split(" ").map((w) => w.length));
 const $ = (s) => document.querySelector(s);
 const MAGS = []; // magazine blocks on the current page (for the fullscreen viewer)
@@ -33,22 +37,46 @@ function pg(side, inner, { num, label = "", cls = "", style = "" } = {}) {
     : `<footer class="pg__foot"><span>${label}</span><span>${num}</span></footer>`;
   return `<div class="pg pg--${side} ${cls}"${style ? ` style="${style}"` : ""}>${inner}${foot}</div>`;
 }
+// images in two sizes (tools/make_sizes.py): phones load the 800 px version
+const SIZES = window.SIZES || {};
+const small = (src) => src.replace(/\.jpg$/, "@800.jpg");
+const onPhone = matchMedia("(max-width: 760px)").matches;
 const bg = (src, cls = "", style = "", label = "") =>
-  `<div class="bg ${cls}" style="--src:url('${src}');${style}"${label ? ` role="img" aria-label="${label}"` : ""}></div>`;
+  `<div class="bg ${cls}" style="--src:url('${onPhone && SIZES[src] ? small(src) : src}');${style}"${label ? ` role="img" aria-label="${label}"` : ""}></div>`;
 
 // Front cover: your own design (images.cover) or a plain pink page. Tapping it opens the magazine.
-const coverPage = () => pg("r", images.cover ? bg(images.cover, "bg--cover") : "", { cls: "pg--cover pg--pink" });
+// Cover: your own image (images.cover in data.js) or, until then, a typographic cover with the portrait
+const coverPage = () => images.cover ? pg("r", bg(images.cover, "bg--cover", "", "Amy Grindau, Portfolio 2026"), { cls: "pg--cover pg--pink" })
+  : pg("r", `
+  ${bg(images.face, "cover__photo", "", "Portrait of Amy Grindau")}
+  <div class="cover__shade"></div>
+  <p class="cover__name serif">Amy Grindau</p>
+  <div class="cover__bar"><span>Portfolio</span><span>Issue 2026</span></div>
+  <span class="cover__num cover__num--a serif" aria-hidden="true">20</span>
+  <span class="cover__num cover__num--b serif" aria-hidden="true">26</span>
+  <ul class="cover__lines">
+    <li class="cover__kicker">Creativity × Technology × Strategy × Culture</li>
+    <li><span class="serif">AI Treasure Chest</span> with the Deutsches Museum</li>
+    <li><span class="serif">Two LMU Oscars</span> for Nexus</li>
+    <li><span class="serif">Florilegium</span> at Fukuoka Art Book Fair</li>
+  </ul>
+  <span class="cover__open">Open →</span>
+`, { cls: "pg--cover pg--covertype" });
 
 // Masthead: year, short contents, credits ↔︎ portrait with the pinned editor's letter
 const mastLeft = () => pg("l", `
   <div class="runhead"><span>Contents</span><span>Munich & Seoul</span></div>
   <h2 class="mast__year serif">2026</h2>
+  <p class="mast__claim">Creativity × Technology × Strategy × Culture</p>
   <div class="mast__toc">
     ${sections.map((sec) => `
       <div class="mast__sec">
         <p class="mast__sechead">${sec}</p>
-        ${projects.map((p, k) => p.section !== sec ? "" : `<a href="${urlFor(p.id)}" data-id="${p.id}"><span>${p.title}</span><span>${pad(pageOf(k))}</span></a>`).join("")}
+        ${projects.map((p, k) => p.section !== sec ? "" : `<a href="${urlFor(p.id)}" data-id="${p.id}">
+          <span class="mast__t">${p.title}${p.award ? `<i class="mast__dot" aria-label="award or exhibition">●</i>` : ""}<small>${lowKind(p.kind)}, ${shortYear(p.year)}</small></span>
+          <span>${pad(pageOf(k))}</span></a>`).join("")}
       </div>`).join("")}
+    <p class="mast__legend"><i class="mast__dot">●</i> award or exhibition</p>
   </div>
   <dl class="mast__credits">${DATA.credits.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
 `, { num: pad(2), cls: "pg--mast" });
@@ -97,7 +125,7 @@ function projectRight(p, k) {
   const { src, fit = "cover", zoom, pos, bg: color = "white", blend } = p.key;
   const style = (zoom ? `background-size:${zoom * 100}% auto;background-position:${pos || "center"};` : "")
     + (blend ? `mix-blend-mode:${blend};` : "");
-  return pg("r", bg(src, `bg--${fit}`, style, desc), { num, label, cls: `pg--${color}` });
+  return pg("r", bg(src, `bg--${fit}`, style, desc), { num, label, cls: `pg--${color}`, style: p.key.pageBg ? `background:${p.key.pageBg}` : "" });
 }
 
 // "On my desk" — the current project, as a small moodboard
@@ -179,7 +207,8 @@ const book = new Book(bookEl, spreads, {
     history.replaceState(null, "", urlFor(s.id));
     document.title = titleFor(s.id);
     [i - 1, i, i + 1, i + 2].forEach((k) => preloadSpread(spreads[k]));
-    count.textContent = `${pad(i + 1)} / ${pad(spreads.length)}`;
+    count.textContent = i === 0 ? "Cover" : i === spreads.length - 1 ? "Back cover"
+      : `${pad(i * 2)} · ${pad(i * 2 + 1)} / ${pad((spreads.length - 1) * 2)}`;
     prevBtn.disabled = i <= first();
     nextBtn.disabled = i === spreads.length - 1;
     document.body.dataset.spread = i <= first() ? "first" : i === spreads.length - 1 ? "last" : "";
@@ -198,12 +227,21 @@ book.inner.insertAdjacentHTML("beforeend", `
    NAVIGATION
    ===================================================================== */
 const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-const turn = (i) => {
+// every turn gets an entry in the browser history, so Back goes to the previous page instead of leaving
+const turn = (i, push = true) => {
   i = Math.max(i, first());
+  if (i < 0 || i >= spreads.length || i === book.i) return;
   if (scrollY > 40) toTop();
   toc.close();
+  if (push) history.pushState({ i }, "", urlFor(spreads[i].id));
   book.go(i);
 };
+addEventListener("popstate", () => {
+  const id = /^\/about\/?$/.test(location.pathname) ? "masthead"
+    : (location.pathname.match(/\/work\/([^/]+)/) || [])[1] || location.hash.replace("#/", "") || "cover";
+  closeOverlays();
+  if (indexOf(id) >= 0) turn(indexOf(id), false);
+});
 prevBtn.addEventListener("click", () => turn(book.i - 1));
 nextBtn.addEventListener("click", () => turn(book.i + 1));
 
@@ -305,8 +343,11 @@ document.addEventListener("click", (e) => {
 /* =====================================================================
    SCROLL DOWN — the rest of the story
    ===================================================================== */
-const low = (t) => (t || "").toLowerCase();
-const img = (src, alt = "", cls = "") => `<img class="${cls}" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
+const enc = (u) => u.replace(/ /g, "%20");
+const img = (src, alt = "", cls = "") => {
+  const set = SIZES[src] ? ` srcset="${enc(small(src))} 800w, ${enc(src)} ${SIZES[src]}w" sizes="(max-width: 760px) 92vw, 50vw"` : "";
+  return `<img class="${cls}" src="${src}"${set} alt="${alt}" loading="lazy" decoding="async">`;
+};
 
 function renderMore(p) {
   MAGS.length = 0;
@@ -323,6 +364,8 @@ function renderMore(p) {
         <div class="more__lead">${p.text.map((t) => `<p>${t}</p>`).join("")}</div>
         ${p.team ? `<p class="more__team">${p.team}</p>` : ""}
         ${films ? `<div class="more__films">${films}</div>` : ""}
+        ${p.story ? `<dl class="story">${[["challenge", "Challenge"], ["role", "My role"], ["approach", "Approach"], ["outcome", "Outcome"], ["reflection", "Reflection"]]
+          .filter(([k]) => p.story[k]).map(([k, label]) => `<dt>${label}</dt><dd>${p.story[k]}</dd>`).join("")}</dl>` : ""}
         ${p.process ? `
           <details class="process">
             <summary><span>The process</span><span class="process__icon" aria-hidden="true">+</span></summary>
@@ -361,7 +404,7 @@ function reveal() {
 function renderCurrent() {
   const pins = cur.projects.map((c, n) => `
     <figure class="pin p${n}${c.detail ? " pin--open" : ""}"${c.detail ? ` data-pin="${n}" role="button" tabindex="0" aria-label="${c.title}: read more"` : ""}>
-      ${c.src ? `<img src="${c.src}" alt="${c.title}" loading="lazy">` : `<span class="pin__ph"></span>`}
+      ${c.src ? `<img src="${c.src}" alt="${c.title}" loading="lazy">` : `<span class="pin__ph pin__ph--soon"><span class="serif">Coming soon</span></span>`}
       <figcaption><span class="pin__title serif">${c.title}</span>${c.note ? `<span class="pin__note">${c.note}</span>` : ""}</figcaption>
     </figure>`).join("");
   more.innerHTML = `
@@ -497,6 +540,7 @@ document.addEventListener("click", (e) => {
   if (s) MAGS[Number(s.dataset.start)].book.go(0);
   if (e.target.closest("[data-start-big]")) openMag?.big.go(0);
   if (e.target.closest("[data-start-main]")) turn(0);
+  if (e.target.closest("[data-more-go]")) more.scrollIntoView({ behavior: "smooth" });
 });
 
 /* =====================================================================
@@ -504,12 +548,13 @@ document.addEventListener("click", (e) => {
    ===================================================================== */
 const lightbox = $("[data-lightbox]"), frame = $("[data-frame]");
 
-function playerFor(v, title, poster) {
+function playerFor(v, title, poster, captions) {
   const yt = (v || "").match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);
   const vimeo = (v || "").match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (yt) return `<iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&vq=hd1080&enablejsapi=1" allow="autoplay; fullscreen" allowfullscreen title="${title}"></iframe>`;
+  if (yt) return `<iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0&vq=hd1080&enablejsapi=1&cc_load_policy=1&cc_lang_pref=en" allow="autoplay; fullscreen" allowfullscreen title="${title}"></iframe>`;
   if (vimeo) return `<iframe src="https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&quality=1080p&api=1" allow="autoplay; fullscreen" allowfullscreen title="${title}"></iframe>`;
-  if (v) return `<video src="${v}" controls autoplay playsinline preload="auto" ${poster ? `poster="${poster}"` : ""}></video>`;
+  // subtitles: put an English .vtt file next to the video and add `captions:` in data.js
+  if (v) return `<video src="${v}" controls autoplay playsinline preload="auto" ${poster ? `poster="${poster}"` : ""}>${captions ? `<track kind="subtitles" srclang="en" label="English" src="${captions}" default>` : ""}</video>`;
   return `<p class="lightbox__note">${title}, the film will be online soon.</p>`;
 }
 
@@ -558,13 +603,13 @@ document.addEventListener("click", (e) => {
   const play = e.target.closest("[data-play]");
   if (play) {
     const p = projects.find((x) => x.id === play.dataset.play);
-    return openLightbox(playerFor(p.video, p.title, p.poster));
+    return openLightbox(playerFor(p.video, p.title, p.poster, p.captions));
   }
   const extra = e.target.closest("[data-extra]");
   if (extra) {
     const [id, n] = extra.dataset.extra.split(":");
     const x = projects.find((p) => p.id === id).extras[n];
-    return openLightbox(playerFor(x.url, x.label));
+    return openLightbox(playerFor(x.url, x.label, null, x.captions));
   }
   if (e.target.closest("[data-close]")) closeOverlays();
 });

@@ -80,8 +80,8 @@ window.PORTFOLIO = {
 
   // The magazine follows this order of sections.
   // order of the magazine (tuned for CDTM and NYU: technology and storytelling first)
-  sections: ["Interaction", "Film", "Identity", "Print"],
-  order: ["smartscan", "treasurechest", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
+  sections: ["Interaction", "Strategy", "Film", "Identity", "Print"],
+  order: ["smartscan", "treasurechest", "brewinsight", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
 
   // "On my desk": the page before the back cover
   current: {
@@ -108,21 +108,6 @@ window.PORTFOLIO = {
           ],
         } },
       { title: "Perfume Brand", note: "" },
-      { title: "Brewinsight", src: `${W}/current/brewinsight.jpg`,
-        note: "Instagram content and community strategy for a coffee platform.",
-        detail: {
-          kind: "Creative direction, content strategy, community growth, creator acquisition, 2026",
-          image: `${W}/current/brewinsight.jpg`,
-          intro: "Brewinsight is a coffee intelligence platform, already live as a viable product: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés. We are now in the growth phase, building the audience and the first creator sign-ups.",
-          points: [
-            "Positioning: “coffee magazine meets local culture platform”, editorial, local, human and curious, while keeping the existing identity",
-            { text: "Five content pillars:", sub: ["Coffee culture", "Creator culture", "Café × creator collaborations", "Coffee intelligence", "Community engagement"] },
-            "A content toolkit and posting rhythm that alternates data, cafés, creators, collaborations and community",
-            "A short-form video framework: hook, value, call to action",
-            "Creator acquisition on Threads and X: find creators, start conversations, drive sign-ups",
-            "A growth loop: every collaboration creates content, every piece of content creates discovery",
-          ],
-        } },
       { title: "Magazine Creation", note: "" },
     ],
   },
@@ -357,9 +342,44 @@ window.PORTFOLIO = {
         "Every transition started as a hand-drawn storyboard. Black and white ink painting keeps the symbols calm; Bach's Violin Concerto in A minor gives them energy.",
       ],
       blocks: [
-        // placeholders: add your symbol images as `src`, they appear in this order
+        // hand-drawn storyboard symbols, in the order of the film
         { type: "symbols", title: "The symbols", items: [
-          { label: "Mathematics" }, { label: "DNA" }, { label: "Butterfly" }, { label: "Scroll painting" }, { label: "Choice of music" },
+          { label: "The letter", src: `${W}/snu80/symbol-01-letter.jpg` },
+          { label: "Eight to infinity", src: `${W}/snu80/symbol-02-infinity.jpg` },
+          { label: "Mathematics", src: `${W}/snu80/symbol-03-mathematics.jpg` },
+          { label: "Butterfly", src: `${W}/snu80/symbol-04-butterfly.jpg` },
+          { label: "Hibiscus ink painting", src: `${W}/snu80/symbol-05-hibiscus.jpg` },
+        ] },
+      ],
+    },
+    {
+      id: "brewinsight", section: "Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
+      hook: "Coffee magazine meets local culture platform.",
+      context: "Brewinsight, coffee intelligence platform",
+      role: "Creative direction, content strategy, community growth, creator acquisition",
+      key: { src: `${W}/brewinsight/cover.jpg`, fit: "contain", bg: "black", pageBg: "#396832" },
+      text: [
+        "Brewinsight is a coffee intelligence platform, already live as a viable product: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés.",
+        "The question shifts from what Brewinsight knows to what Brewinsight can give: discovery for coffee lovers, opportunities for creators, visibility for cafés. Brewinsight becomes the connector. We are now in the growth phase, building the audience and the first creator sign-ups.",
+      ],
+      process: [
+        "Keep the core, expand the system: the editorial grid, the cream, green and orange palette, bold typography and data visualisation stay. Editorial photography, café environments, creators, user-generated content and short-form video are added.",
+        "Five content pillars give every post a job: coffee culture for reach and discovery, creator culture for creator acquisition, café × creator collaborations as social proof, coffee intelligence for authority, and community content for engagement and retention.",
+        "A deliberate posting rhythm alternates data, cafés, creators, collaborations and community instead of twelve identical graphics. Short-form video follows a simple framework: hook, value, call to action.",
+        "Threads and X work as a real-time acquisition channel: find creators, start conversations, drive sign-ups. The growth loop closes the circle: every collaboration creates content, every piece of content creates discovery, every discovery creates an opportunity to connect.",
+      ],
+      blocks: [
+        { type: "gallery", title: "The strategy", wide: true, items: [
+          { src: `${W}/brewinsight/content-gap.jpg`, caption: "The content gap: from what Brewinsight knows to what it can give" },
+          { src: `${W}/brewinsight/how-we-do-it.jpg`, caption: "Keep the core, expand the system" },
+          { src: `${W}/brewinsight/content-pillars.jpg`, caption: "Five content pillars" },
+          { src: `${W}/brewinsight/content-formats.jpg`, caption: "A deliberate rhythm instead of identical graphics" },
+          { src: `${W}/brewinsight/content-toolkit.jpg`, caption: "Content toolkit" },
+          { src: `${W}/brewinsight/videos-reels.jpg`, caption: "Short-form video: hook, value, call to action" },
+          { src: `${W}/brewinsight/threads.jpg`, caption: "Threads and X as a creator acquisition channel" },
+          { src: `${W}/brewinsight/community.jpg`, caption: "From audience to participants to contributors" },
+          { src: `${W}/brewinsight/growth-loop.jpg`, caption: "The growth loop" },
+          { src: `${W}/brewinsight/more-than-data.jpg`, caption: "More than data" },
         ] },
       ],
     },
