@@ -1,7 +1,8 @@
 const DATA = window.PORTFOLIO;
 const { images, sections, contact } = DATA;
 // the magazine follows the order of the sections
-const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section === sec && !p.hidden));
+const rank = (p) => { const i = (DATA.order || []).indexOf(p.id); return i < 0 ? 999 : i; };
+const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section === sec && !p.hidden).sort((a, b) => rank(a) - rank(b)));
 const pad = (n) => String(n).padStart(2, "0");
 const FIRST = 2; // spread 0 = cover · 1 = masthead · 2… = projects
 const pageOf = (k) => (FIRST + k) * 2;
@@ -426,7 +427,7 @@ function block(p, b) {
         <figure class="${n === b.feature ? "is-feature" : ""}">${img(it.src, it.caption ? `${p.title}, ${it.caption}` : `${p.title}, ${(b.title || "image").toLowerCase()} ${n + 1}`)}${it.caption ? `<figcaption>${it.caption}</figcaption>` : ""}</figure>`).join("")}</div></section>`;
     }
     case "video":
-      return `<section class="block">${head}<button class="videocard" data-play="${p.id}"><span>▶︎ Play</span></button></section>`;
+      return `<section class="block">${head}<button class="videocard" data-play="${p.id}"><span>▶︎ Play</span></button>${note}</section>`;
     case "logos":
       return `<section class="block">${head}
         <div class="logos">${b.items.map((s, n) => `<figure>${img(s, `${p.title} logo, iteration ${n + 1}`)}<figcaption>Iteration ${pad(n + 1)}</figcaption></figure>`).join("")}</div>

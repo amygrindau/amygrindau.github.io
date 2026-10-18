@@ -200,7 +200,10 @@ def fill(template, marker, content):
 
 def main():
     data = load_data()
-    projects = [p for sec in data["sections"] for p in data["projects"] if p["section"] == sec and not p.get("hidden")]
+    order = data.get("order", [])
+    rank = lambda p: order.index(p["id"]) if p["id"] in order else 999
+    projects = [p for sec in data["sections"] for p in sorted(
+        (q for q in data["projects"] if q["section"] == sec and not q.get("hidden")), key=rank)]
     path = os.path.join(ROOT, "index.html")
     template = open(path, encoding="utf-8").read()
 
