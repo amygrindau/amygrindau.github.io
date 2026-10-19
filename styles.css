@@ -812,3 +812,22 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 .story dt { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; padding-top: 3px; }
 .story dd { margin: 0; font-size: 15px; line-height: 1.6; }
 @media (max-width: 760px) { .story { grid-template-columns: 1fr; gap: 4px; } .story dd { margin-bottom: 12px; } }
+
+/* ---------- contents spread, right page: photo, letter, recognition and places ---------- */
+.mast__face { left: 7cqw; top: 7cqw; width: 58cqw; }
+.pg--mast-r .pinned { top: 47cqw; bottom: auto; right: 5cqw; width: 42cqw; }
+.mast__about { position: absolute; left: 7cqw; right: 7cqw; bottom: 11cqw; display: grid; grid-template-columns: 1.15fr 1fr; gap: 5cqw;
+  padding-top: 1.8cqw; border-top: .15cqw solid var(--ink); font-size: 1.85cqw; line-height: 1.45; }
+.mast__abouthead { margin: 0 0 1.2cqw; font-size: 1.5cqw; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.mast__about ul { margin: 0; padding: 0; list-style: none; }
+.mast__about li { display: flex; gap: 1cqw; margin-bottom: .6cqw; }
+.mast__about .mast__dot { color: var(--ink); }
+.mast__about dl { display: grid; grid-template-columns: auto 1fr; gap: .5cqw 2cqw; margin: 0; }
+.mast__about dt { font-weight: 500; font-size: .88em; letter-spacing: .05em; text-transform: uppercase; padding-top: .1em; }
+.mast__about dd { margin: 0; }
+.mast__toc { gap: 3.6cqw 5cqw; }
+
+/* header: long on desktop, short on phones */
+.bar__short { display: none; }
+@media (max-width: 760px) { .bar__long { display: none; } .bar__short { display: inline; } .mast__about { font-size: max(1.75cqw, 9px); } }
+@media (max-width: 760px) { .mast__abouthead { font-size: max(1.5cqw, 8.5px); } }

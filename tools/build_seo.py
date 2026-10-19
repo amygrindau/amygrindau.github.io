@@ -17,8 +17,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = "https://amygrindau.github.io"
 TODAY = datetime.date.today().isoformat()
 SITE_TITLE = "Amy Grindau, Creative Direction, Film & Creative Technology"
-SITE_DESC = ("Portfolio of Amy Grindau, multidisciplinary creative in Munich and Seoul: "
-             "creative direction, film, editorial design, branding and creative technology.")
+SITE_DESC = ("Portfolio of Amy Grindau, Munich-based multidisciplinary creative working internationally: "
+             "creative direction, film, branding and creative technology.")
 
 # Relevant topics per project, only what the project really is (for structured data, not visible text)
 KEYWORDS = {

@@ -65,7 +65,7 @@ const coverPage = () => images.cover ? pg("r", bg(images.cover, "bg--cover", "",
 
 // Masthead: year, short contents, credits ↔︎ portrait with the pinned editor's letter
 const mastLeft = () => pg("l", `
-  <div class="runhead"><span>Contents</span><span>Munich & Seoul</span></div>
+  <div class="runhead"><span>Contents</span><span>Munich · Seoul · Fukuoka · Nairobi</span></div>
   <h2 class="mast__year serif">2026</h2>
   <p class="mast__claim">Creativity × Technology × Strategy × Culture</p>
   <div class="mast__toc">
@@ -78,7 +78,6 @@ const mastLeft = () => pg("l", `
       </div>`).join("")}
     <p class="mast__legend"><i class="mast__dot">●</i> award or exhibition</p>
   </div>
-  <dl class="mast__credits">${DATA.credits.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
 `, { num: pad(2), cls: "pg--mast" });
 
 const mastRight = () => pg("r", `
@@ -90,7 +89,13 @@ const mastRight = () => pg("r", `
     <span class="pinned__text">${DATA.letter[0]}</span>
     <span class="pinned__more">Read →</span>
   </button>
-`, { num: pad(3), label: "Editor's letter", cls: "pg--pink" });
+  <div class="mast__about">
+    <div><p class="mast__abouthead">Recognition</p>
+      <ul>${DATA.recognition.map((r) => `<li><i class="mast__dot">●</i>${r}</li>`).join("")}</ul></div>
+    <div><p class="mast__abouthead">Places</p>
+      <dl>${DATA.places.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>
+  </div>
+`, { num: pad(3), label: "Editor's letter", cls: "pg--pink pg--mast-r" });
 
 // Project spread — left: information, right: key visual. Two layouts alternate.
 function projectLeft(p, k) {
@@ -153,7 +158,7 @@ const backCover = () => pg("l", `
       ${contact.instagram ? `<a href="${contact.instagram}" target="_blank" rel="noopener">Instagram</a>` : ""}
       <a href="${contact.cv}" download>Download CV ↓</a></p>
     <p><b>Colophon</b>Editor, design, text &amp; photography: Amy Grindau. Made between Munich and Seoul.
-      <button data-legal-open="privacy">Datenschutz</button></p>
+      <button data-legal-open="privacy">Privacy</button></p>
   </div>
   <p class="back__end serif">End.</p>
 `, { cls: "pg--back" });
@@ -636,17 +641,17 @@ function openLetter() {
 // If you ever offer work for clients on this site, an Impressum with a postal address becomes necessary.
 const LEGAL = {
   privacy: `
-    <p class="kicker">Datenschutz</p>
-    <h2 class="serif">Datenschutzerklärung</h2>
-    <p><b>Über diese Website</b><br>Dies ist eine private, nicht-kommerzielle Portfolio-Website. Sie zeigt meine Arbeiten aus Studium und eigenen Projekten und bietet keine Dienstleistungen an.</p>
-    <p><b>Verantwortlich</b><br>Amy Grindau, E-Mail: <a href="mailto:${contact.email}">${contact.email}</a></p>
-    <p><b>Hosting</b><br>Diese Website wird über GitHub Pages gehostet (GitHub Inc., 88 Colin P. Kelly Jr. St., San Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten wie die IP-Adresse in Server-Logfiles, um die Seite sicher auszuliefern (Art. 6 Abs. 1 lit. f DSGVO). GitHub ist unter dem EU-US Data Privacy Framework zertifiziert. Mehr: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
-    <p><b>Keine Cookies, kein Tracking</b><br>Diese Website setzt keine Cookies und verwendet keine Analyse-Tools.</p>
-    <p><b>Schriften</b><br>Alle Schriften sind lokal auf diesem Server gespeichert. Es wird keine Verbindung zu Google oder anderen Anbietern aufgebaut.</p>
-    <p><b>Videos</b><br>Videos von YouTube werden über youtube-nocookie.com und erst nach einem Klick geladen; dabei werden Daten an Google übertragen.</p>
-    <p><b>Kontakt per E-Mail</b><br>Wenn du mir schreibst, verarbeite ich deine Angaben nur zur Beantwortung deiner Anfrage.</p>
-    <p><b>Deine Rechte</b><br>Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Beschwerde bei einer Aufsichtsbehörde.</p>
-    <p class="legal__small">Alle Inhalte (Texte, Bilder, Filme, Gestaltung) © Amy Grindau bzw. die jeweiligen Teams, sofern nicht anders angegeben.</p>`,
+    <p class="kicker">Privacy</p>
+    <h2 class="serif">Privacy policy</h2>
+    <p><b>About this website</b><br>This is a private, non-commercial portfolio website. It shows my work from university and personal projects and does not offer any services.</p>
+    <p><b>Controller</b><br>Amy Grindau, email: <a href="mailto:${contact.email}">${contact.email}</a></p>
+    <p><b>Hosting</b><br>This website is hosted on GitHub Pages (GitHub Inc., 88 Colin P. Kelly Jr. St., San Francisco, CA 94107, USA). When you visit it, GitHub processes technically necessary data such as your IP address in server log files to deliver the site securely (Art. 6(1)(f) GDPR). GitHub is certified under the EU-US Data Privacy Framework. More: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub privacy statement</a>.</p>
+    <p><b>No cookies, no tracking</b><br>This website sets no cookies and uses no analytics tools.</p>
+    <p><b>Fonts</b><br>All fonts are stored on this server. No connection is made to Google or any other provider.</p>
+    <p><b>Videos</b><br>YouTube videos are loaded via youtube-nocookie.com and only after you click play; at that point, data is transferred to Google.</p>
+    <p><b>Contact by email</b><br>If you write to me, I only use your details to answer your message.</p>
+    <p><b>Your rights</b><br>Under the GDPR you have the right to access, rectification, erasure, restriction of processing and objection, and the right to lodge a complaint with a supervisory authority.</p>
+    <p class="legal__small">All content (texts, images, films, design) © Amy Grindau or the respective teams, unless stated otherwise.</p>`,
 };
 
 // "On my desk": a pin opens a short description (same paper overlay as the legal pages)
@@ -706,10 +711,10 @@ $("[data-foot]").innerHTML = `
     </div>
     <div class="foot__col">
       <p class="kicker">Info</p>
-      <button data-legal-open="privacy">Datenschutz</button>
+      <button data-legal-open="privacy">Privacy</button>
       <a href="${contact.cv}" download>CV ↓</a>
     </div>
-    <p class="foot__copy">© 2026 Amy Grindau, Munich & Seoul</p>
+    <p class="foot__copy">© 2026 Amy Grindau, based in Munich</p>
   </div>`;
 
 /* ---------- start on the page in the URL ---------- */

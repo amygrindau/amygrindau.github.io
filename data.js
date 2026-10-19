@@ -67,8 +67,22 @@ window.PORTFOLIO = {
 
   credits: [
     ["Editor & art direction", "Amy Grindau"],
-    ["Based in", "Munich & Seoul"],
+    ["Based in", "Munich"],
     ["Contact", "amiiryyy@gmail.com"],
+  ],
+  // contents spread, right page: international experience and recognition
+  places: [
+    ["Based in", "Munich"],
+    ["Studied in", "Munich & Seoul"],
+    ["Exhibited in", "Fukuoka"],
+    ["Screened in", "Nairobi"],
+    ["Presented at", "Deutsches Museum"],
+  ],
+  recognition: [
+    "Two LMU Oscars, Nexus",
+    "Excellence Award, SNU 80th",
+    "1st Prize, Crossmedia 2022",
+    "Featured by LMU Newsroom, SNU Design and Bayerischer Rundfunk",
   ],
 
   contact: {
