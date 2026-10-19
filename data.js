@@ -138,6 +138,13 @@ window.PORTFOLIO = {
       award: "Pages, Fukuoka Art Book Fair 2026",
       key: { src: `${W}/florilegium/cards/ff-01.jpg`, fit: "contain", bg: "pink" },
       links: [{ label: "Featured by SNU Design on Instagram", url: "https://www.instagram.com/p/DYd146jEo72/" }],
+      story: {
+        challenge: "Every photograph carries data it never shows: where I stood, the hour the shutter opened. Can that invisible layer become the narrative?",
+        role: "Concept, photography, TouchDesigner and editorial design, solo.",
+        approach: "A rule instead of taste: the metadata drives the transformation, so each flower dissolves according to its own coordinates and time.",
+        outcome: "An artist book of 18 postcards with transparent sheets, exhibited at Pages, Fukuoka Art Book Fair 2026 and featured by SNU Design.",
+        reflection: "What remains is not documentation, but echo. A photograph is already a transformation: not the original, only stored data. It is also a very personal project, built from flower photographs I collected over several years.",
+      },
       text: [
         "An artist book that turns my personal flower photography into a metadata-based archive, where the invisible data becomes the narrative. 18 flowers, photographed across Seoul, Busan, Jeju, Tokyo and Okinawa over three years.",
       ],
@@ -176,6 +183,13 @@ window.PORTFOLIO = {
       context: "Design Studio 21, Seoul National University",
       role: "Concept, editorial design, print production, solo",
       key: { src: `${W}/printedmatter/form.jpg`, fit: "contain", bg: "hotpink", blend: "multiply" }, // white → pink
+      story: {
+        challenge: "Design an index for Printed Matter, the New York non-profit that has published and distributed artist books since 1976.",
+        role: "Concept, editorial design and print production, solo.",
+        approach: "Every page is cut in half, one half for the artist and one for the publisher, printed on transparent sheets that layer into one another.",
+        outcome: "A small zine of just a few pages.",
+        reflection: "Indexing a publisher index meant breaking it down once more and asking what a publisher actually does.",
+      },
       text: [
         "A publisher index for Printed Matter, the New York non-profit that has published and distributed artist books since 1976. Every page is cut in half and printed on transparent sheets that layer into one another.",
       ],
@@ -201,6 +215,13 @@ window.PORTFOLIO = {
       context: "Editorial project",
       role: "Concept, layout, typography, solo",
       key: { src: `${W}/ella/mockup.jpg`, fit: "cover" },
+      story: {
+        challenge: "Translate Ella Fitzgerald's voice and rhythm into print.",
+        role: "Concept, layout and typography, solo.",
+        approach: "Typography and layout that echo the elegance and swing of jazz.",
+        outcome: "A magazine about her life and legacy.",
+        reflection: "The topic stayed with me at the time. Ella Fitzgerald is a jazz icon, and this is my homage to her.",
+      },
       text: [
         "Ella Fitzgerald's voice, rhythm and legacy translated into contemporary editorial design, with typography and layout that echo the elegance and swing of jazz.",
       ],
@@ -228,6 +249,13 @@ window.PORTFOLIO = {
         { label: "Bayerischer Rundfunk, prize winner", url: "https://www.br.de/medienkompetenzprojekte/inhalt/crossmedia/untitled-magazin-foto-grafik-layout-crossmedia-2022-preistraeger-100.html" },
         { label: "Bayerischer Rundfunk, all Crossmedia 2022 winners", url: "https://www.br.de/medienkompetenzprojekte/inhalt/crossmedia/crossmedia-2022-preistraeger-gewinner-in-den-neuen-medien-zu-hause-100.html" },
       ],
+      story: {
+        challenge: "A magazine for young adults that does not only show the negative side of the topics it covers.",
+        role: "Art direction, layout, photography and branding, solo.",
+        approach: "Built around the prefix UN-: every chapter shows two sides of the same coin. Inspired by David Carson's rule-breaking typography.",
+        outcome: "1st Prize, Photography & Layout, Crossmedia Competition 2022, featured by Bayerischer Rundfunk and Münchner Merkur.",
+        reflection: "My first magazine, and an experiment in everything: I created different make-up looks, was the model in almost every picture, and worked with many textures, programs and tools. Winning the prize was a real confirmation.",
+      },
       text: [
         "My very first magazine: bilingual, for young adults, and built around the prefix UN-. Every chapter shows two sides of the same coin, so that the negative is never the only thing you see.",
         "Awarded 1st Prize in Photography & Layout at the Bavarian state media competition, and featured by Bayerischer Rundfunk and Münchner Merkur.",
@@ -265,6 +293,12 @@ window.PORTFOLIO = {
       context: "Munich basketball community & events",
       role: "Name, logo, identity, pitch deck, flyers, stickers, social",
       key: { src: `${W}/sixthman/6th-man-01.jpg`, fit: "small", bg: "orange" },
+      story: {
+        challenge: "Give a young Munich basketball community an identity that feels inclusive and open to people who are not (yet) part of it.",
+        role: "Naming, logo, colours, layouts, pitch deck, flyers, stickers and social media, in collaboration with the founders but designed by me.",
+        outcome: "An identity in use since 2024 at events, in print and on social media.",
+        reflection: "My first large project with a complete brand identity, from the name to the last layout. And one with a purpose I care about: strengthening a community and getting children and young people to play basketball.",
+      },
       text: [
         "The complete visual identity for a Munich-based basketball community focused on inclusive, community-driven events, developed closely with the people behind it.",
       ],
@@ -293,6 +327,12 @@ window.PORTFOLIO = {
       context: "Exhibitions, events and non-profit organisations",
       role: "Concept, illustration, layout",
       key: { src: `${W}/loose/graphic-design-projects.jpg`, fit: "fill", bg: "pink" },
+      story: {
+        challenge: "Posters and flyers for exhibitions, events and non-profit organisations, often with little time and budget.",
+        role: "Concept, illustration and layout.",
+        approach: "Hand-drawn illustration in Procreate, set in InDesign and Illustrator, so each piece has its own character.",
+        outcome: "Work for an exhibition, theatre and community events since 2021.",
+      },
       text: [
         "Visual communication for exhibitions, events and non-profit organisations, drawn in Procreate and set in InDesign and Illustrator.",
       ],
@@ -324,6 +364,13 @@ window.PORTFOLIO = {
       team: "With Fujii Midori, Goh See Min, Paulina Temborius & Kim Woosung",
       poster: `${W}/poster-theoneiwant.jpg`,
       video: `${W}/theoneiwant/film.mp4`,
+      story: {
+        challenge: "Create a short film in an international team of people who had never worked together, and most of whom had never made a film.",
+        role: "Director and producer, screenplay and storyboard.",
+        approach: "Unlike Nexus, this film commits to a single genre: the conventions of the romantic thriller. I translated my filmmaking experience into a process the whole team could take part in, with clear roles, storyboards and a structured shoot.",
+        outcome: "A romantic thriller set in contemporary Seoul, made at Seoul National University and exhibited at the Digitalanalog Festival in Munich, extended into the space with sticky notes.",
+        reflection: "Leadership was not about having the best idea. It was about creating a structure in which everyone could contribute and turn different perspectives into a shared outcome.",
+      },
       text: [
         "A romantic thriller in contemporary Seoul: Mia's carefully structured routine unravels as harmless attention turns into the experience of being watched.",
         "The film was exhibited at the Digitalanalog e.V. Festival in Munich, a weekend of film, art and new perspectives. Presenting it in a completely different context outside of Korea showed how audiences engage and interact with the film.",
@@ -358,6 +405,13 @@ window.PORTFOLIO = {
       still: `${W}/still-snu80-cover.jpg`,
       pageBg: "#21325e", // the navy of the still
       video: `${W}/snu80.mp4`,
+      story: {
+        challenge: "Celebrate 80 years of Seoul National University in under 20 seconds, as an exchange student with only a short connection to the university.",
+        role: "Concept, hand-drawn storyboards and animation, solo.",
+        approach: "I wanted to make something creative and bring in as many elements as possible that connect me, as an exchange student, to the university. One continuous transformation: a letter, the number 8 becoming infinity, mathematics and DNA, a butterfly, hibiscus in an ink landscape.",
+        outcome: "Excellence Award (Idea Award) in the SNU 80th Anniversary Video Contest.",
+        reflection: "80 years is a long time, and I was only part of it for about eight months. Still, I became part of this identity, and that is what a university needs: people who make it their own, even for a short time.",
+      },
       text: [
         "The film transforms SNU's 80th anniversary into a visual journey. Beginning with a congratulatory letter, the number 8 becomes infinity, symbolizing boundless knowledge and endless possibility.",
         "It unfolds into DNA and mathematical forms, reflecting science and discovery, before taking flight as a butterfly, a symbol of growth, transformation and new generations. Its journey ends among hibiscus blossoms in a traditional Korean ink landscape, where art, nature and heritage converge.",
@@ -378,11 +432,18 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "brewinsight", tags: ["strategy", "digital"], section: "Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
+      id: "brewinsight", logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
       role: "Creative direction, content strategy, community growth, creator acquisition",
       key: { src: `${W}/brewinsight/cover.jpg`, fit: "contain", bg: "white", pageBg: "#f3f0e8" },
+      story: {
+        challenge: "The Instagram feed communicated Brewinsight's data well, but gave people little reason to follow, share or take part.",
+        role: "Creative direction, content strategy, community growth and creator acquisition.",
+        approach: "Shift the question from “What does Brewinsight know?” to “What can Brewinsight give me?”, and make Brewinsight the connector between coffee lovers, creators and cafés.",
+        outcome: "A complete strategy: five content pillars, a content toolkit and posting rhythm, a video framework, creator recruitment on Threads and X, and a growth loop. Brewinsight is live and in its growth phase.",
+        reflection: "I am increasingly interested in what happens after an idea has been created: how it reaches people and how a community forms around it.",
+      },
       text: [
         "Brewinsight is a coffee intelligence platform, already live as a viable product: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés.",
         "The question shifts from what Brewinsight knows to what Brewinsight can give: discovery for coffee lovers, opportunities for creators, visibility for cafés. Brewinsight becomes the connector. We are now in the growth phase, building the audience and the first creator sign-ups.",
@@ -422,6 +483,12 @@ window.PORTFOLIO = {
         { label: "Trailer", url: "https://youtu.be/BLfj2PR6qgk?si=MgnFHE9vKI9ZQE-k" },
         { label: "Interview", url: "https://youtu.be/IM1rYukr6NM?si=sLRuh9wA5csErwQd" },
       ],
+      story: {
+        challenge: "Make a speculative film about artificial intelligence that invites reflection instead of repeating the usual dystopia.",
+        role: "Cinematography, co-direction, screenplay, acting, editing and sound design, in a team of seven.",
+        outcome: "Screened at the 4th International TU Kenya Conference on Artificial Intelligence.",
+        reflection: "The film was never only about how to make it. Writing the storyline forced us to think through what AI actually means for society, ethics and identity, and what consequences it could have.",
+      },
       text: [
         "Set in a fictional future scenario, PULSE delves into the profound implications of artificial intelligence on society, ethics and human identity. This artistic work, created by students of LMU Munich, reflects on the evolving relationship between humanity and technology.",
         "Produced as part of an academic seminar, PULSE was first showcased during the 4th International Technical University of Kenya, Exploring Visual Cultures Conference of Artificial Intelligence.",
@@ -449,6 +516,13 @@ window.PORTFOLIO = {
         { label: "Trailer", url: "https://youtu.be/uDQLkw234cw?si=t2ypc60g2U4b28MC" },
         { label: "Interview", url: "https://youtu.be/JktdeEeUYTc?si=NvPtuuooIjZ4mPyg" },
       ],
+      story: {
+        challenge: "A film about a “Spalt”, a gap. How do you make a gap visible in the film itself?",
+        role: "Co-direction, main camera, editing, light, sound and acting, in a team of five.",
+        approach: "We took the gap literally and split the film into genres. Every part follows a different genre, so we had to learn and work with several sets of conventions at once.",
+        outcome: "Two LMU Oscars, Best Movie and Best Screenplay, and a premiere screening.",
+        reflection: "My first major film, and a lesson in how much the form of a film can say on its own.",
+      },
       text: [
         "My first major film. Around the theme of a 'Spalt', a gap, we broke the film itself apart.",
       ],
@@ -480,6 +554,13 @@ window.PORTFOLIO = {
         { label: "LMU Newsroom article", url: "https://www.lmu.de/de/newsroom/newsuebersicht/news/digitale-hilfen-fuer-aeltere-ki-ist-fuer-alle-da-86caa9b1.html" },
         { label: "Paper (ACM format, unpublished)", url: `${W}/smartscan/smartscan-paper.pdf`, download: true },
       ],
+      story: {
+        challenge: "Official letters, instruction leaflets and forms are hard to read for many older adults, and most AI tools are built for people who already feel at home with technology.",
+        role: "Craftsmanship and aesthetics of the final prototype, visual communication and the presentation, in a team of four.",
+        approach: "We started with interviews about technology, usability worries and scepticism towards AI, and designed a familiar object with haptic buttons instead of another app.",
+        outcome: "A high-fidelity prototype that simplifies, enlarges and reads documents aloud. One of the most applauded projects at the LMU presentation, featured in the LMU Newsroom.",
+        reflection: "Accessibility starts with trust, not features. The teleshopping video showed that the right tone matters as much as the technology.",
+      },
       text: [
         "An AI-supported scanning device for older adults: it simplifies difficult texts, enlarges content and reads it aloud.",
       ],
@@ -503,9 +584,16 @@ window.PORTFOLIO = {
       context: "Practical Interactive Media, LMU Munich, in collaboration with the Deutsches Museum",
       role: "Concept, interaction design, fabrication, GenAI-assisted ornament, hardware",
       team: "Group project with Louis Zimmermann, developed with and presented to the Deutsches Museum",
-      key: { src: `${W}/treasurechest/build-3.jpg`, fit: "contain", bg: "white" },
+      key: { src: `${W}/treasurechest/chest-final.jpg`, fit: "contain", bg: "black" },
       video: `${W}/treasurechest/trailer.mp4`,
       links: [{ label: "Deutsches Museum Digital", url: "https://digital.deutsches-museum.de/de/" }],
+      story: {
+        challenge: "AI decisions are hidden from the people they affect. How do you make an abstract ethical problem, the black box, something you can feel in a museum?",
+        role: "Concept, fabrication and GenAI-assisted ornament, together with Louis Zimmermann.",
+        approach: "A chest that closes as you approach. The interaction itself carries the message: no sound, no data recording, no prescribed narrative.",
+        outcome: "A working exhibit (Pico W, distance sensors, stepper motor, LEDs, display), developed with and presented to the Deutsches Museum.",
+        reflection: "A good interaction can carry an argument without a single word of explanation. Next we would reduce latency and make the opening and closing smoother.",
+      },
       text: [
         "This exhibit uses a powerful metaphor to address the lack of transparency in AI algorithms. As you approach, the antique-style chest, labelled \"AI\", closes its lid completely. The visible treasure is immediately hidden from view.",
         "This physical action prompts reflection on AI's black box nature: a system whose attractive promise and complex decision-making processes remain deliberately opaque and hidden, challenging us to consider what we can and cannot know about the technology that shapes our lives.",
@@ -520,7 +608,8 @@ window.PORTFOLIO = {
         { type: "gallery", title: "The build", items: [
           { src: `${W}/treasurechest/build-1.jpg`, caption: "Laser-cut wooden box" },
           { src: `${W}/treasurechest/build-2.jpg`, caption: "Painted and sprayed" },
-          { src: `${W}/treasurechest/build-3.jpg`, caption: "The finished chest" },
+          { src: `${W}/treasurechest/build-3.jpg`, caption: "Before the electronics" },
+          { src: `${W}/treasurechest/chest-final.jpg`, caption: "The finished chest, lid open, glowing from inside" },
         ] },
         { type: "pairs", title: "Generative AI × craftsmanship", items: [
           { a: `${W}/treasurechest/knobs-print.jpg`, b: `${W}/treasurechest/knobs-final.jpg`, caption: "Ornamental knobs: designed with text-to-image tools, then 3D-printed",

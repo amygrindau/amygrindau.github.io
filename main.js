@@ -384,6 +384,7 @@ function renderMore(p) {
   more.innerHTML = `
     <div class="more__inner">
       <div class="more__text">
+        ${p.logo ? `<img class="more__logo" src="${p.logo}" alt="${p.title} logo">` : ""}
         <div class="more__lead">${p.text.map((t) => `<p>${t}</p>`).join("")}</div>
         ${p.team ? `<p class="more__team">${p.team}</p>` : ""}
         ${films ? `<div class="more__films">${films}</div>` : ""}

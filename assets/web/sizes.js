@@ -12,6 +12,7 @@ window.SIZES = {
 "assets/web/brewinsight/more-than-data.jpg": 1600,
 "assets/web/brewinsight/threads.jpg": 1600,
 "assets/web/brewinsight/videos-reels.jpg": 1600,
+"assets/web/cover-halftone.jpg": 1414,
 "assets/web/current/botanical-bodies.jpg": 1494,
 "assets/web/ella/ella-01.jpg": 1400,
 "assets/web/ella/ella-02.jpg": 1400,

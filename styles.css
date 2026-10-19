@@ -864,3 +864,4 @@ a.is-dim { opacity: .22; }
 .slides__num { font-variant-numeric: tabular-nums; font-size: 11px; letter-spacing: .08em; color: var(--ink); }
 .slides:focus-visible { box-shadow: 0 0 0 2px var(--pink); }
 @media (max-width: 760px) { .slides__btn { width: 34px; height: 34px; font-size: 15px; } .slides__btn--prev { left: 6px; } .slides__btn--next { right: 6px; } }
+.more__logo { width: 64px; height: auto; margin: 0 0 18px; }
