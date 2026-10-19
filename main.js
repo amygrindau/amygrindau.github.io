@@ -10,6 +10,14 @@ const low = (t) => (t || "").toLowerCase();
 // "AI Prototype" → "AI prototype": lower case, but abbreviations stay
 const lowKind = (t) => (t || "").split(" ").map((w) => /^[A-Z0-9&×]{2,}$/.test(w) ? w : w.toLowerCase()).join(" ");
 const shortYear = (y) => /until today/.test(y) ? `since ${y.slice(0, 4)}` : y;
+// split the sections into two columns with about the same number of projects (in order)
+const tocColumns = () => {
+  const n = (sec) => projects.filter((p) => p.section === sec).length + 1.5; // + room for the heading
+  const total = sections.reduce((a, sec) => a + n(sec), 0);
+  let acc = 0, split = sections.length;
+  sections.forEach((sec, k) => { if (acc < total / 2 && acc + n(sec) / 2 < total / 2) split = k + 1; acc += n(sec); });
+  return [sections.slice(0, split), sections.slice(split)];
+};
 const titleLen = (t) => Math.max(...t.split(" ").map((w) => w.length));
 const $ = (s) => document.querySelector(s);
 const MAGS = []; // magazine blocks on the current page (for the fullscreen viewer)
@@ -48,34 +56,29 @@ const bg = (src, cls = "", style = "", label = "") =>
 // Cover: your own image (images.cover in data.js) or, until then, a typographic cover with the portrait
 const coverPage = () => images.cover ? pg("r", bg(images.cover, "bg--cover", "", "Amy Grindau, Portfolio 2026"), { cls: "pg--cover pg--pink" })
   : pg("r", `
-  ${bg(images.face, "cover__photo", "", "Portrait of Amy Grindau")}
-  <div class="cover__shade"></div>
+  ${bg("assets/web/cover-halftone.jpg", "cover__photo", "", "Portrait of Amy Grindau, printed in halftone")}
   <p class="cover__name serif">Amy Grindau</p>
   <div class="cover__bar"><span>Portfolio</span><span>Issue 2026</span></div>
-  <span class="cover__num cover__num--a serif" aria-hidden="true">20</span>
-  <span class="cover__num cover__num--b serif" aria-hidden="true">26</span>
-  <ul class="cover__lines">
-    <li class="cover__kicker">Creativity × Technology × Strategy × Culture</li>
-    <li><span class="serif">AI Treasure Chest</span> with the Deutsches Museum</li>
-    <li><span class="serif">Two LMU Oscars</span> for Nexus</li>
-    <li><span class="serif">Florilegium</span> at Fukuoka Art Book Fair</li>
-  </ul>
+  <p class="cover__year serif" aria-hidden="true">2026</p>
   <span class="cover__open">Open →</span>
 `, { cls: "pg--cover pg--covertype" });
 
 // Masthead: year, short contents, credits ↔︎ portrait with the pinned editor's letter
 const mastLeft = () => pg("l", `
-  <div class="runhead"><span>Contents</span><span>Munich · Seoul · Fukuoka · Nairobi</span></div>
+  <div class="runhead"><span>Contents</span><span>Munich & Seoul</span></div>
   <h2 class="mast__year serif">2026</h2>
   <p class="mast__claim">Creativity × Technology × Strategy × Culture</p>
+  <div class="mast__filter" role="group" aria-label="Filter projects">
+    <button class="is-on" data-filter="">All</button>${(DATA.filters || []).map(([l, t]) => `<button data-filter="${t}">${l}</button>`).join("")}
+  </div>
   <div class="mast__toc">
-    ${sections.map((sec) => `
+    ${tocColumns().map((col) => `<div class="mast__col">${col.map((sec) => `
       <div class="mast__sec">
         <p class="mast__sechead">${sec}</p>
-        ${projects.map((p, k) => p.section !== sec ? "" : `<a href="${urlFor(p.id)}" data-id="${p.id}">
+        ${projects.map((p, k) => p.section !== sec ? "" : `<a href="${urlFor(p.id)}" data-id="${p.id}" data-tags="${(p.tags || []).join(" ")}">
           <span class="mast__t">${p.title}${p.award ? `<i class="mast__dot" aria-label="award or exhibition">●</i>` : ""}<small>${lowKind(p.kind)}, ${shortYear(p.year)}</small></span>
           <span>${pad(pageOf(k))}</span></a>`).join("")}
-      </div>`).join("")}
+      </div>`).join("")}</div>`).join("")}
     <p class="mast__legend"><i class="mast__dot">●</i> award or exhibition</p>
   </div>
 `, { num: pad(2), cls: "pg--mast" });
@@ -201,13 +204,13 @@ const startId = /^\/about\/?$/.test(location.pathname) ? "letter"   // /about/ =
 const phoneMQ = matchMedia("(max-width: 760px)");
 const first = () => (phoneMQ.matches ? 1 : 0);
 const book = new Book(bookEl, spreads, {
-  onSwipe: (d) => turn(book.i + d),
+  onSwipe: (d) => turn(step(d)),
   onChange(i, s) {
     history.replaceState(null, "", urlFor(s.id));
     document.title = titleFor(s.id);
     [i - 1, i, i + 1, i + 2].forEach((k) => preloadSpread(spreads[k]));
     count.textContent = i === 0 ? "Cover" : i === spreads.length - 1 ? "Back cover"
-      : `${pad(i * 2)} · ${pad(i * 2 + 1)} / ${pad((spreads.length - 1) * 2)}`;
+      : `${pad(i * 2)} · ${pad(i * 2 + 1)}`;
     prevBtn.disabled = i <= first();
     nextBtn.disabled = i === spreads.length - 1;
     document.body.dataset.spread = i <= first() ? "first" : i === spreads.length - 1 ? "last" : "";
@@ -226,6 +229,27 @@ book.inner.insertAdjacentHTML("beforeend", `
    NAVIGATION
    ===================================================================== */
 const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+// Filter: highlights matching projects on the contents page and in the tracing-paper contents;
+// the arrows then jump from one matching project to the next
+let filter = "";
+const matches = (i) => !filter || !spreads[i].project || (spreads[i].project.tags || []).includes(filter);
+function setFilter(t) {
+  filter = t;
+  document.querySelectorAll("[data-filter]").forEach((b) => b.classList.toggle("is-on", b.dataset.filter === t));
+  document.querySelectorAll("a[data-tags]").forEach((a) => a.classList.toggle("is-dim", !!t && !a.dataset.tags.split(" ").includes(t)));
+  [...tocSheet.querySelectorAll("a[data-id]")].forEach((a) => {
+    const p = projects.find((x) => x.id === a.dataset.id);
+    a.classList.toggle("is-dim", !!t && !!p && !(p.tags || []).includes(t));
+  });
+  // the contents page is rendered inside the book: keep its HTML in sync so it survives page turns
+  spreads[indexOf("masthead")].left = book.left._html = book.left.innerHTML;
+}
+document.addEventListener("click", (e) => {
+  const f = e.target.closest("[data-filter]");
+  if (f) { e.preventDefault(); e.stopPropagation(); setFilter(f.dataset.filter); }
+}, true);
+const step = (d) => { let i = book.i + d; while (filter && i > 1 && i < spreads.length - 1 && spreads[i].project && !matches(i)) i += d; return i; };
+
 // every turn gets an entry in the browser history, so Back goes to the previous page instead of leaving
 const turn = (i, push = true) => {
   i = Math.max(i, first());
@@ -241,12 +265,12 @@ addEventListener("popstate", () => {
   closeOverlays();
   if (indexOf(id) >= 0) turn(indexOf(id), false);
 });
-prevBtn.addEventListener("click", () => turn(book.i - 1));
-nextBtn.addEventListener("click", () => turn(book.i + 1));
+prevBtn.addEventListener("click", () => turn(step(-1)));
+nextBtn.addEventListener("click", () => turn(step(1)));
 
 document.addEventListener("click", (e) => {
   const edge = e.target.closest("[data-edge]");
-  if (edge) return turn(book.i + Number(edge.dataset.edge));
+  if (edge) return turn(step(Number(edge.dataset.edge)));
   if (e.target.closest("[data-top]")) { e.preventDefault(); return toTop(); }
   // tap the closed cover to open (only the main magazine, not the small viewers)
   if (book.i === 0 && e.target.closest(".book__page--right")?.closest(".book") === bookEl) turn(1);
@@ -257,8 +281,8 @@ addEventListener("keydown", (e) => {
   if (e.key === " " && !lightbox.hidden && togglePlay()) { e.preventDefault(); return; }
   if (document.querySelector(".overlay:not([hidden]), .lightbox:not([hidden])")) return;
   if (e.target.closest?.("input, textarea, [contenteditable]")) return;
-  if (e.key === "ArrowRight") turn(book.i + 1);
-  if (e.key === "ArrowLeft") turn(book.i - 1);
+  if (e.key === "ArrowRight") turn(step(1));
+  if (e.key === "ArrowLeft") turn(step(-1));
 });
 
 function route() {
@@ -388,7 +412,7 @@ let revealer;
 function reveal() {
   revealer?.disconnect();
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const els = [...more.querySelectorAll(REVEAL)].filter((el) => !el.parentElement.closest(REVEAL) && !el.closest(".pt"));
+  const els = [...more.querySelectorAll(REVEAL)].filter((el) => !el.parentElement.closest(REVEAL) && !el.closest(".pt, .slides"));
   revealer = new IntersectionObserver((entries) => {
     entries.filter((e) => e.isIntersecting).forEach((e, n) => {
       e.target.style.transitionDelay = `${Math.min(n, 4) * 140}ms`;
@@ -468,6 +492,14 @@ function block(p, b) {
       return `<section class="block">${head}<div class="gallery ${cls}">${b.items.map((it, n) => `
         <figure class="${n === b.feature ? "is-feature" : ""}">${img(it.src, it.caption ? `${p.title}, ${it.caption}` : `${p.title}, ${(b.title || "image").toLowerCase()} ${n + 1}`)}${it.caption ? `<figcaption>${it.caption}</figcaption>` : ""}</figure>`).join("")}</div></section>`;
     }
+    case "slides":
+      return `<section class="block">${head}<div class="slides" data-slides tabindex="0" aria-roledescription="slideshow">
+        <div class="slides__track">${b.items.map((it, n) => `<figure class="slides__slide${n ? "" : " is-on"}">${img(it.src, `${p.title}, ${low(it.caption)}`).replace('loading="lazy"', 'loading="eager"')}</figure>`).join("")}</div>
+        <button class="slides__btn slides__btn--prev" data-slide="-1" aria-label="Previous slide">←</button>
+        <button class="slides__btn slides__btn--next" data-slide="1" aria-label="Next slide">→</button>
+      </div>
+      <div class="slides__bar"><span class="slides__cap">${b.items[0].caption}</span><span class="slides__num">01 / ${pad(b.items.length)}</span></div>
+      </section>`;
     case "video":
       return `<section class="block">${head}<button class="videocard" data-play="${p.id}"><span>▶︎ Play</span></button>${note}</section>`;
     case "logos":
@@ -671,6 +703,33 @@ document.addEventListener("keydown", (e) => {
   if (pin && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openPin(Number(pin.dataset.pin)); }
 });
 
+// slides viewer (Brewinsight strategy): arrows, keys and swipe
+function slideBy(box, d) {
+  const all = [...box.querySelectorAll(".slides__slide")], i = all.findIndex((x) => x.classList.contains("is-on"));
+  const n = Math.max(0, Math.min(all.length - 1, i + d));
+  all.forEach((x, k) => x.classList.toggle("is-on", k === n));
+  const bar = box.nextElementSibling, data = projects.flatMap((p) => p.blocks).find((b) => b.type === "slides" && b.items.length === all.length);
+  bar.querySelector(".slides__num").textContent = `${pad(n + 1)} / ${pad(all.length)}`;
+  if (data) bar.querySelector(".slides__cap").textContent = data.items[n].caption;
+  box.querySelector(".slides__btn--prev").disabled = n === 0;
+  box.querySelector(".slides__btn--next").disabled = n === all.length - 1;
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-slide]");
+  if (b) slideBy(b.closest("[data-slides]"), Number(b.dataset.slide));
+});
+document.addEventListener("keydown", (e) => {
+  const box = e.target.closest?.("[data-slides]");
+  if (box && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { e.preventDefault(); e.stopPropagation(); slideBy(box, e.key === "ArrowRight" ? 1 : -1); }
+}, true);
+let slideX = null;
+document.addEventListener("pointerdown", (e) => { if (e.target.closest("[data-slides]") && e.pointerType !== "mouse") slideX = e.clientX; });
+document.addEventListener("pointerup", (e) => {
+  const box = e.target.closest("[data-slides]");
+  if (box && slideX !== null && Math.abs(e.clientX - slideX) > 40) slideBy(box, e.clientX < slideX ? 1 : -1);
+  slideX = null;
+});
+
 function openLegal(which) {
   legal.querySelector(".legal__paper").innerHTML = `<button class="overlay__close" data-close>Close ✕</button>${LEGAL[which]}`;
   legal.hidden = false;
@@ -708,7 +767,7 @@ $("[data-foot]").innerHTML = `
       <button data-legal-open="privacy">Privacy</button>
       <a href="${contact.cv}" download>CV ↓</a>
     </div>
-    <p class="foot__copy">© 2026 Amy Grindau, based in Munich</p>
+    <p class="foot__copy">© 2026 Amy Grindau, Munich & Seoul</p>
   </div>`;
 
 /* ---------- start on the page in the URL ---------- */

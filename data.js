@@ -95,6 +95,8 @@ window.PORTFOLIO = {
   // The magazine follows this order of sections.
   // order of the magazine (tuned for CDTM and NYU: technology and storytelling first)
   sections: ["Interaction", "Strategy", "Film", "Identity", "Print"],
+  // filters on the contents page: label → tag (projects carry `tags`)
+  filters: [["Technology & AI", "tech"], ["Film & video", "film"], ["Brand & strategy", "strategy"], ["Editorial & print", "print"], ["Exhibited", "exhibited"]],
   order: ["smartscan", "treasurechest", "brewinsight", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
 
   // "On my desk": the page before the back cover
@@ -129,7 +131,7 @@ window.PORTFOLIO = {
   projects: [
     /* ------------------------------- PRINT ------------------------------- */
     {
-      id: "florilegium", section: "Print", title: "Florilegium", kind: "Artist Book", year: "2026",
+      id: "florilegium", tags: ["print", "tech", "exhibited", "physical"], section: "Print", title: "Florilegium", kind: "Artist Book", year: "2026",
       hook: "18 flowers. Five cities. Three years.",
       context: "Design Studio 21, Seoul National University",
       role: "Concept, photography, TouchDesigner, editorial design",
@@ -169,7 +171,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "printedmatter", section: "Print", title: "Printed Matter", kind: "Publisher Index", year: "2026",
+      id: "printedmatter", tags: ["print", "physical"], section: "Print", title: "Printed Matter", kind: "Publisher Index", year: "2026",
       hook: "Half the page for the artist, half for the publisher.",
       context: "Design Studio 21, Seoul National University",
       role: "Concept, editorial design, print production, solo",
@@ -194,7 +196,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "ella", section: "Print", title: "Ella", kind: "Magazine", year: "2023",
+      id: "ella", tags: ["print"], section: "Print", title: "Ella", kind: "Magazine", year: "2023",
       hook: "A homage to the First Lady of Jazz.",
       context: "Editorial project",
       role: "Concept, layout, typography, solo",
@@ -215,7 +217,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "untitled", section: "Print", title: "Untitled", kind: "Magazine", year: "2022",
+      id: "untitled", tags: ["print", "physical"], section: "Print", title: "Untitled", kind: "Magazine", year: "2022",
       hook: "A magazine for young adults.",
       context: "W-Seminar, Korbinian-Aigner-Gymnasium",
       role: "Art direction, layout, photography, branding, solo",
@@ -258,7 +260,7 @@ window.PORTFOLIO = {
 
     /* ------------------------------ IDENTITY ----------------------------- */
     {
-      id: "sixthman", section: "Identity", title: "6th Man", kind: "Brand Identity", year: "2024 until today",
+      id: "sixthman", tags: ["strategy", "print", "digital"], section: "Identity", title: "6th Man", kind: "Brand Identity", year: "2024 until today",
       hook: "Making basketball more accessible, one identity at a time.",
       context: "Munich basketball community & events",
       role: "Name, logo, identity, pitch deck, flyers, stickers, social",
@@ -286,7 +288,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "graphic", section: "Identity", title: "Graphic Projects", kind: "Graphic Design", year: "2021 until today",
+      id: "graphic", tags: ["print"], section: "Identity", title: "Graphic Projects", kind: "Graphic Design", year: "2021 until today",
       hook: "Posters, flyers and booklets, made along the way.",
       context: "Exhibitions, events and non-profit organisations",
       role: "Concept, illustration, layout",
@@ -314,7 +316,7 @@ window.PORTFOLIO = {
 
     /* -------------------------------- FILM ------------------------------- */
     {
-      id: "theoneiwant", section: "Film", title: "The One I Want", kind: "Short Film", year: "2026",
+      id: "theoneiwant", tags: ["film", "exhibited"], section: "Film", title: "The One I Want", kind: "Short Film", year: "2026",
       hook: "Attraction, routine, and the feeling of being watched.",
       award: "Exhibited at Digitalanalog Festival, Munich",
       context: "Introduction to Popular Art, Seoul National University",
@@ -335,6 +337,12 @@ window.PORTFOLIO = {
         { type: "origin", title: "From storyboard to screen", stack: true, framesFirst: true,
           paper: [`${W}/theoneiwant/storyboard-detail.jpg`],
           frames: [`${W}/theoneiwant/still-1.jpg`, `${W}/theoneiwant/still-2.jpg`, `${W}/theoneiwant/still-3.jpg`] },
+        { type: "gallery", title: "Exhibition, Digitalanalog Festival, Munich", items: [
+          { src: `${W}/theoneiwant/festival-1.jpg`, caption: "The film in the exhibition space" },
+          { src: `${W}/theoneiwant/festival-2.jpg`, caption: "Sticky notes on the floor, the stalker's presence beyond the screen" },
+          { src: `${W}/theoneiwant/festival-3.jpg`, caption: "Digitalanalog e.V. Festival" },
+          { src: `${W}/theoneiwant/festival-4.jpg`, caption: "Notes across the room" },
+        ] },
         { type: "gallery", title: "Behind the scenes", small: true, items: [
           { src: `${W}/theoneiwant/bts-1.jpg` }, { src: `${W}/theoneiwant/bts-2.jpg` },
           { src: `${W}/theoneiwant/bts-3.jpg` }, { src: `${W}/theoneiwant/bts-4.jpg` },
@@ -342,7 +350,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "snu80", section: "Film", title: "SNU 80th", kind: "Congratulatory Video", year: "2026",
+      id: "snu80", tags: ["film", "digital"], section: "Film", title: "SNU 80th", kind: "Congratulatory Video", year: "2026",
       hook: "Sixteen seconds from eight to infinity.",
       context: "SNU 80th Anniversary Video Contest",
       role: "Concept, hand-drawn storyboards, animation, solo",
@@ -370,11 +378,11 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "brewinsight", section: "Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
+      id: "brewinsight", tags: ["strategy", "digital"], section: "Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
       role: "Creative direction, content strategy, community growth, creator acquisition",
-      key: { src: `${W}/brewinsight/cover.jpg`, fit: "contain", bg: "black", pageBg: "#396832" },
+      key: { src: `${W}/brewinsight/cover.jpg`, fit: "contain", bg: "white", pageBg: "#f3f0e8" },
       text: [
         "Brewinsight is a coffee intelligence platform, already live as a viable product: data, trends and insights for the coffee world. I developed its Instagram content and community strategy, turning a data-driven feed into a social ecosystem around coffee, creators and cafés.",
         "The question shifts from what Brewinsight knows to what Brewinsight can give: discovery for coffee lovers, opportunities for creators, visibility for cafés. Brewinsight becomes the connector. We are now in the growth phase, building the audience and the first creator sign-ups.",
@@ -386,7 +394,7 @@ window.PORTFOLIO = {
         "Threads and X work as a real-time acquisition channel: find creators, start conversations, drive sign-ups. The growth loop closes the circle: every collaboration creates content, every piece of content creates discovery, every discovery creates an opportunity to connect.",
       ],
       blocks: [
-        { type: "gallery", title: "The strategy", wide: true, items: [
+        { type: "slides", title: "The strategy", items: [
           { src: `${W}/brewinsight/content-gap.jpg`, caption: "The content gap: from what Brewinsight knows to what it can give" },
           { src: `${W}/brewinsight/how-we-do-it.jpg`, caption: "Keep the core, expand the system" },
           { src: `${W}/brewinsight/content-pillars.jpg`, caption: "Five content pillars" },
@@ -401,7 +409,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "pulse", section: "Film", title: "Pulse", kind: "Short Film", year: "2024",
+      id: "pulse", tags: ["film", "tech", "exhibited"], section: "Film", title: "Pulse", kind: "Short Film", year: "2024",
       hook: "A speculative film about AI, ethics and identity.",
       context: "Seminar, LMU Munich",
       role: "Cinematography, co-direction, screenplay, acting, edit, sound design",
@@ -429,7 +437,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "nexus", section: "Film", title: "Nexus", kind: "Short Film", year: "2024",
+      id: "nexus", tags: ["film"], section: "Film", title: "Nexus", kind: "Short Film", year: "2024",
       hook: "A film about a gap, that breaks into genres.",
       context: "Media Technology, LMU Munich",
       role: "Co-direction, main camera, edit, light, sound, acting",
@@ -461,7 +469,7 @@ window.PORTFOLIO = {
 
     /* ----------------------------- INTERACTION --------------------------- */
     {
-      id: "smartscan", section: "Interaction", title: "SmartScan", kind: "AI Prototype", year: "2025",
+      id: "smartscan", tags: ["tech", "physical"], section: "Interaction", title: "SmartScan", kind: "AI Prototype", year: "2025",
       hook: "AI that lowers barriers instead of building new ones.",
       context: "Design Workshop 2, LMU × Digitale Hilfe München",
       role: "Craftsmanship, aesthetics, visual communication, hi-fi prototype",
@@ -490,12 +498,12 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "treasurechest", section: "Interaction", title: "AI Treasure Chest", kind: "Interactive Installation", year: "2025",
+      id: "treasurechest", tags: ["tech", "physical", "exhibited"], section: "Interaction", title: "AI Treasure Chest", kind: "Interactive Installation", year: "2025",
       hook: "A chest that closes when you come closer.",
       context: "Practical Interactive Media, LMU Munich, in collaboration with the Deutsches Museum",
       role: "Concept, interaction design, fabrication, GenAI-assisted ornament, hardware",
       team: "Group project with Louis Zimmermann, developed with and presented to the Deutsches Museum",
-      key: { src: `${W}/treasurechest/photo-1.jpg`, fit: "cover" },
+      key: { src: `${W}/treasurechest/build-3.jpg`, fit: "contain", bg: "white" },
       video: `${W}/treasurechest/trailer.mp4`,
       links: [{ label: "Deutsches Museum Digital", url: "https://digital.deutsches-museum.de/de/" }],
       text: [

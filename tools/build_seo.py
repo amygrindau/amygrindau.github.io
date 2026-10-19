@@ -212,7 +212,7 @@ def main():
     # start page
     home = fill(template, "head", head(SITE_TITLE, SITE_DESC, f"{SITE}/", f"{SITE}/og-image.jpg",
                                        "Amy Grindau, Portfolio: name in serif type next to a portrait on pink",
-                                       [person(data), website()]))
+                                       [person(data), website()], base=True))
     home = fill(home, "noscript", noscript_home(data, projects))
     open(path, "w", encoding="utf-8").write(home)
 
