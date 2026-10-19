@@ -865,3 +865,33 @@ a.is-dim { opacity: .22; }
 .slides:focus-visible { box-shadow: 0 0 0 2px var(--pink); }
 @media (max-width: 760px) { .slides__btn { width: 34px; height: 34px; font-size: 15px; } .slides__btn--prev { left: 6px; } .slides__btn--next { right: 6px; } }
 .more__logo { width: 64px; height: auto; margin: 0 0 18px; }
+
+/* project text: short lead, "at a glance", then the pictures; the rest folded below */
+.glance { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 28px; margin: 26px 0 0; padding-top: 16px; border-top: 1px solid var(--ink); }
+.glance dt { margin-bottom: 6px; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.glance dd { margin: 0; font-size: 14px; line-height: 1.55; color: #2a2a28; }
+@media (max-width: 760px) { .glance { grid-template-columns: 1fr; gap: 14px; } }
+.more__deep { margin-top: clamp(48px, 7vw, 90px); }
+.more__deep .process { margin-top: 0; }
+.process__body--deep { columns: auto; max-width: 680px; }
+.deep__h { margin: 22px 0 6px; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.deep__h:first-child { margin-top: 8px; }
+.more__team { margin-top: 14px; }
+
+/* filter chips sit above the invisible page-turn zone at the page edge */
+.mast__filter { position: relative; z-index: 7; }
+.mast__toc a { position: relative; z-index: 7; }
+
+/* cover: lighter halftone, so the name reads */
+.pg--covertype .cover__photo { opacity: .58; }
+.pg--covertype .cover__name { text-shadow: 0 0 2.5cqw rgba(216,132,158,.9); }
+
+/* tracing-paper contents: compact, fits without scrolling */
+.sheet { padding: 4cqw 5.5cqw; }
+.sheet__title { font-size: 6.5cqh; }
+.sheet__sec { margin-top: 1.3cqh; }
+.sheet__sechead { font-size: 1.35cqh; margin-bottom: .2cqh; }
+.sheet__sec a { padding: .28cqh 0; }
+.sheet__t { font-size: 2.45cqh; }
+.sheet__k, .sheet__p { font-size: 1.35cqh; }
+.sheet__sec--end { margin-top: 1.6cqh; }

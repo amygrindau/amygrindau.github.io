@@ -372,6 +372,23 @@ const img = (src, alt = "", cls = "") => {
   return `<img class="${cls}" src="${src}"${set} alt="${alt}" loading="lazy" decoding="async">`;
 };
 
+// below the pictures, folded: approach, reflection, the rest of the text and the process
+function deep(p) {
+  const st = p.story || {};
+  const parts = [
+    st.approach && `<h4 class="deep__h">Approach</h4><p>${st.approach}</p>`,
+    p.text.length > 1 && `<h4 class="deep__h">More about the project</h4>${p.text.slice(1).map((t) => `<p>${t}</p>`).join("")}`,
+    p.process && `<h4 class="deep__h">The process</h4>${p.process.map((t) => `<p>${t}</p>`).join("")}`,
+    st.reflection && `<h4 class="deep__h">Reflection</h4><p>${st.reflection}</p>`,
+  ].filter(Boolean);
+  if (!parts.length) return "";
+  const label = [st.approach && "approach", (p.text.length > 1 || p.process) && "process", st.reflection && "reflection"].filter(Boolean).join(", ");
+  return `<details class="process">
+    <summary><span>${label.charAt(0).toUpperCase() + label.slice(1)}</span><span class="process__icon" aria-hidden="true">+</span></summary>
+    <div class="process__body process__body--deep">${parts.join("")}</div>
+  </details>`;
+}
+
 function renderMore(p) {
   MAGS.length = 0;
   if (!p) { more.innerHTML = ""; return; }
@@ -385,19 +402,17 @@ function renderMore(p) {
     <div class="more__inner">
       <div class="more__text">
         ${p.logo ? `<img class="more__logo" src="${p.logo}" alt="${p.title} logo">` : ""}
-        <div class="more__lead">${p.text.map((t) => `<p>${t}</p>`).join("")}</div>
-        ${p.team ? `<p class="more__team">${p.team}</p>` : ""}
+        <div class="more__lead"><p>${p.text[0]}</p></div>
+        ${p.story ? `<dl class="glance">${[["challenge", "Challenge"], ["role", "My role"], ["outcome", "Outcome"]]
+          .filter(([k]) => p.story[k]).map(([k, label]) => `<div><dt>${label}</dt><dd>${p.story[k]}</dd></div>`).join("")}</dl>` : ""}
         ${films ? `<div class="more__films">${films}</div>` : ""}
-        ${p.story ? `<dl class="story">${[["challenge", "Challenge"], ["role", "My role"], ["approach", "Approach"], ["outcome", "Outcome"], ["reflection", "Reflection"]]
-          .filter(([k]) => p.story[k]).map(([k, label]) => `<dt>${label}</dt><dd>${p.story[k]}</dd>`).join("")}</dl>` : ""}
-        ${p.process ? `
-          <details class="process">
-            <summary><span>The process</span><span class="process__icon" aria-hidden="true">+</span></summary>
-            <div class="process__body">${p.process.map((t) => `<p>${t}</p>`).join("")}</div>
-          </details>` : ""}
-        ${p.quote ? `<blockquote class="serif">${p.quote}</blockquote>` : ""}
+        ${p.team ? `<p class="more__team">${p.team}</p>` : ""}
       </div>
       ${p.blocks.map((b) => block(p, b)).join("")}
+      <div class="more__text more__deep">
+        ${deep(p)}
+        ${p.quote ? `<blockquote class="serif">${p.quote}</blockquote>` : ""}
+      </div>
       <button class="more__back" data-top>↑ Back to the spread</button>
     </div>`;
   more.querySelectorAll("[data-mini]").forEach((el, n) => { MAGS[n].book = mountMagazine(el, MAGS[n]); });
@@ -658,7 +673,7 @@ function openLetter() {
     <h2 class="letter__title serif">Hi, I'm Amy,</h2>
     ${DATA.letter.map((t) => `<p>${t}</p>`).join("")}
     <p class="letter__mission serif">${DATA.mission}</p>
-    <ol class="letter__timeline">${DATA.timeline.map(([y, w]) => `<li><span>${y}</span><span>${w}</span></li>`).join("")}</ol>
+    <ol class="letter__timeline">${[...DATA.timeline].reverse().map(([y, w]) => `<li><span>${y}</span><span>${w}</span></li>`).join("")}</ol>
     <p class="letter__sign serif">Amy</p>
     <a class="btn" href="${contact.cv}" download>Download CV ↓</a>`;
   letter.hidden = false;
