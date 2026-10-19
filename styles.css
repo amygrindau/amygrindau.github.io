@@ -814,8 +814,6 @@ body[data-spread="last"] .edge--prev { width: 3%; }
 @media (max-width: 760px) { .story { grid-template-columns: 1fr; gap: 4px; } .story dd { margin-bottom: 12px; } }
 
 /* ---------- contents spread, right page: photo, letter, recognition and places ---------- */
-.mast__face { left: 7cqw; top: 7cqw; width: 58cqw; }
-.pg--mast-r .pinned { top: 47cqw; bottom: auto; right: 5cqw; width: 42cqw; }
 .mast__about { position: absolute; left: 7cqw; right: 7cqw; bottom: 11cqw; display: grid; grid-template-columns: 1.15fr 1fr; gap: 5cqw;
   padding-top: 1.8cqw; border-top: .15cqw solid var(--ink); font-size: 1.85cqw; line-height: 1.45; }
 .mast__abouthead { margin: 0 0 1.2cqw; font-size: 1.5cqw; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }

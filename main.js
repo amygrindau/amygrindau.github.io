@@ -89,12 +89,6 @@ const mastRight = () => pg("r", `
     <span class="pinned__text">${DATA.letter[0]}</span>
     <span class="pinned__more">Read →</span>
   </button>
-  <div class="mast__about">
-    <div><p class="mast__abouthead">Recognition</p>
-      <ul>${DATA.recognition.map((r) => `<li><i class="mast__dot">●</i>${r}</li>`).join("")}</ul></div>
-    <div><p class="mast__abouthead">Places</p>
-      <dl>${DATA.places.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>
-  </div>
 `, { num: pad(3), label: "Editor's letter", cls: "pg--pink pg--mast-r" });
 
 // Project spread — left: information, right: key visual. Two layouts alternate.

@@ -70,11 +70,11 @@ window.PORTFOLIO = {
     ["Based in", "Munich"],
     ["Contact", "amiiryyy@gmail.com"],
   ],
-  // contents spread, right page: international experience and recognition
+  // international experience and recognition (not shown at the moment, kept for later)
   places: [
     ["Based in", "Munich"],
     ["Studied in", "Munich & Seoul"],
-    ["Exhibited in", "Fukuoka"],
+    ["Exhibited in", "Fukuoka & Munich"],
     ["Screened in", "Nairobi"],
     ["Presented at", "Deutsches Museum"],
   ],
@@ -316,6 +316,7 @@ window.PORTFOLIO = {
     {
       id: "theoneiwant", section: "Film", title: "The One I Want", kind: "Short Film", year: "2026",
       hook: "Attraction, routine, and the feeling of being watched.",
+      award: "Exhibited at Digitalanalog Festival, Munich",
       context: "Introduction to Popular Art, Seoul National University",
       role: "Direction & production, screenplay, storyboard",
       team: "With Fujii Midori, Goh See Min, Paulina Temborius & Kim Woosung",
@@ -323,6 +324,8 @@ window.PORTFOLIO = {
       video: `${W}/theoneiwant/film.mp4`,
       text: [
         "A romantic thriller in contemporary Seoul: Mia's carefully structured routine unravels as harmless attention turns into the experience of being watched.",
+        "The film was exhibited at the Digitalanalog e.V. Festival in Munich, a weekend of film, art and new perspectives. Presenting it in a completely different context outside of Korea showed how audiences engage and interact with the film.",
+        "I extended the film into the exhibition space through sticky notes scattered across the wall and floor, subtly evoking the stalker's looming presence beyond the screen.",
       ],
       process: [
         "We started from the conventions of the romantic thriller, inspired by Decision to Leave and Gone Girl, and asked how attraction, routine and surveillance can slowly turn into fear.",
