@@ -1,4 +1,5 @@
 const DATA = window.PORTFOLIO;
+const START_HASH = location.hash; // read before the magazine rewrites the address (archive.js needs it)
 const { images, sections, contact } = DATA;
 // the magazine follows the order of the sections
 const rank = (p) => { const i = (DATA.order || []).indexOf(p.id); return i < 0 ? 999 : i; };
@@ -6,7 +7,7 @@ const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section
 const pad = (n) => String(n).padStart(2, "0");
 const FIRST = 2; // spread 0 = cover · 1 = masthead · 2… = projects
 // chapter divider spreads (DATA.chapters) come before the first project of their section
-const hasDivider = (sec) => !!DATA.chapters?.[sec] || sec === "Archive";
+const hasDivider = (sec) => !!DATA.chapters?.[sec];
 const chapterBefore = (k) => projects.slice(0, k + 1).filter((p, i) => hasDivider(p.section) && (i === 0 || projects[i - 1].section !== p.section)).length;
 const pageOf = (k) => (FIRST + k + chapterBefore(Math.min(k, projects.length - 1))) * 2;
 const low = (t) => (t || "").toLowerCase();
@@ -14,12 +15,13 @@ const low = (t) => (t || "").toLowerCase();
 const lowKind = (t) => (t || "").split(" ").map((w) => /^[A-Z0-9&×]{2,}$/.test(w) ? w : w.toLowerCase()).join(" ");
 const shortYear = (y) => /until today/.test(y) ? `since ${y.slice(0, 4)}` : y;
 // split the sections into two columns with about the same number of projects (in order)
+const issueSections = sections.filter((sec) => sec !== "Archive");
 const tocColumns = () => {
   const n = (sec) => projects.filter((p) => p.section === sec).length + 1.5; // + room for the heading
-  const total = sections.reduce((a, sec) => a + n(sec), 0);
-  let acc = 0, split = sections.length;
-  sections.forEach((sec, k) => { if (acc < total / 2 && acc + n(sec) / 2 < total / 2) split = k + 1; acc += n(sec); });
-  return [sections.slice(0, split), sections.slice(split)];
+  const total = issueSections.reduce((a, sec) => a + n(sec), 0);
+  let acc = 0, split = issueSections.length;
+  issueSections.forEach((sec, k) => { if (acc < total / 2 && acc + n(sec) / 2 < total / 2) split = k + 1; acc += n(sec); });
+  return [issueSections.slice(0, split), issueSections.slice(split)];
 };
 const titleLen = (t) => Math.max(...t.split(" ").map((w) => w.length));
 const $ = (s) => document.querySelector(s);
@@ -121,30 +123,6 @@ function chapterPage(side, sec, k) {
   `, { num: pad(pageOf(k) - 1), label: sec, cls: "pg--chapter pg--chapter-r" });
 }
 
-// Index: all work as a matrix, year × discipline, running across both pages. The archive follows it.
-const YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
-const DISC = ["Interaction", "Strategy", "Film", "Identity", "Print"];
-const thumbOf = (p) => p.poster || p.still || p.key?.src || p.key?.collage?.[0];
-function indexPage(side, k) {
-  const cell = (d, y) => projects.filter((p) => (p.discipline || p.section) === d && parseInt(p.year) === y).map((p) => `
-    <a class="ix__item${p.section === "Archive" ? " is-archive" : ""}" href="${urlFor(p.id)}" data-id="${p.id}">
-      <span class="ix__thumb" style="--src:url('${SIZES[thumbOf(p)] ? small(thumbOf(p)) : thumbOf(p)}')"></span>
-      <span class="ix__t">${p.title}</span></a>`).join("");
-  const matrix = `<div class="ix">
-    <div class="ix__row ix__row--head"><span></span>${YEARS.map((y) => `<span class="ix__y">${y}</span>`).join("")}</div>
-    ${DISC.map((d) => `<div class="ix__row"><span class="ix__d">${d}</span>${YEARS.map((y) => `<div class="ix__cell">${cell(d, y)}</div>`).join("")}</div>`).join("")}
-  </div>`;
-  if (side === "l") return pg("l", `
-    <div class="runhead"><span>Index</span><span>All work, 2021 to 2026</span></div>
-    <h2 class="ix__title serif">Index${STAR}</h2>
-    ${matrix}`, { num: pad(pageOf(k) - 2), cls: "pg--index" });
-  return pg("r", `
-    <div class="runhead"><span>Year × discipline</span><span>Archive follows</span></div>
-    ${matrix}
-    <p class="ix__legend"><span class="ix__key"></span> in this issue <span class="ix__key is-archive"></span> archive, after this page</p>`,
-    { num: pad(pageOf(k) - 1), label: "Index", cls: "pg--index pg--index-r" });
-}
-
 function projectLeft(p, k) {
   const no = projects.filter((x, i) => x.section === p.section && i <= k).length;
   return pg("l", `
@@ -219,9 +197,7 @@ const spreads = [
   { id: "masthead", title: "Masthead", left: mastLeft(), right: mastRight() },
   ...projects.flatMap((p, k) => [
     ...(hasDivider(p.section) && (k === 0 || projects[k - 1].section !== p.section)
-      ? [p.section === "Archive"
-        ? { id: "index", title: "Index", left: indexPage("l", k), right: indexPage("r", k) }
-        : { id: `chapter-${low(p.section)}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
+      ? [{ id: `chapter-${low(p.section)}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
     { id: p.id, title: p.title, project: p, left: projectLeft(p, k), right: projectRight(p, k) },
   ]),
   { id: "current", title: "On my desk", left: currentLeft(curPage), right: currentRight(curPage + 1) },
@@ -304,7 +280,13 @@ document.addEventListener("click", (e) => {
   const f = e.target.closest("[data-filter]");
   if (f) { e.preventDefault(); e.stopPropagation(); setFilter(f.dataset.filter); }
 }, true);
-const step = (d) => { let i = book.i + d; while (filter && i > 1 && i < spreads.length - 1 && spreads[i].project && !matches(i)) i += d; return i; };
+const inArchive = (i) => spreads[i]?.project?.section === "Archive";
+const step = (d) => {
+  let i = book.i + d;
+  const skip = (k) => (!inArchive(book.i) && inArchive(k)) || (filter && spreads[k].project && !matches(k));
+  while (i > 1 && i < spreads.length - 1 && skip(i)) i += d;
+  return i;
+};
 
 // every turn gets an entry in the browser history, so Back goes to the previous page instead of leaving
 const turn = (i, push = true) => {
@@ -334,6 +316,7 @@ document.addEventListener("click", (e) => {
 
 addEventListener("keydown", (e) => {
   if (e.key === "Escape") { closeOverlays(); toc.close(); return; }
+  if (document.body.classList.contains("archive-open")) return;
   if (e.key === " " && !lightbox.hidden && togglePlay()) { e.preventDefault(); return; }
   if (document.querySelector(".overlay:not([hidden]), .lightbox:not([hidden])")) return;
   if (e.target.closest?.("input, textarea, [contenteditable]")) return;
@@ -366,7 +349,7 @@ document.addEventListener("click", (e) => {
 /* =====================================================================
    CONTENTS — tracing paper pulled down over one page
    ===================================================================== */
-$("[data-toc-list]").innerHTML = sections.map((sec) => `
+$("[data-toc-list]").innerHTML = issueSections.map((sec) => `
   <section class="sheet__sec">
     <p class="sheet__sechead">${sec}</p>
     ${projects.map((p, k) => p.section !== sec ? "" : `

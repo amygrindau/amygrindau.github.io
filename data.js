@@ -108,6 +108,18 @@ window.PORTFOLIO = {
     Print: { words: ["Editorial", "Photography", "Artist books", "Typography", "TouchDesigner", "Paper"],
       intro: "Things you can hold: artist books and magazines." },
   },
+  // ARCHIVE (the watercolor edge): everything, 2020 to 2026. All projects appear automatically;
+  // add single works here: title, year, image (src) and optionally `link` (a project id) if it has a page.
+  // Years of the graphic works: please check.
+  archive: [
+    { title: "Nostalgia", kind: "Exhibition poster", year: 2022, src: `${W}/loose/work-4.jpg`, link: "graphic" },
+    { title: "Rockin' & Rolling", kind: "Poster & invitations", year: 2022, src: `${W}/loose/work-6.jpg`, link: "graphic" },
+    { title: "Net g'schimpft is aa scho g'lobt", kind: "Theatre flyer", year: 2023, src: `${W}/loose/work-3 front.jpg`, link: "graphic" },
+    { title: "Sundae", kind: "Foldable booklet", year: 2023, src: `${W}/loose/sundae-2 front.jpg`, link: "graphic" },
+    { title: "Yap to Vote", kind: "Poster, non-profit", year: 2024, src: `${W}/loose/work-1.jpg`, link: "graphic" },
+    { title: "Solidarität für Lorenz", kind: "Instagram post", year: 2025, src: `${W}/loose/work-5.jpg`, link: "graphic" },
+  ],
+  archiveSkip: ["graphic"], // shown through its single works instead
   // filters on the contents page: label → tag (projects carry `tags`)
   filters: [["Technology & AI", "tech"], ["Film & video", "film"], ["Brand & strategy", "strategy"], ["Editorial & print", "print"], ["Exhibited", "exhibited"]],
   order: ["smartscan", "treasurechest", "brewinsight", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
