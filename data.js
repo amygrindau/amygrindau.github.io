@@ -120,7 +120,7 @@ window.PORTFOLIO = {
   archiveSkip: ["graphic"], // shown through its single works instead
   // visitor statistics with GoatCounter (cookieless). Put your code here, e.g. "amygrindau" for amygrindau.goatcounter.com.
   // Empty = no statistics at all.
-  analytics: { goatcounter: "" },
+  analytics: { goatcounter: "amygrindau" },
   // filters on the contents page: label → tag (projects carry `tags`)
   filters: [["Technology & AI", "tech"], ["Film & video", "film"], ["Brand & strategy", "strategy"], ["Editorial & print", "print"], ["Exhibited", "exhibited"]],
   order: ["smartscan", "treasurechest", "brewinsight", "sixthman", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
