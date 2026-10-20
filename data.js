@@ -129,7 +129,7 @@ window.PORTFOLIO = {
     hook: "What I'm working on right now.",
     image: `${W}/current/collage.jpg`, // fills the whole right page
     text: [
-      "A few projects in progress, from AI-generated imagery to a perfume brand.",
+      "This is what is on my pinboard right now: projects in progress across different disciplines, from AI-generated imagery to brand building and editorial work.",
     ],
     // the pinboard below the spread: one pin per project. Add an image as `src` when you have one.
     projects: [

@@ -15,7 +15,7 @@ precision mediump float;
 varying vec2 uv;
 uniform float t, reveal, rest, dir, aspect, span;
 uniform vec3 mouse;        // x, y (screen 0..1), strength
-uniform vec3 drops[6];     // x, y, age in seconds (age < 0 = unused)
+uniform vec4 drops[8];     // x, y, age in seconds (age < 0 = unused), size
 float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
   return mix(mix(h(i), h(i + vec2(1, 0)), f.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), f.x), f.y); }
@@ -34,8 +34,8 @@ void main(){
   // water: the cursor pushes the paint aside, drops send rings through it
   vec2 dm = q - mouse.xy; float rm = length(dm * asp);
   q += normalize(dm + 1e-5) * exp(-rm * rm * 30.) * .035 * mouse.z;
-  for (int i = 0; i < 6; i++) {
-    vec3 d = drops[i];
+  for (int i = 0; i < 8; i++) {
+    vec4 d = drops[i];
     if (d.z < 0.) continue;
     vec2 dd = q - d.xy; float r = length(dd * asp);
     float wave = sin(r * 55. - d.z * 9.) * exp(-d.z * 1.4) * exp(-abs(r - d.z * .16) * 12.);
@@ -53,7 +53,9 @@ void main(){
   vec3 paper = vec3(.95, .93, .90);
   vec3 col = mix(paper, pig, .45 + dens * .45);
   // the wet edge: frayed, with a darker pigment rim (deep blue and magenta, like dried watercolour)
-  float edge = mix(1. - rest, -.12, reveal);
+  // the edge of the strip moves in slow, organic waves (no pulsing)
+  float swell = (fbm(vec2(across * 2.4 - t * .06, t * .05)) - .5) * rest * 1.4 * (1. - reveal);
+  float edge = mix(1. - rest + swell, -.12, reveal);
   float fray = (fbm(vec2(across * 16., t * .2)) - .5) * (.006 + reveal * .09) + (fbm(vec2(across * 40., 3.)) - .5) * .012;
   float dist = along + fray - edge;
   float a = smoothstep(-.004, .016, dist);
@@ -61,13 +63,14 @@ void main(){
   vec3 rimCol = mix(vec3(.22,.24,.62), vec3(.80,.25,.55), fbm(vec2(across * 6., t * .1)));
   col = mix(col, rimCol, rim * .75);
   // white paint dropped into the wet colour: it blooms outward with a frayed edge
-  for (int i = 0; i < 6; i++) {
-    vec3 d = drops[i];
+  for (int i = 0; i < 8; i++) {
+    vec4 d = drops[i];
     if (d.z < 0.) continue;
     vec2 dd = (uv2 - d.xy) * asp;
-    float grow = .035 + .11 * (1. - exp(-d.z * 1.3));
-    float ang = atan(dd.y, dd.x);
-    float wobble = (fbm(vec2(ang * 2.5 + float(i) * 3.1, d.z * .25)) - .5) * .05;
+    float grow = d.w * (.02 + .06 * (1. - exp(-d.z * 1.3)));
+    // frayed edge from noise on the direction (no seam, no half circle)
+    vec2 nd = normalize(dd + 1e-5);
+    float wobble = (fbm(nd * 1.8 + vec2(float(i) * 3.7, d.z * .12)) - .5) * .045 * d.w;
     float r = length(dd) + wobble;
     float life = 1. - smoothstep(9., 14., d.z);
     float wet = smoothstep(grow, grow - .03, r) * life;
@@ -91,6 +94,7 @@ void main(){
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
     gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) console.warn("watercolour shader:", gl.getProgramInfoLog(prog));
     gl.useProgram(prog);
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -114,8 +118,14 @@ void main(){
   document.addEventListener("pointerleave", () => (pointer.on = false));
   addEventListener("pointerdown", (e) => {
     if (!document.body.classList.contains("archive-open") && !e.target.closest(".wc-edge")) return;
-    const [x, y] = toScreen(e);
-    drops.unshift({ x, y, t: performance.now() }); drops.length = Math.min(drops.length, 6);
+    const [x, y] = toScreen(e), t = performance.now();
+    // drops of different sizes; sometimes a second, smaller one lands next to it
+    drops.unshift({ x, y, t, s: .45 + Math.random() * .75 });
+    if (Math.random() < .45) {
+      const a = Math.random() * Math.PI * 2, r = .025 + Math.random() * .04;
+      drops.unshift({ x: x + Math.cos(a) * r * innerHeight / innerWidth, y: y + Math.sin(a) * r, t: t + 120 + Math.random() * 260, s: .25 + Math.random() * .35 });
+    }
+    drops.length = Math.min(drops.length, 8);
   }, { passive: true });
   const scale = 0.5; // render at half resolution: soft anyway, and cheap
   // at rest the canvas only covers the edge strip (cheap); while flowing and open, the whole screen
@@ -149,21 +159,21 @@ void main(){
     if (wantFull !== (span === 1)) size();
     if (gl) {
       // at rest the strip moves faster and breathes; open, the colour drifts slowly
-      clock += dt * (reduced ? 0 : 1 + 2.2 * (1 - state.reveal));
+      clock += dt * (reduced ? 0 : 1 + 1.2 * (1 - state.reveal));
       gl.uniform1f(loc.t, reduced ? 3 : clock);
       gl.uniform1f(loc.reveal, state.reveal);
-      gl.uniform1f(loc.rest, state.rest * (1 + .18 * Math.sin(clock * .9) * (1 - state.reveal)));
+      gl.uniform1f(loc.rest, state.rest);
       gl.uniform1f(loc.dir, phone.matches ? 1 : 0);
       gl.uniform1f(loc.aspect, canvas.width / canvas.height);
       gl.uniform1f(loc.span, span);
       pointer.z += ((pointer.on ? 1 : 0) - pointer.z) * (1 - Math.exp(-dt * 4));
       gl.uniform3f(loc.mouse, pointer.x, pointer.y, reduced ? 0 : pointer.z);
-      const arr = new Float32Array(18);
-      for (let i = 0; i < 6; i++) {
+      const arr = new Float32Array(32);
+      for (let i = 0; i < 8; i++) {
         const d = drops[i], age = d ? (now - d.t) / 1000 : -1;
-        arr.set([d ? d.x : 0, d ? d.y : 0, d && age < 14 ? age : -1], i * 3);
+        arr.set([d ? d.x : 0, d ? d.y : 0, d && age >= 0 && age < 14 ? age : -1, d ? d.s : 1], i * 4);
       }
-      gl.uniform3fv(loc.drops, arr);
+      gl.uniform4fv(loc.drops, arr);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
