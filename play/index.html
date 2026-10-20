@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Off the record, Amy Grindau</title>
+<meta name="robots" content="noindex">
+<link href="/fonts/fonts.css" rel="stylesheet">
+<style>
+  :root { --ink: #0b0b0b; --pink: #d8849e; --paper: #f6f4f0; }
+  html, body { margin: 0; height: 100%; background: var(--paper); color: var(--ink); font-family: "Inter Tight", Arial, sans-serif; overflow: hidden; }
+  header { position: fixed; inset: 0 0 auto; display: flex; justify-content: space-between; padding: 16px clamp(16px, 3vw, 40px); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; z-index: 2; }
+  header a { color: inherit; text-decoration: none; }
+  header a:hover { color: var(--pink); }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: manipulation; }
+</style>
+</head>
+<body>
+<header><a href="/">← Back to the portfolio</a><span>Off the record</span></header>
+<canvas id="c" aria-label="A small jumping game. Press space or tap to jump."></canvas>
+<script>
+// A tiny runner: the star from the portfolio rolls along a line and jumps over things from the projects.
+const cv = document.getElementById("c"), g = cv.getContext("2d");
+let W, H, dpr, ground;
+function size() {
+  dpr = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ground = Math.round(H * .66);
+}
+addEventListener("resize", size); size();
+
+const S = Math.max(.75, Math.min(1.25, W / 1100));      // scale for small screens
+const best = () => +(localStorage.getItem("ag-best") || 0);
+let state = "ready", t = 0, score = 0, speed, obs, nextIn, star, last = 0, shake = 0;
+function reset() { speed = 330 * S; obs = []; nextIn = .9; score = 0; star = { y: 0, vy: 0, rot: 0, onGround: true }; }
+reset();
+
+function jump() {
+  if (state !== "run") { reset(); state = "run"; return; }
+  if (star.onGround) { star.vy = -760 * S; star.onGround = false; }
+}
+addEventListener("keydown", (e) => { if ([" ", "ArrowUp", "w"].includes(e.key)) { e.preventDefault(); jump(); } if (e.key === "Escape") location.href = "/"; });
+cv.addEventListener("pointerdown", jump);
+
+// things from the projects: magazine, clapperboard, treasure chest, postcard
+const KINDS = [
+  { w: 34, h: 44, draw(x, y, w, h) { g.fillRect(x, y, w, h); g.fillStyle = "#f6f4f0"; for (let i = 0; i < 4; i++) g.fillRect(x + 6, y + 9 + i * 8, w - 12, 2); } },           // magazine
+  { w: 46, h: 36, draw(x, y, w, h) { g.fillRect(x, y + 10, w, h - 10); g.save(); g.translate(x, y + 10); g.rotate(-.28); g.fillRect(0, -9, w, 8); g.restore();
+      g.fillStyle = "#f6f4f0"; for (let i = 0; i < 4; i++) g.fillRect(x + 4 + i * 11, y + 14, 5, 3); } },                                                             // clapperboard
+  { w: 54, h: 40, draw(x, y, w, h) { g.beginPath(); g.moveTo(x, y + 16); g.quadraticCurveTo(x + w / 2, y - 6, x + w, y + 16); g.lineTo(x + w, y + h); g.lineTo(x, y + h); g.fill();
+      g.fillStyle = "#d8849e"; g.fillRect(x + w / 2 - 6, y + 20, 12, 9); } },                                                                                           // treasure chest
+  { w: 30, h: 22, air: true, draw(x, y, w, h) { g.save(); g.translate(x + w / 2, y + h / 2); g.rotate(Math.sin(t * 3) * .25); g.fillRect(-w / 2, -h / 2, w, h);
+      g.fillStyle = "#d8849e"; g.fillRect(-w / 2 + 4, -h / 2 + 4, w - 8, h - 8); g.restore(); } },                                                                       // postcard (flies)
+];
+
+function spawn() {
+  const k = KINDS[Math.floor(Math.random() * (score > 8 ? 4 : 3))];
+  const w = k.w * S, h = k.h * S;
+  obs.push({ k, x: W + 40, w, h, y: k.air ? ground - h - (58 + Math.random() * 30) * S : ground - h });
+  if (score > 14 && Math.random() < .25) obs.push({ k: KINDS[0], x: W + 40 + w + 14 * S, w: KINDS[0].w * S, h: KINDS[0].h * S, y: ground - KINDS[0].h * S });
+  nextIn = (.85 + Math.random() * 1.1) * (420 * S / speed);
+}
+
+function drawStar(cx, cy, r, rot) {
+  g.save(); g.translate(cx, cy); g.rotate(rot); g.strokeStyle = "#d8849e"; g.lineWidth = 3.2 * S; g.lineCap = "round";
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, k = i % 2 ? .78 : 1; g.beginPath(); g.moveTo(Math.cos(a) * r * .12, Math.sin(a) * r * .12); g.lineTo(Math.cos(a) * r * k, Math.sin(a) * r * k); g.stroke(); }
+  g.restore();
+}
+
+function frame(now) {
+  const dt = Math.min(.035, (now - last) / 1000 || .016); last = now; t += dt;
+  const R = 17 * S, sx = Math.max(70, W * .16);
+  if (state === "run") {
+    speed += dt * 7 * S;
+    star.vy += 2100 * S * dt; star.y += star.vy * dt;
+    if (star.y >= 0) { star.y = 0; star.vy = 0; star.onGround = true; }
+    star.rot += dt * speed / R * (star.onGround ? 1 : .6);
+    nextIn -= dt; if (nextIn <= 0) spawn();
+    obs.forEach((o) => (o.x -= speed * dt));
+    while (obs.length && obs[0].x + obs[0].w < -20) { obs.shift(); score++; }
+    // collision: a forgiving circle against the box
+    const cx = sx, cy = ground - R + star.y;
+    for (const o of obs) {
+      const nx = Math.max(o.x, Math.min(cx, o.x + o.w)), ny = Math.max(o.y, Math.min(cy, o.y + o.h));
+      if ((cx - nx) ** 2 + (cy - ny) ** 2 < (R * .72) ** 2) { state = "over"; shake = .3; if (score > best()) try { localStorage.setItem("ag-best", score); } catch {} }
+    }
+  } else star.rot += dt * .6;
+  shake = Math.max(0, shake - dt);
+
+  g.save();
+  if (shake) g.translate((Math.random() - .5) * 8 * shake, 0);
+  g.fillStyle = "#f6f4f0"; g.fillRect(-10, -10, W + 20, H + 20);
+  // the line, with little marks scrolling like a timeline
+  g.fillStyle = "#0b0b0b"; g.fillRect(0, ground, W, 1.5);
+  const off = (t * (state === "run" ? speed : 40)) % 80;
+  for (let x = -off; x < W; x += 80) g.fillRect(x, ground + 8, 1, 6);
+  g.fillStyle = "#0b0b0b"; obs.forEach((o) => { g.fillStyle = "#0b0b0b"; o.k.draw(o.x, o.y, o.w, o.h); });
+  drawStar(sx, ground - R + star.y, R, star.rot);
+  g.restore();
+
+  // type
+  g.fillStyle = "#0b0b0b"; g.textAlign = "right";
+  g.font = `400 ${Math.round(46 * S)}px "Instrument Serif", serif`;
+  g.fillText(String(score).padStart(2, "0"), W - Math.max(16, W * .03), ground - 120 * S);
+  g.font = `500 ${Math.round(11 * S)}px "Inter Tight", sans-serif`;
+  g.fillText(`BEST ${String(Math.max(best(), score)).padStart(2, "0")}`, W - Math.max(16, W * .03), ground - 100 * S);
+  g.textAlign = "center";
+  if (state !== "run") {
+    g.font = `italic 400 ${Math.round(54 * S)}px "Instrument Serif", serif`;
+    g.fillText(state === "ready" ? "Off the record" : "That was the deadline.", W / 2, H * .3);
+    g.font = `500 ${Math.round(11 * S)}px "Inter Tight", sans-serif`;
+    g.fillText(matchMedia("(hover: none)").matches ? "TAP TO JUMP" : "SPACE OR CLICK TO JUMP", W / 2, H * .3 + 34 * S);
+  }
+  requestAnimationFrame(frame);
+}
+document.fonts.ready.then(() => requestAnimationFrame(frame));
+</script>
+</body>
+</html>

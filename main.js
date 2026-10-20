@@ -834,7 +834,7 @@ document.addEventListener("click", (e) => {
    ===================================================================== */
 $("[data-foot]").innerHTML = `
   <div class="foot__inner">
-    <p class="foot__name serif">Amy Grindau${STAR}</p>
+    <p class="foot__name serif">Amy Grindau<a class="foot__egg" href="/play/" aria-label="A little game">${STAR}</a></p>
     <div class="foot__col">
       <p class="kicker">Contact</p>
       <a href="mailto:${contact.email}">${contact.email}</a>

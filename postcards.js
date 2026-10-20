@@ -379,6 +379,7 @@ function mountPostcards(root, cards) {
         s.s.t = rest * (h ? 1.06 : 1); s.lift.t = h ? 0.5 : 0; s.flip.t = 0;
       }
       el.classList.toggle("is-sheet", i === picked && sheet);
+      el.classList.toggle("is-flipped", i === picked && flipped);
     });
     root.classList.toggle("is-picked", picked !== -1);
     kick();
