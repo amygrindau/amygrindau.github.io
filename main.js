@@ -6,7 +6,8 @@ const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section
 const pad = (n) => String(n).padStart(2, "0");
 const FIRST = 2; // spread 0 = cover · 1 = masthead · 2… = projects
 // chapter divider spreads (DATA.chapters) come before the first project of their section
-const chapterBefore = (k) => projects.slice(0, k + 1).filter((p, i) => DATA.chapters?.[p.section] && (i === 0 || projects[i - 1].section !== p.section)).length;
+const hasDivider = (sec) => !!DATA.chapters?.[sec] || sec === "Archive";
+const chapterBefore = (k) => projects.slice(0, k + 1).filter((p, i) => hasDivider(p.section) && (i === 0 || projects[i - 1].section !== p.section)).length;
 const pageOf = (k) => (FIRST + k + chapterBefore(Math.min(k, projects.length - 1))) * 2;
 const low = (t) => (t || "").toLowerCase();
 // "AI Prototype" → "AI prototype": lower case, but abbreviations stay
@@ -60,7 +61,7 @@ const coverPage = () => images.cover ? pg("r", bg(images.cover, "bg--cover", "",
   : pg("r", `
   ${bg("assets/web/cover-halftone.jpg", "cover__photo", "", "Portrait of Amy Grindau, printed in halftone")}
   <p class="cover__name serif">Amy Grindau</p>
-  <div class="cover__bar"><span>Portfolio</span><span>Issue 2026</span></div>
+  <div class="cover__bar"><span>Portfolio</span><span>${STAR} Issue 2026</span></div>
   <p class="cover__year serif" aria-hidden="true">2026</p>
   <span class="cover__open">Open →</span>
 `, { cls: "pg--cover pg--covertype" });
@@ -97,39 +98,51 @@ const mastRight = () => pg("r", `
 `, { num: pad(3), label: "Editor's letter", cls: "pg--pink pg--mast-r" });
 
 // Project spread — left: information, right: key visual. Two layouts alternate.
-/* ---------- hand layer: notes, scribbles (prototype) ---------- */
-// hand-drawn marks as SVG paths (viewBox 0 0 100 100, stretched to the box)
-const SCRIB = {
-  circle: `<path d="M52 6C24 4 5 22 7 48c2 27 28 44 54 40 25-4 37-26 33-48C90 18 70 5 44 9 30 11 20 17 14 24"/>`,
-  arrow: `<path d="M6 88C28 72 52 52 92 14"/><path d="M70 12l23 1-3 22"/>`,
-  arrowDown: `<path d="M20 6C28 36 52 58 82 90"/><path d="M60 90h23V68"/>`,
-  arrowLeft: `<path d="M94 50C70 40 40 44 8 52"/><path d="M24 36L7 52l17 14"/>`,
-  star: `<path d="M50 4l12 32 34 2-27 21 10 34-29-20-29 20 10-34L4 38l34-2z"/>`,
-};
-const scrib = (type, x, y, w, h, rot = 0) =>
-  `<svg class="scrib" viewBox="0 0 100 100" preserveAspectRatio="none" style="left:${x}cqw;top:${y}cqw;width:${w}cqw;height:${h}cqw;rotate:${rot}deg" aria-hidden="true">${SCRIB[type]}</svg>`;
-const notesFor = (p, where) => (p.notes || []).filter((n) => n.on === where).map((n) =>
-  (n.text ? `<p class="note" style="left:${n.x}cqw;top:${n.y}cqw;rotate:${n.rot || 0}deg;${n.w ? `width:${n.w}cqw;` : ""}">${n.text}</p>` : "")
-  + (n.mark ? scrib(...n.mark) : "")).join("");
+// hand-drawn star, the one handmade accent (turns very slowly)
+const STAR = `<svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3c.6 6 1.4 11 2.6 14.5M20 3c-.9 5.8-1.8 10.3-3 14M4 15.5c5.6.6 10.8 1.6 14.6 2.8M35.6 14.2c-5.2 1.5-9.9 2.8-13.2 3.6M11 34.5c2.6-5 5.4-9.4 8.2-13.2M29.5 35.2c-2.4-4.7-5-8.9-7.8-12.8"/></svg>`;
 
-// chapter divider: one word across both pages, magazine style
+// chapter page: the chapter word sharp in pink, its disciplines blurred behind, like through tracing paper
 function chapterPage(side, sec, k) {
   const c = DATA.chapters[sec], n = Object.keys(DATA.chapters).indexOf(sec) + 1;
   const list = projects.filter((p) => p.section === sec);
-  const word = `<p class="chapter__word serif">${c.word || sec}</p>`;
+  const veil = `<div class="chapter__veil serif" aria-hidden="true">${c.words.map((w) => `<span>${w}</span>`).join(" ")}</div>
+    <p class="chapter__word">${c.word || sec}${STAR}</p>`;
   if (side === "l") return pg("l", `
-    <p class="chapter__no mono">[ Chapter ${pad(n)} ]</p>
-    ${word}
-    <p class="note chapter__note" style="left:8cqw;bottom:14cqw;rotate:-4deg">${c.note || ""}</p>
-  `, { num: pad(pageOf(k) - 2), cls: `pg--chapter pg--${c.bg || "ink"}` });
+    <div class="runhead"><span>Chapter ${pad(n)}</span><span>${sec}</span></div>
+    ${veil}
+    <p class="chapter__intro">${c.intro || ""}</p>
+  `, { num: pad(pageOf(k) - 2), cls: "pg--chapter" });
   return pg("r", `
-    ${word}
+    <div class="runhead"><span>In this chapter</span><span>${list.length} ${list.length === 1 ? "project" : "projects"}</span></div>
+    ${veil}
     <div class="chapter__list">
-      <p class="mono">[ In this chapter ]</p>
-      ${list.map((p) => `<a href="${urlFor(p.id)}" data-id="${p.id}"><span class="serif">${p.title}</span><span class="mono">${pad(pageOf(projects.indexOf(p)))}</span></a>`).join("")}
-      <p class="chapter__intro">${c.intro || ""}</p>
+      ${list.map((p) => `<a href="${urlFor(p.id)}" data-id="${p.id}"><span class="serif">${p.title}</span><span>${pad(pageOf(projects.indexOf(p)))}</span></a>`).join("")}
     </div>
-  `, { num: pad(pageOf(k) - 1), label: sec, cls: `pg--chapter pg--chapter-r pg--${c.bg || "ink"}` });
+  `, { num: pad(pageOf(k) - 1), label: sec, cls: "pg--chapter pg--chapter-r" });
+}
+
+// Index: all work as a matrix, year × discipline, running across both pages. The archive follows it.
+const YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
+const DISC = ["Interaction", "Strategy", "Film", "Identity", "Print"];
+const thumbOf = (p) => p.poster || p.still || p.key?.src || p.key?.collage?.[0];
+function indexPage(side, k) {
+  const cell = (d, y) => projects.filter((p) => (p.discipline || p.section) === d && parseInt(p.year) === y).map((p) => `
+    <a class="ix__item${p.section === "Archive" ? " is-archive" : ""}" href="${urlFor(p.id)}" data-id="${p.id}">
+      <span class="ix__thumb" style="--src:url('${SIZES[thumbOf(p)] ? small(thumbOf(p)) : thumbOf(p)}')"></span>
+      <span class="ix__t">${p.title}</span></a>`).join("");
+  const matrix = `<div class="ix">
+    <div class="ix__row ix__row--head"><span></span>${YEARS.map((y) => `<span class="ix__y">${y}</span>`).join("")}</div>
+    ${DISC.map((d) => `<div class="ix__row"><span class="ix__d">${d}</span>${YEARS.map((y) => `<div class="ix__cell">${cell(d, y)}</div>`).join("")}</div>`).join("")}
+  </div>`;
+  if (side === "l") return pg("l", `
+    <div class="runhead"><span>Index</span><span>All work, 2021 to 2026</span></div>
+    <h2 class="ix__title serif">Index${STAR}</h2>
+    ${matrix}`, { num: pad(pageOf(k) - 2), cls: "pg--index" });
+  return pg("r", `
+    <div class="runhead"><span>Year × discipline</span><span>Archive follows</span></div>
+    ${matrix}
+    <p class="ix__legend"><span class="ix__key"></span> in this issue <span class="ix__key is-archive"></span> archive, after this page</p>`,
+    { num: pad(pageOf(k) - 1), label: "Index", cls: "pg--index pg--index-r" });
 }
 
 function projectLeft(p, k) {
@@ -138,8 +151,7 @@ function projectLeft(p, k) {
     <div class="runhead"><span>${p.section}</span><span>No. ${pad(no)}</span></div>
     <div class="project__head">
       <h1 class="project__title serif" style="--chars:${titleLen(p.title)}">${p.title}</h1>
-      <p class="project__hook serif">${p.proto ? `<span class="scrib-under">${p.hook}</span>` : p.hook}</p>
-      ${notesFor(p, "head")}
+      <p class="project__hook serif">${p.hook}</p>
     </div>
     <dl class="meta">
       <dt>Year</dt><dd>${p.year}</dd>
@@ -148,7 +160,6 @@ function projectLeft(p, k) {
       <dt>Role</dt><dd>${p.role}</dd>
       ${p.award ? `<dt>Award</dt><dd>${p.award}</dd>` : ""}
     </dl>
-    ${notesFor(p, "l")}
   `, { num: pad(pageOf(k)), cls: `pg--project v${k % 2}${p.proto ? " pg--proto" : ""}` });
 }
 
@@ -166,7 +177,7 @@ function projectRight(p, k) {
   const { src, fit = "cover", zoom, pos, bg: color = "white", blend } = p.key;
   const style = (zoom ? `background-size:${zoom * 100}% auto;background-position:${pos || "center"};` : "")
     + (blend ? `mix-blend-mode:${blend};` : "");
-  return pg("r", bg(src, `bg--${fit}`, style, desc) + notesFor(p, "r"), { num, label, cls: `pg--${color}${p.proto ? " pg--proto" : ""}`, style: p.key.pageBg ? `background:${p.key.pageBg}` : "" });
+  return pg("r", bg(src, `bg--${fit}`, style, desc), { num, label, cls: `pg--${color}${p.proto ? " pg--proto" : ""}`, style: p.key.pageBg ? `background:${p.key.pageBg}` : "" });
 }
 
 // "On my desk" — the current project, as a small moodboard
@@ -207,8 +218,10 @@ const spreads = [
   { id: "cover", title: "Cover", left: null, right: coverPage() },
   { id: "masthead", title: "Masthead", left: mastLeft(), right: mastRight() },
   ...projects.flatMap((p, k) => [
-    ...(DATA.chapters?.[p.section] && (k === 0 || projects[k - 1].section !== p.section)
-      ? [{ id: `chapter-${low(p.section)}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
+    ...(hasDivider(p.section) && (k === 0 || projects[k - 1].section !== p.section)
+      ? [p.section === "Archive"
+        ? { id: "index", title: "Index", left: indexPage("l", k), right: indexPage("r", k) }
+        : { id: `chapter-${low(p.section)}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
     { id: p.id, title: p.title, project: p, left: projectLeft(p, k), right: projectRight(p, k) },
   ]),
   { id: "current", title: "On my desk", left: currentLeft(curPage), right: currentRight(curPage + 1) },
@@ -424,7 +437,7 @@ function deep(p) {
     <div class="process__body">${flow.map((t) => `<p>${t}</p>`).join("")}</div>
   </details>` : "";
   const closing = st.reflection
-    ? `<figure class="reflection"><figcaption>Reflection</figcaption><blockquote class="serif">${st.reflection}</blockquote></figure>`
+    ? `<figure class="reflection"><figcaption>Reflection ${STAR}</figcaption><blockquote class="serif">${st.reflection}</blockquote></figure>`
     : p.quote ? `<blockquote class="serif">${p.quote}</blockquote>` : "";
   return process + closing;
 }
@@ -601,15 +614,6 @@ function block(p, b) {
       return "";
   }
 }
-
-// hand notes on / off
-document.addEventListener("click", (e) => {
-  const t = e.target.closest("[data-notes]");
-  if (!t) return;
-  const off = document.body.classList.toggle("notes-off");
-  t.textContent = off ? "Notes off" : "Notes on";
-  t.setAttribute("aria-pressed", String(!off));
-});
 
 document.addEventListener("click", (e) => {
   const f = e.target.closest("[data-flip]");

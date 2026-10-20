@@ -370,7 +370,7 @@ figcaption { margin-top: 8px; font-size: 12px; color: var(--grey); }
 /* logo iterations */
 .logos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 760px; margin: 0 auto; }
 .logos img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
-.logo-scale { display: flex; justify-content: center; align-items: flex-end; gap: 28px; margin: 24px auto 0; padding: 28px; background: var(--orange); max-width: 760px; }
+.logo-scale { display: flex; justify-content: center; align-items: flex-end; gap: 28px; margin: 24px 0 0; padding: 28px; background: var(--orange); max-width: 900px; }
 .logo-scale figcaption { color: rgba(0,0,0,.55); }
 .logo-scale img { aspect-ratio: 1 / 1; object-fit: cover; }
 
@@ -614,7 +614,7 @@ figcaption { margin-top: 8px; font-size: 12px; color: var(--grey); }
 
 /* v15 */
 .block__title { text-align: left; }
-.flip-wrap + *, .logos + .logo-scale { margin-left: auto; margin-right: auto; }
+.flip-wrap + * { margin-left: auto; margin-right: auto; }
 .block .block__note { text-align: center; }
 /* the magazine in the dark overlay */
 .lightbox__frame.is-mag { aspect-ratio: auto; width: min(94vw, calc((100vh - 120px) * 2 * var(--ratio, .75))); }
@@ -910,25 +910,12 @@ a.is-dim { opacity: .22; }
 .reflection blockquote { margin: 0; max-width: 32ch; font-size: clamp(24px, 2.6vw, 36px); line-height: 1.12; font-style: italic; letter-spacing: -.01em; }
 
 /* =====================================================================
-   PROTOTYPE: hand layer, chapter spreads, bracket metadata, process map
+   v3: chapters as tracing paper, index, star, bracket metadata
    ===================================================================== */
-:root { --hand: "Caveat", "Bradley Hand", cursive; --mono: "IBM Plex Mono", ui-monospace, monospace; --pen: #c0386b; }
+:root { --mono: "IBM Plex Mono", ui-monospace, monospace; }
 .mono { font-family: var(--mono); font-weight: 400; letter-spacing: .02em; text-transform: uppercase; }
 
-/* handwritten notes and scribbles */
-.note { position: absolute; z-index: 5; margin: 0; font: 500 3.1cqw/1.05 var(--hand); color: var(--pen); pointer-events: none; white-space: nowrap; }
-.note[style*="width"] { white-space: normal; }
-.scrib { position: absolute; z-index: 5; overflow: visible; pointer-events: none; fill: none; stroke: var(--pen); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.scrib path { vector-effect: non-scaling-stroke; }
-.pg--black .note, .pg--ink .note { color: #ff8db4; } .pg--black .scrib, .pg--ink .scrib { stroke: #ff8db4; }
-.project__head { position: relative; }
-.scrib-under { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M2 7C40 3 80 9 120 5s60 2 76-1' fill='none' stroke='%23c0386b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") bottom / 100% .32em no-repeat; padding-bottom: .12em; }
-body.notes-off .note, body.notes-off .scrib { opacity: 0; }
-body.notes-off .scrib-under { background: none; }
-.note, .scrib { transition: opacity .35s var(--soft); }
-.tab--notes { font-family: var(--hand); font-size: 17px; letter-spacing: 0; text-transform: none; color: var(--pen); border-color: var(--pen); }
-
-/* bracket metadata in mono (prototype project) */
+/* bracket metadata in mono (AI Treasure Chest only for now) */
 .pg--proto .runhead span, .pg--proto .pg__foot span { font-family: var(--mono); font-weight: 400; letter-spacing: .02em; }
 .pg--proto .runhead span::before, .pg--proto .pg__foot span::before { content: "[ "; }
 .pg--proto .runhead span::after, .pg--proto .pg__foot span::after { content: " ]"; }
@@ -936,43 +923,80 @@ body.notes-off .scrib-under { background: none; }
 .pg--proto .meta dt::before { content: "[ "; } .pg--proto .meta dt::after { content: " ]"; }
 .pg--proto .meta { grid-template-columns: 17cqw 1fr; }
 
-/* chapter divider: one huge word running across both pages */
-.pg--ink { background: var(--ink); color: var(--white); }
-.pg--chapter { overflow: hidden; }
-.chapter__word { position: absolute; left: 6cqw; top: 46%; translate: 0 -55%; margin: 0; font-size: 46cqw; line-height: .8; letter-spacing: -.045em; white-space: nowrap; }
-.pg--chapter-r .chapter__word { left: -94cqw; }
-.chapter__no { position: absolute; left: 6.5cqw; top: 6cqw; margin: 0; font-size: 1.8cqw; }
-.chapter__note { font-size: 4.4cqw; }
-.chapter__list { position: absolute; right: 7cqw; bottom: 11cqw; width: 42cqw; font-size: 1.8cqw; }
-.chapter__list p.mono { margin: 0 0 1.2cqw; font-size: 1.5cqw; color: rgba(255,255,255,.6); }
-.chapter__list a { display: flex; justify-content: space-between; align-items: baseline; padding: .8cqw 0; border-bottom: .12cqw solid rgba(255,255,255,.3); text-decoration: none; color: inherit; position: relative; z-index: 7; }
-.chapter__list a .serif { font-size: 3.4cqw; }
-.chapter__list a:hover .serif { color: var(--pink); }
-.chapter__intro { margin: 2cqw 0 0; font-size: 1.7cqw; line-height: 1.45; color: rgba(255,255,255,.75); }
+/* the star: one hand-drawn accent, turning very slowly */
+.star { display: inline-block; width: .5em; height: .5em; margin-left: .12em; vertical-align: .6em; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; animation: star-turn 14s linear infinite, star-breathe 4.5s var(--soft) infinite alternate; }
+@keyframes star-turn { to { rotate: 360deg; } }
+@keyframes star-breathe { from { scale: .92; } to { scale: 1.08; } }
+.cover__bar .star { width: 1.5em; height: 1.5em; vertical-align: -.45em; margin: 0 .3em 0 0; }
+.reflection figcaption .star { width: 1.3em; height: 1.3em; vertical-align: -.35em; color: var(--pink); }
+
+/* chapter: tracing paper. The disciplines blurred in grey behind, the chapter word sharp in pink */
+.pg--chapter { overflow: hidden; background: #f6f5f2; }
+.chapter__veil { position: absolute; left: 4cqw; top: 13cqw; width: 192cqw; margin: 0; display: flex; flex-wrap: wrap; gap: 0 4cqw;
+  font-size: 15cqw; line-height: .92; letter-spacing: -.035em; color: rgba(0,0,0,.2); filter: blur(.9cqw); user-select: none;
+  animation: veil-drift 26s ease-in-out infinite alternate; }
+@keyframes veil-drift { from { translate: 0 0; } to { translate: -3cqw 1.5cqw; } }
+.pg--chapter-r .chapter__veil { left: -96cqw; }
+.pg--chapter .chapter__word { position: absolute; left: 6.5cqw; top: 50%; translate: 0 -50%; z-index: 2; margin: 0; width: 186cqw;
+  font: 400 30cqw/.8 var(--serif); letter-spacing: -.045em; color: var(--pink); white-space: nowrap; }
+.pg--chapter-r .chapter__word { left: -93.5cqw; }
+.pg--chapter .chapter__word .star { width: .28em; height: .28em; vertical-align: .55em; color: var(--pink); }
+.chapter__intro { position: absolute; left: 6.5cqw; bottom: 11cqw; z-index: 2; width: 46cqw; margin: 0; font-size: 2cqw; line-height: 1.45; color: #b04f6d; }
+.chapter__list { position: absolute; right: 6.5cqw; bottom: 11cqw; z-index: 2; width: 46cqw; font-size: 1.8cqw; }
+.chapter__list a { display: flex; justify-content: space-between; align-items: baseline; padding: .8cqw 0; border-bottom: .12cqw solid rgba(176,79,109,.4); text-decoration: none; color: #b04f6d; position: relative; z-index: 7; }
+.chapter__list a .serif { font-size: 3.6cqw; }
+.chapter__list a:hover { color: var(--ink); }
+.pg--chapter .runhead { position: relative; z-index: 2; }
 @media (max-width: 760px) {
-  .chapter__word { font-size: 24cqw; left: 5cqw; white-space: normal; width: 90cqw; line-height: .85; }
+  .pg--chapter .chapter__word { font-size: 24cqw; width: auto; white-space: normal; line-height: .85; }
+  .pg--chapter-r .chapter__word, .pg--chapter-r .chapter__veil { left: 4cqw; }
   .pg--chapter-r .chapter__word { display: none; }
-  .book__page--left:has(.pg--chapter) { aspect-ratio: 3 / 4; }
-  .chapter__list { font-size: max(1.8cqw, 11px); width: 80cqw; left: 7cqw; right: auto; }
-  .chapter__list p.mono, .chapter__intro { font-size: max(1.5cqw, 10px); }
-  .note { font-size: max(3.1cqw, 13px); }
+  .chapter__veil { width: 95cqw; font-size: 13cqw; }
+  .chapter__intro, .chapter__list { font-size: max(2cqw, 12px); width: 80cqw; }
+  .chapter__list { left: 6.5cqw; right: auto; }
 }
 
-/* process map: pictures placed freely, connected by hand-drawn lines */
-.map { position: relative; aspect-ratio: var(--ratio); background: #f4f2ee; container-type: inline-size; }
-.map__lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; fill: none; stroke: var(--pen); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 0; }
-.map__lines path { vector-effect: non-scaling-stroke; }
-.map__lines marker path { fill: none; stroke: var(--pen); stroke-width: 1.6; }
-.map__lines text { font: 500 2.2px var(--hand); fill: var(--pen); stroke: none; text-anchor: middle; }
-.map__item { position: absolute; margin: 0; background: #fff; padding: .5cqw .5cqw 0; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 1.6cqw 2cqw -1.2cqw rgba(0,0,0,.35); }
-.map__item img { width: 100%; height: auto; display: block; }
-.map__item .note { position: static; display: block; padding: .5cqw .3cqw .7cqw; font-size: 2.1cqw; white-space: normal; }
-.map__note { font-size: 2.6cqw; }
+/* index: year × discipline, across both pages */
+.pg--index { overflow: hidden; }
+.ix__title { position: absolute; left: 6.5cqw; top: 10cqw; margin: 0; font-size: 11cqw; line-height: .85; letter-spacing: -.03em; }
+.ix__title .star { color: var(--pink); width: .35em; height: .35em; }
+.ix { position: absolute; left: 6.5cqw; top: 27cqw; width: 187cqw; display: grid; gap: 0; font-size: 1.55cqw; }
+.pg--index-r .ix { left: -93.5cqw; top: 27cqw; }
+.ix__row { display: grid; grid-template-columns: 16cqw repeat(6, 1fr); border-top: .12cqw solid var(--line); min-height: 16.5cqw; }
+.ix__row--head { min-height: 0; border-top: .15cqw solid var(--ink); }
+.ix__y { padding: .8cqw .6cqw; font-family: var(--mono); font-size: 1.5cqw; }
+.ix__d { padding: 1cqw 0; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; font-size: 1.35cqw; }
+.ix__cell { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 1cqw; padding: 1cqw .6cqw; }
+.ix__item { display: flex; flex-direction: column; gap: .5cqw; width: 9.5cqw; text-decoration: none; color: inherit; position: relative; z-index: 7; }
+.ix__thumb { display: block; width: 100%; aspect-ratio: 4 / 5; background: var(--src) center / cover no-repeat #eee; transition: transform .5s var(--soft), filter .5s var(--soft); }
+.ix__item:hover .ix__thumb { transform: translateY(-.5cqw); }
+.ix__t { font-size: 1.4cqw; line-height: 1.2; }
+.ix__item.is-archive .ix__thumb { filter: grayscale(1) contrast(.9); opacity: .75; }
+.ix__item.is-archive .ix__t { color: var(--grey); }
+.ix__item.is-archive:hover .ix__thumb { filter: none; opacity: 1; }
+.ix__legend { position: absolute; right: 6.5cqw; top: 13cqw; margin: 0; display: flex; align-items: center; gap: 1cqw; font-size: 1.5cqw; color: var(--grey); }
+.ix__key { display: inline-block; width: 2cqw; height: 2.4cqw; background: var(--pink); margin-left: 1.5cqw; }
+.ix__key.is-archive { background: #aaa; }
 @media (max-width: 760px) {
-  .map { aspect-ratio: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px; }
-  .map__lines, .map__note { display: none; }
-  .map__item { position: static; width: auto !important; rotate: 0deg !important; }
-  .map__item .note { font-size: 16px; }
+  .book__page--left:has(.pg--index), .book__page--left:has(.pg--chapter) { aspect-ratio: 3 / 4 !important; }
+  .ix, .pg--index-r .ix { font-size: max(1.55cqw, 9px); }
+  .ix__t { font-size: max(1.4cqw, 9px); }
 }
-.map__label { z-index: 6; translate: -50% -50%; padding: .2cqw .8cqw; background: #f4f2ee; font-size: 2.2cqw; }
-.map__note { z-index: 6; }
+
+/* quiet motion: pictures react to the cursor, contents show where you go */
+.gallery figure, .pair__imgs, .posters, .origin__frames { overflow: hidden; }
+.gallery img, .pair__imgs img, .posters img, .origin__frames img { transition: transform .9s var(--soft); }
+.gallery figure:hover img, .pair__imgs img:hover, .posters img:hover, .origin__frames img:hover { transform: scale(1.025); }
+.mast__toc a { transition: padding .35s var(--soft), opacity .3s var(--soft); }
+.mast__toc a:hover { padding-left: .8cqw; }
+@media (prefers-reduced-motion: reduce) { .star, .chapter__veil { animation: none; } .gallery figure:hover img { transform: none; } }
+
+/* text below the spread: flush with the pictures */
+.more__text { max-width: none; margin: 0; }
+.more__lead p, .more__team, .process__body { max-width: 720px; }
+.more__films { max-width: 900px; }
+
+/* 6th Man: the four logo iterations in one row */
+.logos { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin: 0; }
+@media (max-width: 760px) { .logos { grid-template-columns: repeat(2, 1fr); } }

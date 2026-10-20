@@ -94,11 +94,19 @@ window.PORTFOLIO = {
 
   // The magazine follows this order of sections.
   // order of the magazine (tuned for CDTM and NYU: technology and storytelling first)
-  sections: ["Interaction", "Strategy", "Film", "Identity", "Print"],
-  // PROTOTYPE: chapter divider spreads before a section (only Interaction for now)
+  sections: ["Interaction", "Strategy", "Film", "Identity", "Print", "Archive"],
+  // chapter pages before each section: the word sharp in pink, the disciplines blurred behind it (tracing paper)
   chapters: {
-    Interaction: { word: "Interaction", bg: "ink", note: "where things react to you",
+    Interaction: { words: ["AI", "Prototyping", "Physical computing", "User research", "Accessibility", "Museum"],
       intro: "Technology, AI and objects you can touch: projects where the interaction itself carries the idea." },
+    Strategy: { words: ["Content", "Community", "Creators", "Growth", "Brand", "Platforms"],
+      intro: "How an idea reaches people: content systems, communities and growth." },
+    Film: { words: ["Direction", "Camera", "Screenplay", "Editing", "Animation", "Sound"],
+      intro: "Four films, from speculative AI fiction to a hand-drawn anniversary film." },
+    Identity: { words: ["Naming", "Logo", "Identity", "Social", "Print", "Community"],
+      intro: "Brand identity built with and for a community." },
+    Print: { words: ["Editorial", "Photography", "Artist books", "Typography", "TouchDesigner", "Paper"],
+      intro: "Things you can hold: artist books and magazines." },
   },
   // filters on the contents page: label → tag (projects carry `tags`)
   filters: [["Technology & AI", "tech"], ["Film & video", "film"], ["Brand & strategy", "strategy"], ["Editorial & print", "print"], ["Exhibited", "exhibited"]],
@@ -183,7 +191,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "printedmatter", tags: ["print", "physical"], section: "Print", title: "Printed Matter", kind: "Publisher Index", year: "2026",
+      id: "printedmatter", tags: ["print", "physical"], section: "Archive", discipline: "Print", title: "Printed Matter", kind: "Publisher Index", year: "2026",
       hook: "Half the page for the artist, half for the publisher.",
       context: "Design Studio 21, Seoul National University",
       role: "Concept, editorial design, print production, solo",
@@ -215,7 +223,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "ella", tags: ["print"], section: "Print", title: "Ella", kind: "Magazine", year: "2023",
+      id: "ella", tags: ["print"], section: "Archive", discipline: "Print", title: "Ella", kind: "Magazine", year: "2023",
       hook: "A homage to the First Lady of Jazz.",
       context: "Editorial project",
       role: "Concept, layout, typography, solo",
@@ -327,7 +335,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "graphic", tags: ["print"], section: "Identity", title: "Graphic Projects", kind: "Graphic Design", year: "2021 until today",
+      id: "graphic", tags: ["print"], section: "Archive", discipline: "Identity", title: "Graphic Projects", kind: "Graphic Design", year: "2021 until today",
       hook: "Posters, flyers and booklets, made along the way.",
       context: "Exhibitions, events and non-profit organisations",
       role: "Concept, illustration, layout",
@@ -585,13 +593,6 @@ window.PORTFOLIO = {
     },
     {
       id: "treasurechest", proto: true,
-      // PROTOTYPE hand layer: on = "head" (next to the title), "l" or "r" page; x/y/w in % of the page width
-      notes: [
-        { on: "head", x: 58, y: -6, rot: 5, w: 30, text: "a black box you can touch" },
-        { on: "r", x: 50, y: 27, rot: 3, text: "the lid never fully opens", mark: ["arrowDown", 58, 37, 10, 22] },
-        { on: "r", x: 12, y: 93, rot: -3, text: "the only word on it: AI", mark: ["arrow", 25, 73, 13, 18] },
-        { on: "r", mark: ["circle", 35.5, 65, 15, 12, -4] },
-      ],
 tags: ["tech", "physical", "exhibited"], section: "Interaction", title: "AI Treasure Chest", kind: "Interactive Installation", year: "2025",
       hook: "A chest that closes when you come closer.",
       context: "Practical Interactive Media, LMU Munich, in collaboration with the Deutsches Museum",
@@ -618,19 +619,6 @@ tags: ["tech", "physical", "exhibited"], section: "Interaction", title: "AI Trea
         "Laser-cut wood, painted and sprayed. Generative AI was part of the craft: text-to-image designs became 3D-printed ornamental knobs, and AI reference images were hand-painted onto the chest. Inside, a Raspberry Pi Pico W reads three distance sensors and drives a stepper motor, an LED strip and a display.",
       ],
       blocks: [
-        { type: "map", title: "Process map", ratio: 1.7,
-          items: [
-            { src: `${W}/treasurechest/sketch.jpg`, label: "first sketch", x: 2, y: 3, w: 20, h: 17 },
-            { src: `${W}/treasurechest/build-1.jpg`, label: "laser-cut box", x: 27, y: 1, w: 13, h: 16.5, rot: -2 },
-            { src: `${W}/treasurechest/build-2.jpg`, label: "painted & sprayed", x: 45, y: 7, w: 18, h: 13.8, rot: 1.5 },
-            { src: `${W}/treasurechest/knobs-print.jpg`, label: "AI-designed knobs, 3D-printed", x: 4, y: 33, w: 20, h: 11, rot: 1 },
-            { src: `${W}/treasurechest/motif-painted.jpg`, label: "AI reference → hand-painted", x: 28, y: 37, w: 19, h: 11.4, rot: -1.5 },
-            { src: `${W}/treasurechest/inside.jpg`, label: "Pico W, sensors, motor, LEDs", x: 52, y: 34, w: 19, h: 12.4, rot: 2 },
-            { src: `${W}/treasurechest/chest-final.jpg`, label: "the finished chest", x: 70, y: 15, w: 28, h: 12 },
-          ],
-          links: [[0, 1, "build"], [1, 2], [3, 2, "GenAI"], [4, 2], [2, 6], [5, 6]],
-          notes: [{ x: 74, y: 32, rot: -3, text: "closes as you come closer ✶" }],
-        },
         { type: "gallery", title: "The build", items: [
           { src: `${W}/treasurechest/build-1.jpg`, caption: "Laser-cut wooden box" },
           { src: `${W}/treasurechest/build-2.jpg`, caption: "Painted and sprayed" },
