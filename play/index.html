@@ -29,10 +29,10 @@ function size() {
 }
 addEventListener("resize", size); size();
 
-const S = Math.max(.75, Math.min(1.25, W / 1100));      // scale for small screens
+const S = Math.max(.75, Math.min(1.1, W / 1200));      // scale for small screens
 const best = () => +(localStorage.getItem("ag-best") || 0);
 let state = "ready", t = 0, score = 0, speed, obs, nextIn, star, last = 0, shake = 0;
-function reset() { speed = 330 * S; obs = []; nextIn = .9; score = 0; star = { y: 0, vy: 0, rot: 0, onGround: true }; }
+function reset() { speed = 230 * S; obs = []; nextIn = .9; score = 0; star = { y: 0, vy: 0, rot: 0, onGround: true }; }
 reset();
 
 function jump() {
@@ -71,7 +71,7 @@ function frame(now) {
   const dt = Math.min(.035, (now - last) / 1000 || .016); last = now; t += dt;
   const R = 17 * S, sx = Math.max(70, W * .16);
   if (state === "run") {
-    speed += dt * 7 * S;
+    speed = Math.min(520 * S, speed + dt * 3.5 * S); // calmer start, slower build-up, a ceiling
     star.vy += 2100 * S * dt; star.y += star.vy * dt;
     if (star.y >= 0) { star.y = 0; star.vy = 0; star.onGround = true; }
     star.rot += dt * speed / R * (star.onGround ? 1 : .6);

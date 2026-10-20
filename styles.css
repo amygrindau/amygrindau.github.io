@@ -1115,3 +1115,10 @@ figcaption { margin-top: 12px; font-size: 12px; line-height: 1.45; }
 .foot__egg .star { width: .42em; height: .42em; vertical-align: .55em; margin: 0; }
 .foot__name:hover .foot__egg, .foot__egg:focus-visible { animation: egg-hop .55s cubic-bezier(.3,.7,.4,1) infinite; }
 @keyframes egg-hop { 0%, 100% { translate: 0 0; } 45% { translate: 0 -.35em; } }
+
+/* tracing-paper contents: a bit larger again (fewer entries now) */
+.sheet__title { font-size: 7.6cqh; }
+.sheet__sechead { font-size: 1.7cqh; }
+.sheet__t { font-size: 3.3cqh; }
+.sheet__k, .sheet__p { font-size: 1.7cqh; }
+.sheet__sec { margin-top: 1.6cqh; }
