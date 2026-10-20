@@ -269,9 +269,9 @@ window.PORTFOLIO = {
       award: "1st Prize, Photography & Layout, Crossmedia",
       key: { src: `${W}/untitled/page-01.jpg`, fit: "contain", bg: "black" },
       links: [
-        { label: "Interview, Münchner Merkur", url: "https://www.merkur.de/lokales/erding/oberding-ort29189/aussergewoehnlich-kreativ-amy-grindau-korbinian-aigner-gymnasium-92067353.html" },
-        { label: "Bayerischer Rundfunk, prize winner", url: "https://www.br.de/medienkompetenzprojekte/inhalt/crossmedia/untitled-magazin-foto-grafik-layout-crossmedia-2022-preistraeger-100.html" },
-        { label: "Bayerischer Rundfunk, all Crossmedia 2022 winners", url: "https://www.br.de/medienkompetenzprojekte/inhalt/crossmedia/crossmedia-2022-preistraeger-gewinner-in-den-neuen-medien-zu-hause-100.html" },
+        { label: "Münchner Merkur", url: "https://www.merkur.de/lokales/erding/oberding-ort29189/aussergewoehnlich-kreativ-amy-grindau-korbinian-aigner-gymnasium-92067353.html" },
+        { label: "BR, prize winner", url: "https://www.br.de/medienkompetenzprojekte/inhalt/crossmedia/untitled-magazin-foto-grafik-layout-crossmedia-2022-preistraeger-100.html" },
+        { label: "BR, all winners 2022", url: "https://www.br.de/medienkompetenzprojekte/inhalt/crossmedia/crossmedia-2022-preistraeger-gewinner-in-den-neuen-medien-zu-hause-100.html" },
       ],
       story: {
         challenge: "A magazine for young adults that does not only show the negative side of the topics it covers.",
@@ -456,7 +456,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "brewinsight", logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
+      id: "brewinsight", hidden: true, logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
       role: "Creative direction, content strategy, community growth, creator acquisition",

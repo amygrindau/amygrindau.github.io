@@ -327,7 +327,7 @@ function mountPostcards(root, cards) {
           <div class="pc__inner">
             <div class="pc__face pc__front">
               <img src="${c.src}" alt="N°${c.no} ${c.name}" draggable="false">
-              <img class="pc__sheet" src="${c.overlay}" alt="" draggable="false">
+              <span class="pc__veil" aria-hidden="true"></span><img class="pc__sheet" src="${c.overlay}" alt="" draggable="false">
             </div>
             <div class="pc__face pc__back"><img src="${c.back}" alt="" draggable="false"></div>
           </div>
@@ -340,7 +340,7 @@ function mountPostcards(root, cards) {
         <button data-pt-upload hidden>Upload an image</button>
         <button data-pt-sheet hidden>Lay the transparent sheet</button>
         <button data-pt-flip>Turn over</button>
-        <button data-pt-save>Save in frame</button>
+        <button data-pt-save>Save</button>
         <button data-pt-back>Put back</button>
       </div>
     </div>
@@ -526,26 +526,24 @@ function mountPostcards(root, cards) {
     return cv;
   }
 
+  // Save: front and back as two separate JPEGs, in the original postcard size
   async function save() {
     const c = all[picked];
     if (!c) return;
-    const face = await cardFace(c, flipped);
-    const [ow, oh] = FRAME.outer, [iw, ih] = FRAME.window, k = 1.25;
-    const fw = ow * k, fh = oh * k, pad = 260;
-    const out = document.createElement("canvas"); out.width = fw + pad * 2; out.height = fh + pad * 2;
-    const g = out.getContext("2d");
-    g.fillStyle = "#efeeea"; g.fillRect(0, 0, out.width, out.height);          // wall
-    g.save(); g.shadowColor = "rgba(40,30,20,.28)"; g.shadowBlur = 90; g.shadowOffsetY = 40;
-    g.fillStyle = "#fff"; g.fillRect(pad, pad, fw, fh); g.restore();            // frame
-    g.strokeStyle = "rgba(0,0,0,.55)"; g.lineWidth = 2.5; g.strokeRect(pad, pad, fw, fh);
-    const wx = pad + (fw - iw * k) / 2, wy = pad + (fh - ih * k) / 2;
-    const cw = iw * k, ch = cw / CARD_RATIO, cy = wy + (ih * k - ch) / 2;     // the card fills the window
-    g.save(); g.beginPath(); g.rect(wx, wy, iw * k, ih * k); g.clip();
-    g.drawImage(face, wx, cy, cw, ch); g.restore();
-    g.strokeRect(wx, wy, iw * k, ih * k);                                       // window line
-    const a = document.createElement("a");
-    a.download = `florilegium-${c.own ? "my-postcard" : c.name.toLowerCase().replace(/\s+/g, "-")}${flipped ? "-back" : ""}.png`;
-    a.href = out.toDataURL("image/png"); a.click();
+    const name = `florilegium-${c.own ? "my-postcard" : c.name.toLowerCase().replace(/\s+/g, "-")}`;
+    for (const [back, suffix] of [[false, "front"], [true, "back"]]) {
+      const face = await cardFace(c, back);
+      const out = document.createElement("canvas");
+      out.width = face.width; out.height = face.height;
+      const g = out.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, out.width, out.height);
+      g.drawImage(face, 0, 0);
+      const a = document.createElement("a");
+      a.download = `${name}-${suffix}.jpg`;
+      a.href = out.toDataURL("image/jpeg", .92);
+      a.click();
+      await new Promise((r) => setTimeout(r, 400)); // two downloads, one after the other
+    }
   }
 
   addEventListener("resize", () => { size(); targets(); });
