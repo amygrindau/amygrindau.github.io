@@ -888,12 +888,12 @@ a.is-dim { opacity: .22; }
 
 /* tracing-paper contents: compact, fits without scrolling */
 .sheet { padding: 4cqw 5.5cqw; }
-.sheet__title { font-size: 6.5cqh; }
+.sheet__title { font-size: 7cqh; }
 .sheet__sec { margin-top: 1.3cqh; }
-.sheet__sechead { font-size: 1.35cqh; margin-bottom: .2cqh; }
+.sheet__sechead { font-size: 1.55cqh; margin-bottom: .2cqh; }
 .sheet__sec a { padding: .28cqh 0; }
-.sheet__t { font-size: 2.45cqh; }
-.sheet__k, .sheet__p { font-size: 1.35cqh; }
+.sheet__t { font-size: 2.9cqh; }
+.sheet__k, .sheet__p { font-size: 1.55cqh; }
 .sheet__sec--end { margin-top: 1.6cqh; }
 
 /* v2: calmer project text */
@@ -915,14 +915,6 @@ a.is-dim { opacity: .22; }
 :root { --mono: "IBM Plex Mono", ui-monospace, monospace; }
 .mono { font-family: var(--mono); font-weight: 400; letter-spacing: .02em; text-transform: uppercase; }
 
-/* bracket metadata in mono (AI Treasure Chest only for now) */
-.pg--proto .runhead span, .pg--proto .pg__foot span { font-family: var(--mono); font-weight: 400; letter-spacing: .02em; }
-.pg--proto .runhead span::before, .pg--proto .pg__foot span::before { content: "[ "; }
-.pg--proto .runhead span::after, .pg--proto .pg__foot span::after { content: " ]"; }
-.pg--proto .meta dt { font-family: var(--mono); font-weight: 400; letter-spacing: .02em; }
-.pg--proto .meta dt::before { content: "[ "; } .pg--proto .meta dt::after { content: " ]"; }
-.pg--proto .meta { grid-template-columns: 17cqw 1fr; }
-
 /* the star: one hand-drawn accent, turning very slowly */
 .star { display: inline-block; width: .5em; height: .5em; margin-left: .12em; vertical-align: .6em; overflow: visible;
   fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; animation: star-turn 14s linear infinite, star-breathe 4.5s var(--soft) infinite alternate; }
@@ -932,9 +924,9 @@ a.is-dim { opacity: .22; }
 .reflection figcaption .star { width: 1.3em; height: 1.3em; vertical-align: -.35em; color: var(--pink); }
 
 /* chapter: tracing paper. The disciplines blurred in grey behind, the chapter word sharp in pink */
-.pg--chapter { overflow: hidden; background: #f6f5f2; }
+.pg--chapter { overflow: hidden; background: #0b0b0b; color: var(--white); }
 .chapter__veil { position: absolute; left: 4cqw; top: 13cqw; width: 192cqw; margin: 0; display: flex; flex-wrap: wrap; gap: 0 4cqw;
-  font-size: 15cqw; line-height: .92; letter-spacing: -.035em; color: rgba(0,0,0,.2); filter: blur(.9cqw); user-select: none;
+  font-size: 15cqw; line-height: .92; letter-spacing: -.035em; color: rgba(255,255,255,.34); filter: blur(.8cqw); user-select: none;
   animation: veil-drift 26s ease-in-out infinite alternate; }
 @keyframes veil-drift { from { translate: 0 0; } to { translate: -3cqw 1.5cqw; } }
 .pg--chapter-r .chapter__veil { left: -96cqw; }
@@ -942,11 +934,11 @@ a.is-dim { opacity: .22; }
   font: 400 30cqw/.8 var(--serif); letter-spacing: -.045em; color: var(--pink); white-space: nowrap; }
 .pg--chapter-r .chapter__word { left: -93.5cqw; }
 .pg--chapter .chapter__word .star { width: .28em; height: .28em; vertical-align: .55em; color: var(--pink); }
-.chapter__intro { position: absolute; left: 6.5cqw; bottom: 11cqw; z-index: 2; width: 46cqw; margin: 0; font-size: 2cqw; line-height: 1.45; color: #b04f6d; }
+.chapter__intro { position: absolute; left: 6.5cqw; bottom: 11cqw; z-index: 2; width: 46cqw; margin: 0; font-size: 2cqw; line-height: 1.45; color: var(--pink); }
 .chapter__list { position: absolute; right: 6.5cqw; bottom: 11cqw; z-index: 2; width: 46cqw; font-size: 1.8cqw; }
-.chapter__list a { display: flex; justify-content: space-between; align-items: baseline; padding: .8cqw 0; border-bottom: .12cqw solid rgba(176,79,109,.4); text-decoration: none; color: #b04f6d; position: relative; z-index: 7; }
+.chapter__list a { display: flex; justify-content: space-between; align-items: baseline; padding: .8cqw 0; border-bottom: .12cqw solid rgba(216,132,158,.45); text-decoration: none; color: var(--pink); position: relative; z-index: 7; }
 .chapter__list a .serif { font-size: 3.6cqw; }
-.chapter__list a:hover { color: var(--ink); }
+.chapter__list a:hover { color: var(--white); }
 .pg--chapter .runhead { position: relative; z-index: 2; }
 @media (max-width: 760px) {
   .pg--chapter .chapter__word { font-size: 24cqw; width: auto; white-space: normal; line-height: .85; }
@@ -1000,3 +992,6 @@ a.is-dim { opacity: .22; }
 /* 6th Man: the four logo iterations in one row */
 .logos { grid-template-columns: repeat(4, 1fr); max-width: 900px; margin: 0; }
 @media (max-width: 760px) { .logos { grid-template-columns: repeat(2, 1fr); } }
+
+.pg--chapter .pg__foot { color: rgba(255,255,255,.7); }
+.pg--chapter .runhead { border-color: rgba(255,255,255,.5); }
