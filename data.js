@@ -94,17 +94,15 @@ window.PORTFOLIO = {
 
   // The magazine follows this order of sections.
   // order of the magazine (tuned for CDTM and NYU: technology and storytelling first)
-  sections: ["Interaction", "Strategy", "Film", "Identity", "Print", "Archive"],
+  sections: ["Interaction", "Brand & Strategy", "Film", "Print", "Archive"],
   // chapter pages before each section: the word sharp in pink, the disciplines blurred behind it (tracing paper)
   chapters: {
     Interaction: { words: ["AI", "Prototyping", "Physical computing", "User research", "Accessibility", "Museum"],
       intro: "Technology, AI and objects you can touch: projects where the interaction itself carries the idea." },
-    Strategy: { words: ["Content", "Community", "Creators", "Growth", "Brand", "Platforms"],
-      intro: "How an idea reaches people: content systems, communities and growth." },
+    "Brand & Strategy": { words: ["Naming", "Identity", "Content", "Community", "Creators", "Growth"],
+      intro: "How an idea becomes a brand and reaches people: identity, content systems and communities." },
     Film: { words: ["Direction", "Camera", "Screenplay", "Editing", "Animation", "Sound"],
       intro: "Four films, from speculative AI fiction to a hand-drawn anniversary film." },
-    Identity: { words: ["Naming", "Logo", "Identity", "Social", "Print", "Community"],
-      intro: "Brand identity built with and for a community." },
     Print: { words: ["Editorial", "Photography", "Artist books", "Typography", "TouchDesigner", "Paper"],
       intro: "Things you can hold: artist books and magazines." },
   },
@@ -122,7 +120,7 @@ window.PORTFOLIO = {
   archiveSkip: ["graphic"], // shown through its single works instead
   // filters on the contents page: label → tag (projects carry `tags`)
   filters: [["Technology & AI", "tech"], ["Film & video", "film"], ["Brand & strategy", "strategy"], ["Editorial & print", "print"], ["Exhibited", "exhibited"]],
-  order: ["smartscan", "treasurechest", "brewinsight", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
+  order: ["smartscan", "treasurechest", "brewinsight", "sixthman", "pulse", "nexus", "theoneiwant", "snu80", "sixthman", "graphic", "florilegium", "untitled", "printedmatter", "ella"],
 
   // "On my desk": the page before the back cover
   current: {
@@ -313,7 +311,7 @@ window.PORTFOLIO = {
 
     /* ------------------------------ IDENTITY ----------------------------- */
     {
-      id: "sixthman", tags: ["strategy", "print", "digital"], section: "Identity", title: "6th Man", kind: "Brand Identity", year: "2024 until today",
+      id: "sixthman", tags: ["strategy", "print", "digital"], section: "Brand & Strategy", title: "6th Man", kind: "Brand Identity", year: "2024 until today",
       hook: "Making basketball more accessible, one identity at a time.",
       context: "Munich basketball community & events",
       role: "Name, logo, identity, pitch deck, flyers, stickers, social",
@@ -457,7 +455,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "brewinsight", logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
+      id: "brewinsight", logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
       role: "Creative direction, content strategy, community growth, creator acquisition",

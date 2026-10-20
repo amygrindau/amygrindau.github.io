@@ -105,6 +105,7 @@ void main(){
   // at rest the canvas only covers the edge strip (cheap); while flowing and open, the whole screen
   let span = 1;
   function size() {
+    if (!gl) return; // fallback: a still strip, styled in CSS
     const full = state.target > 0 || state.reveal > .002 || state.restTarget > restWidth() * 1.2 || state.rest > restWidth() * 1.2;
     span = full ? 1 : Math.min(1, restWidth() * 4);
     const w = innerWidth, h = innerHeight - 44, vertical = phone.matches;

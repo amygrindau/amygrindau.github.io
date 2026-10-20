@@ -931,7 +931,7 @@ a.is-dim { opacity: .22; }
 @keyframes veil-drift { from { translate: 0 0; } to { translate: -3cqw 1.5cqw; } }
 .pg--chapter-r .chapter__veil { left: -96cqw; }
 .pg--chapter .chapter__word { position: absolute; left: 6.5cqw; top: 50%; translate: 0 -50%; z-index: 2; margin: 0; width: 186cqw;
-  font: 400 30cqw/.8 var(--serif); letter-spacing: -.045em; color: var(--pink); white-space: nowrap; }
+  font: 400 min(30cqw, calc(176cqw / (var(--chars) * .42)))/.8 var(--serif); letter-spacing: -.045em; color: var(--pink); white-space: nowrap; }
 .pg--chapter-r .chapter__word { left: -93.5cqw; }
 .pg--chapter .chapter__word .star { width: .28em; height: .28em; vertical-align: .55em; color: var(--pink); }
 .chapter__intro { position: absolute; left: 6.5cqw; bottom: 11cqw; z-index: 2; width: 46cqw; margin: 0; font-size: 2cqw; line-height: 1.45; color: var(--pink); }
@@ -973,7 +973,7 @@ a.is-dim { opacity: .22; }
    ARCHIVE: watercolour edge on the right, flows over the page on click
    ===================================================================== */
 .wc { position: fixed; left: 0; top: 44px; width: 100%; height: calc(100% - 44px); z-index: 60; pointer-events: none; }
-.wc--fallback { left: auto; width: 4vw; background: linear-gradient(to bottom, #ccd1f2, #dc99d6, #5a8c4d, #211f47, #ed9440, #f2e6dc); }
+.wc--fallback { left: auto; width: 4vw; background: linear-gradient(to bottom, #f5bdd6, #e673a8, #c7a8e6, #a3aeeb, #f2e0a8, #e094d0); }
 .wc-edge { position: fixed; right: 0; top: 44px; bottom: 0; width: 4vw; z-index: 62; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .wc-edge span { position: absolute; right: calc(4vw + 8px); top: 50%; translate: 0 -50%; rotate: -90deg; transform-origin: center; white-space: nowrap;
   font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); opacity: 0; transition: opacity .3s var(--soft), right .4s var(--soft); }
@@ -981,7 +981,7 @@ a.is-dim { opacity: .22; }
 body.archive-open .wc-edge { pointer-events: none; }
 body:not(.archive-open) .desk { padding-right: 4vw; }
 @media (max-width: 760px) {
-  .wc--fallback { top: auto; height: 26px; width: auto; left: 0; right: 0; background: linear-gradient(to right, #ccd1f2, #dc99d6, #5a8c4d, #211f47, #ed9440, #f2e6dc); }
+  .wc--fallback { top: auto; height: 26px; width: auto; left: 0; right: 0; background: linear-gradient(to right, #f5bdd6, #e673a8, #c7a8e6, #a3aeeb, #f2e0a8, #e094d0); }
   .wc-edge { top: auto; height: 26px; width: auto; left: 0; }
   .wc-edge span { right: 50%; top: 0; rotate: 0deg; translate: 50% 0; opacity: 1; font-size: 9px; line-height: 26px; color: var(--white); text-shadow: 0 0 4px rgba(0,0,0,.45); }
   .wc-edge:hover span { right: 50%; }
@@ -1023,3 +1023,9 @@ body:not(.archive-open) .desk { padding-right: 4vw; }
 .bar { z-index: 70; }
 .archive__close:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
 .wc-edge:focus-visible { outline: 2px solid var(--pink); }
+
+/* archive: one calm, unified look. Everything in soft monochrome on the paper, colour returns on hover */
+.archive__img { background: #efe9e6; }
+.archive__img img { filter: grayscale(1) contrast(.92) brightness(1.04); mix-blend-mode: multiply; opacity: .92; transition: transform .8s var(--soft), filter .6s var(--soft), opacity .6s var(--soft); }
+.archive__item:hover .archive__img img, .archive__item:focus-visible .archive__img img { filter: none; mix-blend-mode: normal; opacity: 1; }
+.archive__img { box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 22px -18px rgba(0,0,0,.4); }

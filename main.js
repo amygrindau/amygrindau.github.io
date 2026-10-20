@@ -108,7 +108,7 @@ function chapterPage(side, sec, k) {
   const c = DATA.chapters[sec], n = Object.keys(DATA.chapters).indexOf(sec) + 1;
   const list = projects.filter((p) => p.section === sec);
   const veil = `<div class="chapter__veil serif" aria-hidden="true">${c.words.map((w) => `<span>${w}</span>`).join(" ")}</div>
-    <p class="chapter__word">${c.word || sec}${STAR}</p>`;
+    <p class="chapter__word" style="--chars:${(c.word || sec).length}">${c.word || sec}${STAR}</p>`;
   if (side === "l") return pg("l", `
     <div class="runhead"><span>Chapter ${pad(n)}</span><span>${sec}</span></div>
     ${veil}
@@ -197,7 +197,7 @@ const spreads = [
   { id: "masthead", title: "Masthead", left: mastLeft(), right: mastRight() },
   ...projects.flatMap((p, k) => [
     ...(hasDivider(p.section) && (k === 0 || projects[k - 1].section !== p.section)
-      ? [{ id: `chapter-${low(p.section)}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
+      ? [{ id: `chapter-${low(p.section).replace(/[^a-z0-9]+/g, "-")}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
     { id: p.id, title: p.title, project: p, left: projectLeft(p, k), right: projectRight(p, k) },
   ]),
   { id: "current", title: "On my desk", left: currentLeft(curPage), right: currentRight(curPage + 1) },
