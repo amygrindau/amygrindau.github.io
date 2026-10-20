@@ -5,7 +5,9 @@ const rank = (p) => { const i = (DATA.order || []).indexOf(p.id); return i < 0 ?
 const projects = sections.flatMap((sec) => DATA.projects.filter((p) => p.section === sec && !p.hidden).sort((a, b) => rank(a) - rank(b)));
 const pad = (n) => String(n).padStart(2, "0");
 const FIRST = 2; // spread 0 = cover · 1 = masthead · 2… = projects
-const pageOf = (k) => (FIRST + k) * 2;
+// chapter divider spreads (DATA.chapters) come before the first project of their section
+const chapterBefore = (k) => projects.slice(0, k + 1).filter((p, i) => DATA.chapters?.[p.section] && (i === 0 || projects[i - 1].section !== p.section)).length;
+const pageOf = (k) => (FIRST + k + chapterBefore(Math.min(k, projects.length - 1))) * 2;
 const low = (t) => (t || "").toLowerCase();
 // "AI Prototype" → "AI prototype": lower case, but abbreviations stay
 const lowKind = (t) => (t || "").split(" ").map((w) => /^[A-Z0-9&×]{2,}$/.test(w) ? w : w.toLowerCase()).join(" ");
@@ -95,13 +97,49 @@ const mastRight = () => pg("r", `
 `, { num: pad(3), label: "Editor's letter", cls: "pg--pink pg--mast-r" });
 
 // Project spread — left: information, right: key visual. Two layouts alternate.
+/* ---------- hand layer: notes, scribbles (prototype) ---------- */
+// hand-drawn marks as SVG paths (viewBox 0 0 100 100, stretched to the box)
+const SCRIB = {
+  circle: `<path d="M52 6C24 4 5 22 7 48c2 27 28 44 54 40 25-4 37-26 33-48C90 18 70 5 44 9 30 11 20 17 14 24"/>`,
+  arrow: `<path d="M6 88C28 72 52 52 92 14"/><path d="M70 12l23 1-3 22"/>`,
+  arrowDown: `<path d="M20 6C28 36 52 58 82 90"/><path d="M60 90h23V68"/>`,
+  arrowLeft: `<path d="M94 50C70 40 40 44 8 52"/><path d="M24 36L7 52l17 14"/>`,
+  star: `<path d="M50 4l12 32 34 2-27 21 10 34-29-20-29 20 10-34L4 38l34-2z"/>`,
+};
+const scrib = (type, x, y, w, h, rot = 0) =>
+  `<svg class="scrib" viewBox="0 0 100 100" preserveAspectRatio="none" style="left:${x}cqw;top:${y}cqw;width:${w}cqw;height:${h}cqw;rotate:${rot}deg" aria-hidden="true">${SCRIB[type]}</svg>`;
+const notesFor = (p, where) => (p.notes || []).filter((n) => n.on === where).map((n) =>
+  (n.text ? `<p class="note" style="left:${n.x}cqw;top:${n.y}cqw;rotate:${n.rot || 0}deg;${n.w ? `width:${n.w}cqw;` : ""}">${n.text}</p>` : "")
+  + (n.mark ? scrib(...n.mark) : "")).join("");
+
+// chapter divider: one word across both pages, magazine style
+function chapterPage(side, sec, k) {
+  const c = DATA.chapters[sec], n = Object.keys(DATA.chapters).indexOf(sec) + 1;
+  const list = projects.filter((p) => p.section === sec);
+  const word = `<p class="chapter__word serif">${c.word || sec}</p>`;
+  if (side === "l") return pg("l", `
+    <p class="chapter__no mono">[ Chapter ${pad(n)} ]</p>
+    ${word}
+    <p class="note chapter__note" style="left:8cqw;bottom:14cqw;rotate:-4deg">${c.note || ""}</p>
+  `, { num: pad(pageOf(k) - 2), cls: `pg--chapter pg--${c.bg || "ink"}` });
+  return pg("r", `
+    ${word}
+    <div class="chapter__list">
+      <p class="mono">[ In this chapter ]</p>
+      ${list.map((p) => `<a href="${urlFor(p.id)}" data-id="${p.id}"><span class="serif">${p.title}</span><span class="mono">${pad(pageOf(projects.indexOf(p)))}</span></a>`).join("")}
+      <p class="chapter__intro">${c.intro || ""}</p>
+    </div>
+  `, { num: pad(pageOf(k) - 1), label: sec, cls: `pg--chapter pg--chapter-r pg--${c.bg || "ink"}` });
+}
+
 function projectLeft(p, k) {
   const no = projects.filter((x, i) => x.section === p.section && i <= k).length;
   return pg("l", `
     <div class="runhead"><span>${p.section}</span><span>No. ${pad(no)}</span></div>
     <div class="project__head">
       <h1 class="project__title serif" style="--chars:${titleLen(p.title)}">${p.title}</h1>
-      <p class="project__hook serif">${p.hook}</p>
+      <p class="project__hook serif">${p.proto ? `<span class="scrib-under">${p.hook}</span>` : p.hook}</p>
+      ${notesFor(p, "head")}
     </div>
     <dl class="meta">
       <dt>Year</dt><dd>${p.year}</dd>
@@ -110,7 +148,8 @@ function projectLeft(p, k) {
       <dt>Role</dt><dd>${p.role}</dd>
       ${p.award ? `<dt>Award</dt><dd>${p.award}</dd>` : ""}
     </dl>
-  `, { num: pad(pageOf(k)), cls: `pg--project v${k % 2}` });
+    ${notesFor(p, "l")}
+  `, { num: pad(pageOf(k)), cls: `pg--project v${k % 2}${p.proto ? " pg--proto" : ""}` });
 }
 
 function projectRight(p, k) {
@@ -127,7 +166,7 @@ function projectRight(p, k) {
   const { src, fit = "cover", zoom, pos, bg: color = "white", blend } = p.key;
   const style = (zoom ? `background-size:${zoom * 100}% auto;background-position:${pos || "center"};` : "")
     + (blend ? `mix-blend-mode:${blend};` : "");
-  return pg("r", bg(src, `bg--${fit}`, style, desc), { num, label, cls: `pg--${color}`, style: p.key.pageBg ? `background:${p.key.pageBg}` : "" });
+  return pg("r", bg(src, `bg--${fit}`, style, desc) + notesFor(p, "r"), { num, label, cls: `pg--${color}${p.proto ? " pg--proto" : ""}`, style: p.key.pageBg ? `background:${p.key.pageBg}` : "" });
 }
 
 // "On my desk" — the current project, as a small moodboard
@@ -167,7 +206,11 @@ const curPage = pageOf(projects.length);
 const spreads = [
   { id: "cover", title: "Cover", left: null, right: coverPage() },
   { id: "masthead", title: "Masthead", left: mastLeft(), right: mastRight() },
-  ...projects.map((p, k) => ({ id: p.id, title: p.title, project: p, left: projectLeft(p, k), right: projectRight(p, k) })),
+  ...projects.flatMap((p, k) => [
+    ...(DATA.chapters?.[p.section] && (k === 0 || projects[k - 1].section !== p.section)
+      ? [{ id: `chapter-${low(p.section)}`, title: p.section, left: chapterPage("l", p.section, k), right: chapterPage("r", p.section, k) }] : []),
+    { id: p.id, title: p.title, project: p, left: projectLeft(p, k), right: projectRight(p, k) },
+  ]),
   { id: "current", title: "On my desk", left: currentLeft(curPage), right: currentRight(curPage + 1) },
   { id: "contact", title: "Contact", left: backCover(), right: null },
 ];
@@ -505,6 +548,28 @@ function block(p, b) {
       return `<section class="block">${head}<div class="gallery ${cls}">${b.items.map((it, n) => `
         <figure class="${n === b.feature ? "is-feature" : ""}">${img(it.src, it.caption ? `${p.title}, ${it.caption}` : `${p.title}, ${(b.title || "image").toLowerCase()} ${n + 1}`)}${it.caption ? `<figcaption>${it.caption}</figcaption>` : ""}</figure>`).join("")}</div></section>`;
     }
+    case "map": {
+      // process map: pictures placed freely on a sheet, connected by hand-drawn lines
+      const at = (it) => [it.x + it.w / 2, it.y + (it.h || it.w * 0.75) / 2];
+      const lines = (b.links || []).map(([a, c, label]) => {
+        const [x1, y1] = at(b.items[a]), [x2, y2] = at(b.items[c]);
+        const mx = (x1 + x2) / 2 + (y2 - y1) * 0.18, my = (y1 + y2) / 2 - (x2 - x1) * 0.12;
+        return `<path d="M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}" marker-end="url(#mapArrow)"/>`;
+      }).join("");
+      const labels = (b.links || []).filter((l) => l[2]).map(([a, c, label]) => {
+        const [x1, y1] = at(b.items[a]), [x2, y2] = at(b.items[c]);
+        const mx = (x1 + x2) / 2 + (y2 - y1) * 0.09, my = (y1 + y2) / 2 - (x2 - x1) * 0.06;
+        return `<p class="note map__note map__label" style="left:${mx}%;top:${my / (100 / (b.ratio || 1.6)) * 100}%">${label}</p>`;
+      }).join("");
+      return `<section class="block">${head}<div class="map" style="--ratio:${b.ratio || 1.6}">
+        <svg class="map__lines" viewBox="0 0 100 ${100 / (b.ratio || 1.6)}" preserveAspectRatio="none" aria-hidden="true">
+          <defs><marker id="mapArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1L9 5 1 9"/></marker></defs>${lines}</svg>
+        ${b.items.map((it) => `<figure class="map__item" style="left:${it.x}%;top:${it.y / (100 / (b.ratio || 1.6)) * 100}%;width:${it.w}%;rotate:${it.rot || 0}deg">
+          ${img(it.src, `${p.title}, ${low(it.label)}`)}<figcaption class="note">${it.label}</figcaption></figure>`).join("")}
+        ${labels}
+        ${(b.notes || []).map((n) => `<p class="note map__note" style="left:${n.x}%;top:${n.y / (100 / (b.ratio || 1.6)) * 100}%;rotate:${n.rot || 0}deg">${n.text}</p>`).join("")}
+      </div></section>`;
+    }
     case "slides":
       return `<section class="block">${head}<div class="slides" data-slides tabindex="0" aria-roledescription="slideshow">
         <div class="slides__track">${b.items.map((it, n) => `<figure class="slides__slide${n ? "" : " is-on"}">${img(it.src, `${p.title}, ${low(it.caption)}`).replace('loading="lazy"', 'loading="eager"')}</figure>`).join("")}</div>
@@ -536,6 +601,15 @@ function block(p, b) {
       return "";
   }
 }
+
+// hand notes on / off
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-notes]");
+  if (!t) return;
+  const off = document.body.classList.toggle("notes-off");
+  t.textContent = off ? "Notes off" : "Notes on";
+  t.setAttribute("aria-pressed", String(!off));
+});
 
 document.addEventListener("click", (e) => {
   const f = e.target.closest("[data-flip]");
