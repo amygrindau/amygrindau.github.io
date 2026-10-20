@@ -258,9 +258,27 @@ def main():
             os.rmdir(os.path.join(work_dir, d))
 
     urls = [f"{SITE}/", f"{SITE}/about/"] + [f"{SITE}/work/{p['id']}/" for p in projects]
+    # sitemap with images (Google Images) and the CV
+    def images_in(obj, out):
+        if isinstance(obj, str):
+            if obj.startswith("assets/") and re.search(r"\.(jpe?g|png|webp)$", obj, re.I) and obj not in out:
+                out.append(obj)
+        elif isinstance(obj, dict):
+            for v in obj.values(): images_in(v, out)
+        elif isinstance(obj, list):
+            for v in obj: images_in(v, out)
+        return out
+    pages = [(f"{SITE}/", ["og-image.jpg", data["images"]["face"], "assets/web/cover-halftone.jpg"]),
+             (f"{SITE}/about/", [data["images"]["face"]])]
+    pages += [(f"{SITE}/work/{p['id']}/", images_in(p, [])[:40]) for p in projects]
+    def entry(u, imgs):
+        tags = "".join(f"<image:image><image:loc>{e(abs_url(i) if i.startswith('assets/') else SITE + '/' + i)}</image:loc></image:image>" for i in imgs)
+        return f"  <url><loc>{u}</loc><lastmod>{TODAY}</lastmod>{tags}</url>\n"
     open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8").write(
-        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        + "".join(f"  <url><loc>{u}</loc><lastmod>{TODAY}</lastmod></url>\n" for u in urls) + "</urlset>\n")
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
+        + "".join(entry(u, imgs) for u, imgs in pages)
+        + f"  <url><loc>{SITE}/{data['contact']['cv']}</loc><lastmod>{TODAY}</lastmod></url>\n" + "</urlset>\n")
     open(os.path.join(ROOT, "robots.txt"), "w", encoding="utf-8").write(
         f"User-agent: *\nAllow: /\n\nSitemap: {SITE}/sitemap.xml\n")
     open(os.path.join(ROOT, "404.html"), "w", encoding="utf-8").write(

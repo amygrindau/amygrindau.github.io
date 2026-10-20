@@ -1,5 +1,29 @@
 const DATA = window.PORTFOLIO;
-const START_HASH = location.hash; // read before the magazine rewrites the address (archive.js needs it)
+const START_HASH = location.hash;
+/* ---------- statistics (GoatCounter, no cookies): page per spread + a few events ---------- */
+const GC = DATA.analytics?.goatcounter;
+if (GC) {
+  window.goatcounter = { no_onload: true };
+  const sc = document.createElement("script");
+  sc.async = true; sc.src = "https://gc.zgo.at/count.js"; sc.dataset.goatcounter = `https://${GC}.goatcounter.com/count`;
+  document.head.appendChild(sc);
+}
+const gcQueue = [];
+function track(path, title, event = false) {
+  if (!GC) return;
+  const go = () => window.goatcounter.count({ path, title, event });
+  if (window.goatcounter?.count) go(); else gcQueue.push(go);
+}
+setInterval(() => { while (gcQueue.length && window.goatcounter?.count) gcQueue.shift()(); }, 1000);
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-play], [data-extra], [data-cv], a[download], .wc-edge, .foot__egg, a[href^='http'], [data-pt-save], [data-pin], [data-filter]");
+  if (!t) return;
+  const name = t.matches("[data-play]") ? `film: ${t.dataset.play}` : t.matches("[data-extra]") ? `video: ${t.dataset.extra}`
+    : t.matches("[data-cv], a[download]") ? "cv download" : t.matches(".wc-edge") ? "archive opened" : t.matches(".foot__egg") ? "game opened"
+    : t.matches("[data-pt-save]") ? "postcard saved" : t.matches("[data-pin]") ? `desk: ${t.textContent.trim().slice(0, 30)}`
+    : t.matches("[data-filter]") ? `filter: ${t.dataset.filter || "all"}` : `link: ${t.hostname}`;
+  track(name, name, true);
+}, true); // read before the magazine rewrites the address (archive.js needs it)
 const { images, sections, contact } = DATA;
 // the magazine follows the order of the sections
 const rank = (p) => { const i = (DATA.order || []).indexOf(p.id); return i < 0 ? 999 : i; };
@@ -244,6 +268,7 @@ const book = new Book(bookEl, spreads, {
   onSwipe: (d) => turn(step(d)),
   onChange(i, s) {
     history.replaceState(null, "", urlFor(s.id));
+    track(urlFor(s.id).replace("/#/", "/"), titleFor(s.id));
     document.title = titleFor(s.id);
     [i - 1, i, i + 1, i + 2].forEach((k) => preloadSpread(spreads[k]));
     count.textContent = i === 0 ? "Cover" : i === spreads.length - 1 ? "Back cover"
@@ -751,7 +776,7 @@ const LEGAL = {
     <p><b>About this website</b><br>This is a private, non-commercial portfolio website. It shows my work from university and personal projects and does not offer any services.</p>
     <p><b>Controller</b><br>Amy Grindau, email: <a href="mailto:${contact.email}">${contact.email}</a></p>
     <p><b>Hosting</b><br>This website is hosted on GitHub Pages (GitHub Inc., 88 Colin P. Kelly Jr. St., San Francisco, CA 94107, USA). When you visit it, GitHub processes technically necessary data such as your IP address in server log files to deliver the site securely (Art. 6(1)(f) GDPR). GitHub is certified under the EU-US Data Privacy Framework. More: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub privacy statement</a>.</p>
-    <p><b>No cookies, no tracking</b><br>This website sets no cookies and uses no analytics tools.</p>
+    ${GC ? `<p><b>Statistics</b><br>To see which pages are visited, this website uses GoatCounter (goatcounter.com), an open-source statistics service without cookies. It stores no personal data and no IP addresses; it only counts page views, the referring site, the country, the browser and the screen size, in aggregated form (Art. 6(1)(f) GDPR). No cookies are set.</p>` : `<p><b>No cookies, no tracking</b><br>This website sets no cookies and uses no analytics tools.</p>`}
     <p><b>Fonts</b><br>All fonts are stored on this server. No connection is made to Google or any other provider.</p>
     <p><b>Videos</b><br>YouTube videos are loaded via youtube-nocookie.com and only after you click play; at that point, data is transferred to Google.</p>
     <p><b>Contact by email</b><br>If you write to me, I only use your details to answer your message.</p>
