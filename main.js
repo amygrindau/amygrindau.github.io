@@ -84,6 +84,11 @@ const mastLeft = () => pg("l", `
           <span class="mast__t">${p.title}${p.award ? `<i class="mast__dot" aria-label="award or exhibition">●</i>` : ""}<small>${lowKind(p.kind)}, ${shortYear(p.year)}</small></span>
           <span>${pad(pageOf(k))}</span></a>`).join("")}
       </div>`).join("")}</div>`).join("")}
+    <div class="mast__more">
+      <button data-open-archive><span class="serif">Archive</span><small>everything, 2020 to 2026</small><span>→</span></button>
+      <a href="/#/current" data-id="current"><span class="serif">On my desk</span><small>current projects</small><span>${pad(curPage)}</span></a>
+      <a href="/#/contact" data-id="contact"><span class="serif">Contact</span><small>back cover</small><span>${pad(curPage + 2)}</span></a>
+    </div>
     <p class="mast__legend"><i class="mast__dot">●</i> award or exhibition</p>
   </div>
 `, { num: pad(2), cls: "pg--mast" });
@@ -101,7 +106,7 @@ const mastRight = () => pg("r", `
 
 // Project spread — left: information, right: key visual. Two layouts alternate.
 // hand-drawn star, the one handmade accent (turns very slowly)
-const STAR = `<svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3c.6 6 1.4 11 2.6 14.5M20 3c-.9 5.8-1.8 10.3-3 14M4 15.5c5.6.6 10.8 1.6 14.6 2.8M35.6 14.2c-5.2 1.5-9.9 2.8-13.2 3.6M11 34.5c2.6-5 5.4-9.4 8.2-13.2M29.5 35.2c-2.4-4.7-5-8.9-7.8-12.8"/></svg>`;
+const STAR = `<svg class="star" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2.5c.4 5.6 1 11.2 1.4 15.6M20.6 37.6c-.3-5.4-.6-10.6-.9-15M2.6 20.4c5.4-.3 11-.6 15.6-.8M37.4 19.4c-5.3.2-10.6.6-15.2.9M7.4 7.2c3.8 3.9 7.6 7.7 10.9 11.1M32.8 33.2c-3.6-3.7-7.2-7.4-10.6-10.8M33 6.8c-3.9 3.7-7.8 7.5-11.1 10.8M7 33.4c3.7-3.8 7.4-7.5 10.8-10.9"/></svg>`;
 
 // chapter page: the chapter word sharp in pink, its disciplines blurred behind, like through tracing paper
 function chapterPage(side, sec, k) {

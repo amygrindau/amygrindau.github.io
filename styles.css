@@ -1029,3 +1029,49 @@ body:not(.archive-open) .desk { padding-right: 4vw; }
 .archive__img img { filter: grayscale(1) contrast(.92) brightness(1.04); mix-blend-mode: multiply; opacity: .92; transition: transform .8s var(--soft), filter .6s var(--soft), opacity .6s var(--soft); }
 .archive__item:hover .archive__img img, .archive__item:focus-visible .archive__img img { filter: none; mix-blend-mode: normal; opacity: 1; }
 .archive__img { box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 22px -18px rgba(0,0,0,.4); }
+
+/* ---------- v4 details ---------- */
+/* archive */
+.archive__head { flex-direction: column; align-items: flex-start; gap: 4px; position: relative; }
+.archive__sub { flex: none; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(0,0,0,.7); }
+.archive__close { position: absolute; right: clamp(16px, 3vw, 40px); top: 26px; }
+.archive__img img { filter: grayscale(1) contrast(1.15) brightness(1.06); opacity: 1; }
+.wc-back { position: fixed; left: 0; top: 44px; bottom: 0; width: 6vw; z-index: 63; border: 0; padding: 0; background: linear-gradient(to right, rgba(255,255,255,.55), transparent); cursor: w-resize; opacity: 0; pointer-events: none; transition: opacity .4s var(--soft); }
+body.archive-open .wc-back { pointer-events: auto; }
+body.archive-open .wc-back:hover { opacity: 1; }
+.wc-back span { position: absolute; left: 18px; top: 50%; translate: 0 -50%; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+@media (max-width: 760px) { .wc-back { display: none; } }
+
+/* chapter pages: brighter blur and soft pink light behind; overlaps are fine */
+.chapter__veil { color: rgba(255,255,255,.5); }
+.pg--chapter::before { content: ""; position: absolute; inset: -20%; pointer-events: none;
+  background: radial-gradient(38% 30% at 28% 62%, rgba(216,132,158,.45), transparent 70%), radial-gradient(30% 26% at 78% 30%, rgba(200,120,190,.32), transparent 70%);
+  filter: blur(4cqw); animation: glow-drift 22s ease-in-out infinite alternate; }
+.pg--chapter-r::before { background: radial-gradient(34% 30% at -22% 62%, rgba(216,132,158,.45), transparent 70%), radial-gradient(32% 28% at 60% 75%, rgba(216,132,158,.28), transparent 70%); }
+@keyframes glow-drift { to { translate: 3% -2%; } }
+
+/* page 2: archive, on my desk, contact */
+.mast__more { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 3cqw; padding-top: 1.4cqw; border-top: .15cqw solid var(--ink); position: relative; z-index: 7; }
+.mast__more a, .mast__more button { display: grid; grid-template-columns: 1fr auto; align-items: baseline; padding: .4cqw 0; border: 0; background: none; text-align: left; cursor: pointer; text-decoration: none; color: inherit; font: inherit; font-size: 1.9cqw; }
+.mast__more .serif { font-size: 3.2cqw; grid-column: 1; }
+.mast__more small { grid-column: 1; font-size: 1.35cqw; color: var(--grey); }
+.mast__more span:last-child { grid-column: 2; grid-row: 1; font-size: 1.6cqw; }
+.mast__more a:hover .serif, .mast__more button:hover .serif { color: var(--pink); }
+@media (max-width: 760px) { .mast__more small { font-size: max(1.35cqw, 9px); } .mast__more .serif { font-size: max(3.2cqw, 14px); } }
+
+/* editor's letter floats in */
+.overlay:not([hidden]) { animation: ov-in .45s var(--soft); }
+.overlay:not([hidden]) .letter__paper, .overlay:not([hidden]) .legal__paper { animation: paper-in .9s cubic-bezier(.2,.8,.25,1); }
+@keyframes ov-in { from { opacity: 0; } }
+@keyframes paper-in { from { opacity: 0; translate: 0 60px; rotate: -4deg; } }
+@media (prefers-reduced-motion: reduce) { .overlay:not([hidden]), .overlay:not([hidden]) .letter__paper, .overlay:not([hidden]) .legal__paper { animation: none; } }
+
+/* cover: calmer background so name and "Portfolio" read */
+.pg--covertype .cover__photo { opacity: .3; }
+
+/* on my desk: crumpled paper, pins in a tidy row */
+.pinboard { grid-template-columns: repeat(4, 1fr); gap: 32px; padding: 56px 48px 64px; background: url("assets/web/current/crumpled.jpg") center / cover; }
+.pin.p0, .pin.p1, .pin.p2, .pin.p3, .pin.p4, .pin.p5 { transform: none; }
+.pin:nth-child(odd) { rotate: -1.2deg; } .pin:nth-child(even) { rotate: 1deg; }
+.tape { display: none; }
+@media (max-width: 760px) { .pinboard { grid-template-columns: 1fr 1fr; padding: 24px; gap: 20px; } }

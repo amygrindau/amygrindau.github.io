@@ -148,6 +148,7 @@ window.PORTFOLIO = {
         } },
       { title: "Perfume Brand", note: "" },
       { title: "Magazine Creation", note: "" },
+      { title: "Content Strategy", note: "" },
     ],
   },
 
@@ -459,7 +460,7 @@ window.PORTFOLIO = {
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
       role: "Creative direction, content strategy, community growth, creator acquisition",
-      key: { src: `${W}/brewinsight/cover.jpg`, fit: "contain", bg: "white", pageBg: "#f3f0e8" },
+      key: { src: `${W}/brewinsight/logo.png`, fit: "contain", zoom: .42, bg: "white", pageBg: "#f7f4f0" },
       story: {
         challenge: "The Instagram feed communicated Brewinsight's data well, but gave people little reason to follow, share or take part.",
         role: "Creative direction, content strategy, community growth and creator acquisition.",

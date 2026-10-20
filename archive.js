@@ -30,6 +30,7 @@ vec3 pal(float x){
 void main(){
   vec2 q = dir < .5 ? vec2(1. - span + uv.x * span, uv.y) : vec2(uv.x, uv.y * span);
   vec2 asp = vec2(aspect * (dir < .5 ? 1. / span : 1.), 1.);
+  vec2 uv2 = q;
   // water: the cursor pushes the paint aside, drops send rings through it
   vec2 dm = q - mouse.xy; float rm = length(dm * asp);
   q += normalize(dm + 1e-5) * exp(-rm * rm * 30.) * .035 * mouse.z;
@@ -37,8 +38,8 @@ void main(){
     vec3 d = drops[i];
     if (d.z < 0.) continue;
     vec2 dd = q - d.xy; float r = length(dd * asp);
-    float wave = sin(r * 55. - d.z * 9.) * exp(-d.z * 1.1) * exp(-abs(r - d.z * .16) * 12.);
-    q += normalize(dd + 1e-5) * wave * .018;
+    float wave = sin(r * 55. - d.z * 9.) * exp(-d.z * 1.4) * exp(-abs(r - d.z * .16) * 12.);
+    q += normalize(dd + 1e-5) * wave * .008;
   }
   float along = dir < .5 ? q.x : q.y;
   float across = dir < .5 ? q.y : q.x;
@@ -59,6 +60,21 @@ void main(){
   float rim = exp(-max(dist, 0.) * 55.) * a;
   vec3 rimCol = mix(vec3(.22,.24,.62), vec3(.80,.25,.55), fbm(vec2(across * 6., t * .1)));
   col = mix(col, rimCol, rim * .75);
+  // white paint dropped into the wet colour: it blooms outward with a frayed edge
+  for (int i = 0; i < 6; i++) {
+    vec3 d = drops[i];
+    if (d.z < 0.) continue;
+    vec2 dd = (uv2 - d.xy) * asp;
+    float grow = .035 + .11 * (1. - exp(-d.z * 1.3));
+    float ang = atan(dd.y, dd.x);
+    float wobble = (fbm(vec2(ang * 2.5 + float(i) * 3.1, d.z * .25)) - .5) * .05;
+    float r = length(dd) + wobble;
+    float life = 1. - smoothstep(9., 14., d.z);
+    float wet = smoothstep(grow, grow - .03, r) * life;
+    float ring = exp(-pow((r - grow) * 60., 2.)) * .35 * life;
+    col = mix(col, vec3(.98, .97, .96), wet * .92);
+    col = mix(col, pig * .8, ring);
+  }
   col *= .97 + .05 * n(gl_FragCoord.xy * .8);   // paper grain
   gl_FragColor = vec4(col, a);
 }`;
@@ -122,7 +138,7 @@ void main(){
   state.restTarget = state.rest = restWidth();
   size();
 
-  let t0 = performance.now(), last = 0;
+  let t0 = performance.now(), last = 0, clock = 0;
   function frame(now) {
     const dt = Math.min(.05, (now - last) / 1000 || .016); last = now;
     // ease the reveal like liquid: slow start, soft landing
@@ -132,9 +148,11 @@ void main(){
     const wantFull = state.target > 0 || state.reveal > .002 || state.rest > restWidth() * 1.2;
     if (wantFull !== (span === 1)) size();
     if (gl) {
-      gl.uniform1f(loc.t, reduced ? 3 : (now - t0) / 1000);
+      // at rest the strip moves faster and breathes; open, the colour drifts slowly
+      clock += dt * (reduced ? 0 : 1 + 2.2 * (1 - state.reveal));
+      gl.uniform1f(loc.t, reduced ? 3 : clock);
       gl.uniform1f(loc.reveal, state.reveal);
-      gl.uniform1f(loc.rest, state.rest);
+      gl.uniform1f(loc.rest, state.rest * (1 + .18 * Math.sin(clock * .9) * (1 - state.reveal)));
       gl.uniform1f(loc.dir, phone.matches ? 1 : 0);
       gl.uniform1f(loc.aspect, canvas.width / canvas.height);
       gl.uniform1f(loc.span, span);
@@ -143,7 +161,7 @@ void main(){
       const arr = new Float32Array(18);
       for (let i = 0; i < 6; i++) {
         const d = drops[i], age = d ? (now - d.t) / 1000 : -1;
-        arr.set([d ? d.x : 0, d ? d.y : 0, d && age < 4 ? age : -1], i * 3);
+        arr.set([d ? d.x : 0, d ? d.y : 0, d && age < 14 ? age : -1], i * 3);
       }
       gl.uniform3fv(loc.drops, arr);
       gl.clearColor(0, 0, 0, 0);
@@ -174,7 +192,7 @@ void main(){
     ...projects.filter((p) => !(DATA.archiveSkip || []).includes(p.id))
       .map((p) => ({ title: p.title, kind: p.kind, year: firstYear(p.year), src: thumb(p), link: p.id, issue: p.section !== "Archive" })),
     ...(DATA.archive || []).map((a) => ({ ...a, issue: false })),
-  ].filter((a) => a.src && a.year).sort((a, b) => a.year - b.year);
+  ].filter((a) => a.src && a.year).sort((a, b) => b.year - a.year);
 
   const Y0 = Math.min(2020, ...items.map((i) => i.year)), Y1 = 2026;
   const years = [...new Set(items.map((i) => i.year))];
@@ -185,7 +203,7 @@ void main(){
   layer.innerHTML = `
     <header class="archive__head">
       <h2 class="archive__title serif">Archive</h2>
-      <p class="archive__sub">Everything, ${Y0} to ${Y1}. ${items.length} pieces. Those with an arrow open their page.</p>
+      <p class="archive__sub">${Y1} to ${Y0}</p>
       <button class="archive__close" data-archive-close>Close →</button>
     </header>
     <div class="archive__scroll" tabindex="0">
@@ -217,7 +235,7 @@ void main(){
     layer.hidden = false;
     layer.querySelectorAll("img").forEach((i) => (i.loading = "eager"));
     setTimeout(() => layer.classList.add("is-in"), 20);
-    scroller.scrollLeft = scroller.scrollWidth; // start at today
+    scroller.scrollLeft = 0; // start at today, on the left
     layer.querySelector("[data-archive-close]").focus({ preventScroll: true });
   }
   function open() {
@@ -242,6 +260,13 @@ void main(){
     if (push && location.hash === "#/archive") history.back();
   }
   edge.addEventListener("click", open);
+  const back = document.createElement("button");
+  back.className = "wc-back";
+  back.innerHTML = `<span>← Issue</span>`;
+  back.setAttribute("aria-label", "Back to the magazine");
+  document.body.appendChild(back);
+  back.addEventListener("click", () => close());
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-open-archive]")) open(); });
   layer.addEventListener("click", (e) => {
     if (e.target.closest("[data-archive-close]")) return close();
     const go = e.target.closest("[data-archive-go]");
