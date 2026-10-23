@@ -1122,3 +1122,21 @@ figcaption { margin-top: 12px; font-size: 12px; line-height: 1.45; }
 .sheet__t { font-size: 3.3cqh; }
 .sheet__k, .sheet__p { font-size: 1.7cqh; }
 .sheet__sec { margin-top: 1.6cqh; }
+
+/* ---------- phone v2: a calm page row under the magazine, archive in the header ---------- */
+.bar__archive { display: none; }
+@media (max-width: 760px) {
+  .under { position: static; padding: 14px 0 4px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; justify-content: center; gap: 22px; flex-wrap: nowrap; }
+  .under .mini-start, .under .hint { display: none; }
+  .under__btn { width: 40px; height: 40px; }
+  body:not(.archive-open) .under { bottom: auto; }
+  /* the archive: a button in the header instead of the strip at the bottom */
+  .wc-edge { display: none; }
+  body:not(.archive-open) .wc { visibility: hidden; }
+  .bar__edition { display: none; }
+  .bar__archive { display: inline-flex; align-items: center; gap: 7px; padding: 0; border: 0; background: none; cursor: pointer;
+    font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--ink); }
+  .bar__archive i { width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#f5bdd6, #e673a8, #c7a8e6, #a3aeeb, #f2e0a8, #e094d0, #f5bdd6);
+    animation: star-turn 10s linear infinite; }
+  .more__inner { padding-top: 36px; }
+}

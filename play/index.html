@@ -32,33 +32,63 @@ addEventListener("resize", size); size();
 const S = Math.max(.75, Math.min(1.1, W / 1200));      // scale for small screens
 const best = () => +(localStorage.getItem("ag-best") || 0);
 let state = "ready", t = 0, score = 0, speed, obs, nextIn, star, last = 0, shake = 0;
-function reset() { speed = 230 * S; obs = []; nextIn = .9; score = 0; star = { y: 0, vy: 0, rot: 0, onGround: true }; }
+function reset() { speed = 230 * S; obs = []; nextIn = .9; score = 0; star = { y: 0, vy: 0, rot: 0, onGround: true, jumps: 0, puff: 0 }; }
 reset();
 
+// jump, and jump again in the air (double jump)
 function jump() {
-  if (state !== "run") { reset(); state = "run"; return; }
-  if (star.onGround) { star.vy = -760 * S; star.onGround = false; }
+  if (state !== "run") { reset(); t = 0; state = "run"; return; }
+  if (star.jumps < 2) { star.vy = (star.jumps ? -640 : -740) * S; star.onGround = false; star.jumps++; star.puff = .25; }
 }
-addEventListener("keydown", (e) => { if ([" ", "ArrowUp", "w"].includes(e.key)) { e.preventDefault(); jump(); } if (e.key === "Escape") location.href = "/"; });
-cv.addEventListener("pointerdown", jump);
+addEventListener("keydown", (e) => { if ([" ", "ArrowUp", "w"].includes(e.key)) { e.preventDefault(); if (!e.repeat) jump(); } if (e.key === "Escape") location.href = "/"; });
+cv.addEventListener("pointerdown", (e) => { e.preventDefault(); jump(); });
 
-// things from the projects: magazine, clapperboard, treasure chest, postcard
+// things from the projects, drawn as small black objects with a pink detail
+const INK = "#0b0b0b", PAPER = "#f6f4f0", PINK = "#d8849e";
 const KINDS = [
-  { w: 34, h: 44, draw(x, y, w, h) { g.fillRect(x, y, w, h); g.fillStyle = "#f6f4f0"; for (let i = 0; i < 4; i++) g.fillRect(x + 6, y + 9 + i * 8, w - 12, 2); } },           // magazine
-  { w: 46, h: 36, draw(x, y, w, h) { g.fillRect(x, y + 10, w, h - 10); g.save(); g.translate(x, y + 10); g.rotate(-.28); g.fillRect(0, -9, w, 8); g.restore();
-      g.fillStyle = "#f6f4f0"; for (let i = 0; i < 4; i++) g.fillRect(x + 4 + i * 11, y + 14, 5, 3); } },                                                             // clapperboard
-  { w: 54, h: 40, draw(x, y, w, h) { g.beginPath(); g.moveTo(x, y + 16); g.quadraticCurveTo(x + w / 2, y - 6, x + w, y + 16); g.lineTo(x + w, y + h); g.lineTo(x, y + h); g.fill();
-      g.fillStyle = "#d8849e"; g.fillRect(x + w / 2 - 6, y + 20, 12, 9); } },                                                                                           // treasure chest
-  { w: 30, h: 22, air: true, draw(x, y, w, h) { g.save(); g.translate(x + w / 2, y + h / 2); g.rotate(Math.sin(t * 3) * .25); g.fillRect(-w / 2, -h / 2, w, h);
-      g.fillStyle = "#d8849e"; g.fillRect(-w / 2 + 4, -h / 2 + 4, w - 8, h - 8); g.restore(); } },                                                                       // postcard (flies)
+  { name: "magazine", w: 32, h: 44, draw(x, y, w, h) {                       // a magazine: masthead, cover image, spine
+      g.fillStyle = INK; g.fillRect(x, y, w, h);
+      g.fillStyle = PAPER; g.fillRect(x + 4, y + 4, w - 8, 7);
+      g.fillStyle = PINK; g.fillRect(x + 4, y + 14, w - 8, h - 24);
+      g.fillStyle = PAPER; g.fillRect(x + 4, y + h - 7, w * .45, 2); g.fillRect(x + 4, y + h - 4, w * .3, 1.5); } },
+  { name: "clapperboard", w: 46, h: 40, draw(x, y, w, h) {                    // a film clapperboard, the stick a little open
+      g.fillStyle = INK; g.fillRect(x, y + 12, w, h - 12);
+      g.fillStyle = PAPER; g.fillRect(x + 4, y + 18, w - 8, 2); g.fillRect(x + 4, y + 24, w * .5, 2);
+      g.save(); g.translate(x, y + 12); g.rotate(-.32 + Math.sin(t * 9) * .06);
+      g.fillStyle = INK; g.fillRect(0, -8, w, 8);
+      g.fillStyle = PAPER; for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(4 + i * 11, 0); g.lineTo(10 + i * 11, -8); g.lineTo(15 + i * 11, -8); g.lineTo(9 + i * 11, 0); g.fill(); }
+      g.restore(); } },
+  { name: "treasure chest", w: 54, h: 42, draw(x, y, w, h) {                  // the AI treasure chest, lid slightly open and glowing
+      g.fillStyle = PINK; g.globalAlpha = .55 + Math.sin(t * 6) * .2; g.fillRect(x + 4, y + 12, w - 8, 4); g.globalAlpha = 1;
+      g.fillStyle = INK; g.beginPath(); g.moveTo(x, y + 13); g.quadraticCurveTo(x + w / 2, y - 6, x + w, y + 13); g.lineTo(x + w, y + 8 + 4); g.fill();
+      g.beginPath(); g.moveTo(x, y + 11); g.quadraticCurveTo(x + w / 2, y - 8, x + w, y + 11); g.lineTo(x + w, y + 13); g.lineTo(x, y + 13); g.fill();
+      g.fillRect(x, y + 17, w, h - 17);
+      g.fillStyle = PAPER; for (let i = 0; i < 7; i++) g.fillRect(x + 3 + i * (w - 8) / 6, y + 19, 2, 2);
+      g.fillStyle = PINK; g.fillRect(x + w / 2 - 9, y + 25, 18, 11);
+      g.fillStyle = INK; g.font = `700 ${8 * S}px "Inter Tight", sans-serif`; g.textAlign = "center"; g.fillText("AI", x + w / 2, y + 33.5); } },
+  { name: "camera", w: 46, h: 34, draw(x, y, w, h) {                          // a camera with a pink lens ring
+      g.fillStyle = INK; g.fillRect(x, y + 7, w, h - 7); g.fillRect(x + 8, y, 14, 9);
+      g.fillStyle = PAPER; g.beginPath(); g.arc(x + w * .56, y + h * .6, 10, 0, 7); g.fill();
+      g.fillStyle = PINK; g.beginPath(); g.arc(x + w * .56, y + h * .6, 7.5, 0, 7); g.fill();
+      g.fillStyle = INK; g.beginPath(); g.arc(x + w * .56, y + h * .6, 4, 0, 7); g.fill();
+      g.fillStyle = PAPER; g.fillRect(x + w - 9, y + 10, 5, 3); } },
+  { name: "postcard", w: 34, h: 24, air: true, draw(x, y, w, h) {             // a flying postcard with a pink stamp
+      g.save(); g.translate(x + w / 2, y + h / 2); g.rotate(Math.sin(t * 3) * .22);
+      g.fillStyle = INK; g.fillRect(-w / 2 - 1.5, -h / 2 - 1.5, w + 3, h + 3);
+      g.fillStyle = PAPER; g.fillRect(-w / 2, -h / 2, w, h);
+      g.fillStyle = PINK; g.fillRect(w / 2 - 11, -h / 2 + 3, 8, 9);
+      g.fillStyle = INK; g.fillRect(-w / 2 + 4, -1, w * .45, 1.5); g.fillRect(-w / 2 + 4, 4, w * .35, 1.5); g.fillRect(1, -h / 2 + 4, 1, h - 8);
+      g.restore(); } },
 ];
 
 function spawn() {
-  const k = KINDS[Math.floor(Math.random() * (score > 8 ? 4 : 3))];
+  const pool = score < 6 ? 3 : score < 12 ? 4 : 5;                  // new things appear as you get further
+  const k = KINDS[Math.floor(Math.random() * pool)];
   const w = k.w * S, h = k.h * S;
-  obs.push({ k, x: W + 40, w, h, y: k.air ? ground - h - (58 + Math.random() * 30) * S : ground - h });
-  if (score > 14 && Math.random() < .25) obs.push({ k: KINDS[0], x: W + 40 + w + 14 * S, w: KINDS[0].w * S, h: KINDS[0].h * S, y: ground - KINDS[0].h * S });
-  nextIn = (.85 + Math.random() * 1.1) * (420 * S / speed);
+  obs.push({ k, x: W + 40, w, h, y: k.air ? ground - h - (62 + Math.random() * 40) * S : ground - h });
+  // later: two things in a row, so you need the double jump
+  if (score > 10 && Math.random() < .3) { const k2 = KINDS[Math.floor(Math.random() * 3)]; obs.push({ k: k2, x: W + 40 + w + 10 * S, w: k2.w * S, h: k2.h * S, y: ground - k2.h * S }); }
+  nextIn = (.9 + Math.random() * 1.1) * (430 * S / speed);
 }
 
 function drawStar(cx, cy, r, rot) {
@@ -71,9 +101,12 @@ function frame(now) {
   const dt = Math.min(.035, (now - last) / 1000 || .016); last = now; t += dt;
   const R = 17 * S, sx = Math.max(70, W * .16);
   if (state === "run") {
-    speed = Math.min(520 * S, speed + dt * 3.5 * S); // calmer start, slower build-up, a ceiling
+    // the further you get, the faster it runs (eased towards the target, with a ceiling)
+    const target = Math.min(640, 230 + score * 11 + t * 1.5) * S;
+    speed += (target - speed) * Math.min(1, dt * 1.5);
+    star.puff = Math.max(0, star.puff - dt);
     star.vy += 2100 * S * dt; star.y += star.vy * dt;
-    if (star.y >= 0) { star.y = 0; star.vy = 0; star.onGround = true; }
+    if (star.y >= 0) { star.y = 0; star.vy = 0; star.onGround = true; star.jumps = 0; }
     star.rot += dt * speed / R * (star.onGround ? 1 : .6);
     nextIn -= dt; if (nextIn <= 0) spawn();
     obs.forEach((o) => (o.x -= speed * dt));
@@ -95,6 +128,7 @@ function frame(now) {
   const off = (t * (state === "run" ? speed : 40)) % 80;
   for (let x = -off; x < W; x += 80) g.fillRect(x, ground + 8, 1, 6);
   g.fillStyle = "#0b0b0b"; obs.forEach((o) => { g.fillStyle = "#0b0b0b"; o.k.draw(o.x, o.y, o.w, o.h); });
+  if (star.puff) { g.strokeStyle = PINK; g.globalAlpha = star.puff * 3; g.beginPath(); g.arc(sx, ground - R + star.y + R, R * (1.6 - star.puff * 2), 0, 7); g.stroke(); g.globalAlpha = 1; }
   drawStar(sx, ground - R + star.y, R, star.rot);
   g.restore();
 
@@ -109,7 +143,7 @@ function frame(now) {
     g.font = `italic 400 ${Math.round(54 * S)}px "Instrument Serif", serif`;
     g.fillText(state === "ready" ? "Off the record" : "That was the deadline.", W / 2, H * .3);
     g.font = `500 ${Math.round(11 * S)}px "Inter Tight", sans-serif`;
-    g.fillText(matchMedia("(hover: none)").matches ? "TAP TO JUMP" : "SPACE OR CLICK TO JUMP", W / 2, H * .3 + 34 * S);
+    g.fillText(matchMedia("(hover: none)").matches ? "TAP TO JUMP, TAP AGAIN IN THE AIR FOR A DOUBLE JUMP" : "SPACE OR CLICK TO JUMP, AGAIN IN THE AIR FOR A DOUBLE JUMP", W / 2, H * .3 + 34 * S);
   }
   requestAnimationFrame(frame);
 }
