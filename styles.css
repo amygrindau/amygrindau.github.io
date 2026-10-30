@@ -8,7 +8,7 @@
   --white: #ffffff;
   --paper: #fbfaf7;
   --ink: #0b0b0b;
-  --grey: #8a8a86;
+  --grey: #66665f; /* 5.6:1 on white (WCAG AA for small text) */
   --line: rgba(11, 11, 11, .16);
   --pink: #d8849e;
   --orange: #f7931e; /* 6th Man brand colour (sampled from the logo) */
@@ -912,8 +912,6 @@ a.is-dim { opacity: .22; }
 /* =====================================================================
    v3: chapters as tracing paper, index, star, bracket metadata
    ===================================================================== */
-:root { --mono: "IBM Plex Mono", ui-monospace, monospace; }
-.mono { font-family: var(--mono); font-weight: 400; letter-spacing: .02em; text-transform: uppercase; }
 
 /* the star: one hand-drawn accent, turning very slowly */
 .star { display: inline-block; width: .5em; height: .5em; margin-left: .12em; vertical-align: .6em; overflow: visible;
@@ -1140,3 +1138,10 @@ figcaption { margin-top: 12px; font-size: 12px; line-height: 1.45; }
     animation: star-turn 10s linear infinite; }
   .more__inner { padding-top: 36px; }
 }
+
+/* ---------- accessibility ---------- */
+:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+.pg--chapter :focus-visible, .lightbox :focus-visible { outline-color: var(--white); }
+.skip { position: fixed; left: 16px; top: -60px; z-index: 200; padding: 10px 14px; background: var(--ink); color: var(--white); font-size: 12px; text-decoration: none; transition: top .2s; }
+.skip:focus { top: 12px; }
+.more:focus { outline: none; }

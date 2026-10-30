@@ -290,7 +290,7 @@ book.inner.insertAdjacentHTML("beforeend", `
 /* =====================================================================
    NAVIGATION
    ===================================================================== */
-const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+const toTop = () => (window.lenis ? lenis.scrollTo(0, { duration: 1.1 }) : window.scrollTo({ top: 0, behavior: "smooth" }));
 // Filter: highlights matching projects on the contents page and in the tracing-paper contents;
 // the arrows then jump from one matching project to the next
 let filter = "";
@@ -675,7 +675,7 @@ document.addEventListener("click", (e) => {
   if (s) MAGS[Number(s.dataset.start)].book.go(0);
   if (e.target.closest("[data-start-big]")) openMag?.big.go(0);
   if (e.target.closest("[data-start-main]")) turn(0);
-  if (e.target.closest("[data-more-go]")) more.scrollIntoView({ behavior: "smooth" });
+  if (e.target.closest("[data-more-go]")) window.lenis ? lenis.scrollTo(more, { offset: -20, duration: 1.2 }) : more.scrollIntoView({ behavior: "smooth" });
 });
 
 /* =====================================================================
@@ -730,6 +730,7 @@ function openLightbox(html, cls = "") {
   frame.className = `lightbox__frame ${cls}`;
   frame.innerHTML = html;
   lightbox.hidden = false;
+  trapFocus(lightbox);
   listenToPlayer();
   lightbox.querySelector("[data-close]").focus();
 }
@@ -765,6 +766,7 @@ function openLetter() {
     <p class="letter__sign serif">Amy</p>
     <a class="btn" href="${contact.cv}" download>Download CV ↓</a>`;
   letter.hidden = false;
+  trapFocus(letter);
 }
 
 // A private, non-commercial portfolio (no services offered), so there is no Impressum, only the privacy notice.
@@ -779,9 +781,13 @@ const LEGAL = {
     ${GC ? `<p><b>Statistics</b><br>To see which pages are visited, this website uses GoatCounter (goatcounter.com), an open-source statistics service without cookies. It stores no personal data and no IP addresses; it only counts page views, the referring site, the country, the browser and the screen size, in aggregated form (Art. 6(1)(f) GDPR). No cookies are set.</p>` : `<p><b>No cookies, no tracking</b><br>This website sets no cookies and uses no analytics tools.</p>`}
     <p><b>Fonts</b><br>All fonts are stored on this server. No connection is made to Google or any other provider.</p>
     <p><b>Videos</b><br>YouTube videos are loaded via youtube-nocookie.com and only after you click play; at that point, data is transferred to Google.</p>
+    <p><b>Your own postcard</b><br>If you make your own Florilegium postcard, your photo and its metadata are processed only in your browser. Nothing is uploaded or stored on a server.</p>
+    <p><b>Stored on your device</b><br>The little game in the footer remembers your best score in your browser's local storage, only so it can show it to you. It is never sent anywhere; you can delete it at any time by clearing your browser data.</p>
+    <p><b>Links to other websites</b><br>Links to LinkedIn, Instagram, newspapers and other sites open their pages; their own privacy policies apply there.</p>
     <p><b>Contact by email</b><br>If you write to me, I only use your details to answer your message.</p>
     <p><b>Your rights</b><br>Under the GDPR you have the right to access, rectification, erasure, restriction of processing and objection, and the right to lodge a complaint with a supervisory authority.</p>
-    <p class="legal__small">All content (texts, images, films, design) © Amy Grindau or the respective teams, unless stated otherwise.</p>`,
+    <p><b>Deleting data</b><br>This website does not keep personal data about you. If you have written to me and would like your messages deleted, send a short email to <a href="mailto:${contact.email}">${contact.email}</a>.</p>
+    <p class="legal__small">All content (texts, images, films, design) © Amy Grindau or the respective teams, unless stated otherwise. Fonts: Instrument Serif, Inter Tight, Poppins, Pinyon Script (SIL Open Font License). Smooth scrolling: Lenis (MIT License).</p>`,
 };
 
 // "On my desk": a pin opens a short description (same paper overlay as the legal pages)
@@ -797,6 +803,7 @@ function openPin(n) {
     <p>${d.intro}</p>
     <ul class="pindetail__list">${d.points.map(li).join("")}</ul>`;
   legal.hidden = false;
+  trapFocus(legal);
 }
 document.addEventListener("click", (e) => {
   const pin = e.target.closest("[data-pin]");
@@ -837,6 +844,7 @@ document.addEventListener("pointerup", (e) => {
 function openLegal(which) {
   legal.querySelector(".legal__paper").innerHTML = `<button class="overlay__close" data-close>Close ✕</button>${LEGAL[which]}`;
   legal.hidden = false;
+  trapFocus(legal);
 }
 
 let openMag = null;
@@ -845,7 +853,29 @@ function closeLightbox() {
   lightbox.hidden = true; frame.innerHTML = "";
 }
 function closeLetter() { letter.hidden = true; }
-function closeOverlays() { closeLightbox(); closeLetter(); legal.hidden = true; }
+function closeOverlays() { closeLightbox(); closeLetter(); legal.hidden = true; releaseFocus(); }
+
+/* keyboard: an open overlay keeps the focus (Tab cycles inside it) and gives it back when it closes */
+let focusBefore = null, focusBox = null;
+function trapFocus(box) {
+  if (!focusBox) focusBefore = document.activeElement;
+  focusBox = box;
+  box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true");
+  setTimeout(() => box.querySelector("[data-close], button, a")?.focus({ preventScroll: true }), 30);
+}
+function releaseFocus() {
+  if (!focusBox) return;
+  focusBox = null;
+  focusBefore?.focus?.({ preventScroll: true });
+}
+addEventListener("keydown", (e) => {
+  if (e.key !== "Tab" || !focusBox || focusBox.hidden) return;
+  const items = [...focusBox.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), video, iframe, [contenteditable="true"]')].filter((el) => el.offsetParent !== null);
+  if (!items.length) return;
+  const first = items[0], last = items[items.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
 
 document.addEventListener("click", (e) => {
   if (e.target.closest("[data-letter]")) openLetter();
@@ -880,3 +910,21 @@ if (book.i < first()) book.show(first());
 phoneMQ.addEventListener("change", () => { if (book.i < first()) book.show(first()); });
 if (startId === "contents") toc.open();
 if (startId === "letter") { book.show(indexOf("masthead")); openLetter(); history.replaceState(null, "", "/about/"); document.title = "About Amy Grindau"; }
+
+/* =====================================================================
+   SMOOTH SCROLL (Lenis, MIT, stored in /vendor): only with a mouse or trackpad,
+   never with "reduce motion". Overlays, the archive and the postcards scroll natively.
+   ===================================================================== */
+if (window.Lenis && matchMedia("(hover: hover) and (pointer: fine)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  window.lenis = new Lenis({
+    lerp: .1, wheelMultiplier: .9,
+    prevent: (node) => !!node.closest?.(".overlay, .sheet, .archive, .lightbox, .pt, [data-slides], .mini-wrap"),
+  });
+  const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+  // pause while something lies on top of the page
+  const busy = () => document.body.classList.contains("archive-open") || document.body.classList.contains("toc-open")
+    || !!document.querySelector(".overlay:not([hidden]), .lightbox:not([hidden])");
+  new MutationObserver(() => (busy() ? lenis.stop() : lenis.start()))
+    .observe(document.body, { attributes: true, subtree: true, attributeFilter: ["class", "hidden"] });
+}
