@@ -266,6 +266,7 @@ const phoneMQ = matchMedia("(max-width: 760px)");
 const first = () => (phoneMQ.matches ? 1 : 0);
 const book = new Book(bookEl, spreads, {
   onSwipe: (d) => turn(step(d)),
+  onTurnStart: (page, i, dir, ms) => window.Motion?.reveal(page, spreads[i], ms),
   onChange(i, s) {
     history.replaceState(null, "", urlFor(s.id));
     track(urlFor(s.id).replace("/#/", "/"), titleFor(s.id));
@@ -485,6 +486,7 @@ function renderMore(p) {
   const pt = more.querySelector("[data-pt]");
   if (pt) mountPostcards(pt, p.blocks.find((b) => b.type === "specimens").items);
   reveal();
+  window.Motion?.below(more);
 }
 
 // images fade in and rise a little as they scroll into view (short, slightly staggered)
@@ -787,7 +789,7 @@ const LEGAL = {
     <p><b>Contact by email</b><br>If you write to me, I only use your details to answer your message.</p>
     <p><b>Your rights</b><br>Under the GDPR you have the right to access, rectification, erasure, restriction of processing and objection, and the right to lodge a complaint with a supervisory authority.</p>
     <p><b>Deleting data</b><br>This website does not keep personal data about you. If you have written to me and would like your messages deleted, send a short email to <a href="mailto:${contact.email}">${contact.email}</a>.</p>
-    <p class="legal__small">All content (texts, images, films, design) © Amy Grindau or the respective teams, unless stated otherwise. Fonts: Instrument Serif, Inter Tight, Poppins, Pinyon Script (SIL Open Font License). Smooth scrolling: Lenis (MIT License).</p>`,
+    <p class="legal__small">All content (texts, images, films, design) © Amy Grindau or the respective teams, unless stated otherwise. Fonts: Instrument Serif, Inter Tight, Poppins, Pinyon Script (SIL Open Font License). Smooth scrolling: Lenis (MIT License). Animation: GSAP (GSAP Standard License).</p>`,
 };
 
 // "On my desk": a pin opens a short description (same paper overlay as the legal pages)
@@ -920,8 +922,14 @@ if (window.Lenis && matchMedia("(hover: hover) and (pointer: fine)").matches && 
     lerp: .1, wheelMultiplier: .9,
     prevent: (node) => !!node.closest?.(".overlay, .sheet, .archive, .lightbox, .pt, [data-slides], .mini-wrap"),
   });
-  const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
-  requestAnimationFrame(raf);
+  if (window.gsap && window.ScrollTrigger) {           // one clock for smooth scroll and scroll animations
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  } else {
+    const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
   // pause while something lies on top of the page
   const busy = () => document.body.classList.contains("archive-open") || document.body.classList.contains("toc-open")
     || !!document.querySelector(".overlay:not([hidden]), .lightbox:not([hidden])");

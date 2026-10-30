@@ -244,6 +244,7 @@ void main(){
     waiting = false;
     layer.hidden = false;
     layer.querySelectorAll("img").forEach((i) => (i.loading = "eager"));
+    window.Motion?.archive(layer);
     setTimeout(() => layer.classList.add("is-in"), 20);
     scroller.scrollLeft = 0; // start at today, on the left
     layer.querySelector("[data-archive-close]").focus({ preventScroll: true });

@@ -13,10 +13,11 @@
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2); // easeInOutCubic
 
 class Book {
-  constructor(el, spreads, { onChange, onSwipe, clickToTurn = false, duration = 1250, ratio } = {}) {
+  constructor(el, spreads, { onChange, onSwipe, onTurnStart, clickToTurn = false, duration = 1250, ratio } = {}) {
     this.el = el;
     this.spreads = spreads;
     this.onChange = onChange;
+    this.onTurnStart = onTurnStart;
     this.duration = duration;
     this.i = 0;
     this.busy = false;
@@ -84,6 +85,7 @@ class Book {
     if (this.mobile.matches) return this.fade(t);
 
     this.busy = true;
+    await this.ready(this.spreads[t]); // images of the next spread decoded first → no empty flash
     this.el.classList.add("is-turning"); // 3D only while turning → flat and crisp at rest
     const dir = t > this.i ? 1 : -1;
     const cur = this.spreads[this.i];
@@ -97,6 +99,7 @@ class Book {
     if (dir > 0) this.setPage(this.right, nxt.right); // revealed underneath
     else this.setPage(this.left, nxt.left);
     this.setClosed(nxt); // opening/closing slides the book to the centre in parallel
+    this.onTurnStart?.(dir > 0 ? this.right : this.left, t, dir, this.duration); // the page revealed underneath
 
     await this.animateLeaf(dir);
 
@@ -108,6 +111,15 @@ class Book {
     this.i = t;
     this.busy = false;
     this.onChange?.(t, nxt);
+  }
+
+  // wait (briefly) until the images of a spread are decoded, so a page never lands empty
+  ready(spread, max = 350) {
+    const urls = [];
+    `${spread.left || ""}${spread.right || ""}`.replace(/url\('([^']+)'\)|src="([^"]+)"/g, (_, a, b) => urls.push(a || b));
+    if (!urls.length) return Promise.resolve();
+    const all = Promise.all(urls.map((u) => { const im = new Image(); im.src = u; return im.decode ? im.decode().catch(() => {}) : Promise.resolve(); }));
+    return Promise.race([all, new Promise((r) => setTimeout(r, max))]);
   }
 
   // One sheet with two faces. A light/shadow sweep and a soft cast shadow on the

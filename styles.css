@@ -1145,3 +1145,17 @@ figcaption { margin-top: 12px; font-size: 12px; line-height: 1.45; }
 .skip { position: fixed; left: 16px; top: -60px; z-index: 200; padding: 10px 14px; background: var(--ink); color: var(--white); font-size: 12px; text-decoration: none; transition: top .2s; }
 .skip:focus { top: 12px; }
 .more:focus { outline: none; }
+
+/* ---------- no flicker while turning ---------- */
+/* the blurred words: a soft text-shadow instead of a blur filter (filters flicker inside the 3D page turn), no drift */
+.chapter__veil { filter: none !important; animation: none !important; color: transparent !important; text-shadow: 0 0 .9cqw rgba(255,255,255,.55); }
+/* while a page turns, everything inside the turning sheet stands still */
+.book.is-turning .star, .book__leaf .star, .book__leaf * { animation: none !important; transition: none !important; }
+.book__leaf { will-change: transform; }
+.leaf__face { contain: paint; }
+
+/* ---------- motion (GSAP) ---------- */
+.has-parallax { overflow: hidden; }
+/* the rule of a section title is drawn by GSAP (--rule goes 0 → 1) */
+@property --rule { syntax: "<number>"; inherits: false; initial-value: 1; }
+.block__title { border-top-color: transparent; background: linear-gradient(var(--ink), var(--ink)) left top / calc(var(--rule) * 100%) 1px no-repeat; }
