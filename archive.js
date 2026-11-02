@@ -143,7 +143,7 @@ void main(){
     canvas.height = Math.max(1, Math.round(h * (vertical ? span : 1) * scale));
     gl?.viewport(0, 0, canvas.width, canvas.height);
   }
-  const restWidth = () => (phone.matches ? 26 / (innerHeight - 44) : .04); // the strip: 4 % of the width (phones: 26 px high)
+  const restWidth = () => (phone.matches ? 26 / (innerHeight - 44) : .025); // the strip: 2.5 % of the width (phones: 26 px high)
   addEventListener("resize", () => { state.restTarget = restWidth(); size(); });
   state.restTarget = state.rest = restWidth();
   size();
@@ -196,7 +196,7 @@ void main(){
   edge.addEventListener("mouseleave", () => { state.restTarget = restWidth(); });
 
   /* ---------------- the archive ---------------- */
-  const thumb = (p) => p.poster || p.still || p.key?.src || p.key?.collage?.[0];
+  const thumb = (p) => p.archiveSrc || p.poster || p.still || p.key?.src || p.key?.collage?.[0];
   const firstYear = (y) => parseInt(String(y), 10);
   const items = [
     ...projects.filter((p) => !(DATA.archiveSkip || []).includes(p.id))

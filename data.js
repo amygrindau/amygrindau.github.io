@@ -459,7 +459,7 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "brewinsight", logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Brand & Community Strategy", year: "2026",
+      id: "brewinsight", archiveSrc: `${W}/brewinsight/content-pillars.jpg`, logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Brand & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
       role: "Brand & Content Strategist: concept development, social media, content and community strategy",

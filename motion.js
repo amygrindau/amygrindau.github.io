@@ -17,16 +17,9 @@
       if (items.length) gsap.fromTo(items, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: .9, ease, stagger: .05, delay: d * .35, clearProps: "transform,opacity" });
     },
 
-    // the story below the spread: big pictures drift a little slower than the page (parallax)
+    // the story below the spread
     below(root) {
       ScrollTrigger.getAll().forEach((t) => t.vars.id === "below" && t.kill());
-      root.querySelectorAll(".single img, .gallery--wide img, .imgtext__img img, .origin--stack .origin__frames img").forEach((img) => {
-        img.closest("figure, .origin__frames, .imgtext__img")?.classList.add("has-parallax");
-        gsap.fromTo(img, { yPercent: -5, scale: 1.1 }, {
-          yPercent: 5, scale: 1.1, ease: "none",
-          scrollTrigger: { id: "below", trigger: img, start: "top bottom", end: "bottom top", scrub: true },
-        });
-      });
       // section titles: the rule draws itself in from the left
       root.querySelectorAll(".block__title").forEach((h) => {
         gsap.fromTo(h, { "--rule": 0 }, { "--rule": 1, duration: 1.2, ease, scrollTrigger: { id: "below", trigger: h, start: "top 88%" } });
