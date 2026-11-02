@@ -462,11 +462,11 @@ window.PORTFOLIO = {
       id: "brewinsight", archiveSrc: `${W}/brewinsight/content-pillars.jpg`, logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Brand & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
-      role: "Brand & Content Strategist: concept development, social media, content and community strategy",
+      role: "Creative advisor: concept development, social media, content and community strategy",
       key: { src: `${W}/brewinsight/logo.png`, fit: "contain", zoom: .42, bg: "white", pageBg: "#f7f4f0" },
       story: {
         challenge: "The Instagram feed communicated Brewinsight's data well, but gave people little reason to follow, share or take part.",
-        role: "Brand & Content Strategist. I help build the brand from the concept up: concept development, social media and content strategy, community strategy and creator acquisition.",
+        role: "Creative advisor, a voluntary role since August 2026, a few hours a week. I help build the brand from the concept up: concept development, social media and content strategy, community strategy and creator acquisition.",
         approach: "Shift the question from “What does Brewinsight know?” to “What can Brewinsight give me?”, and make Brewinsight the connector between coffee lovers, creators and cafés.",
         outcome: "A complete strategy: five content pillars, a content toolkit and posting rhythm, a video framework, creator recruitment on Threads and X, and a growth loop. Brewinsight is live and in its growth phase.",
         reflection: "I am increasingly interested in what happens after an idea has been created: how it reaches people and how a community forms around it.",
