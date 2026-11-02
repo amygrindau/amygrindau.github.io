@@ -459,14 +459,14 @@ window.PORTFOLIO = {
       ],
     },
     {
-      id: "brewinsight", hidden: true, logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Content & Community Strategy", year: "2026",
+      id: "brewinsight", logo: `${W}/brewinsight/logo.png`, tags: ["strategy", "digital"], section: "Brand & Strategy", title: "Brewinsight", kind: "Brand & Community Strategy", year: "2026",
       hook: "Coffee magazine meets local culture platform.",
       context: "Brewinsight, coffee intelligence platform",
-      role: "Creative direction, content strategy, community growth, creator acquisition",
+      role: "Brand & Content Strategist: concept development, social media, content and community strategy",
       key: { src: `${W}/brewinsight/logo.png`, fit: "contain", zoom: .42, bg: "white", pageBg: "#f7f4f0" },
       story: {
         challenge: "The Instagram feed communicated Brewinsight's data well, but gave people little reason to follow, share or take part.",
-        role: "Creative direction, content strategy, community growth and creator acquisition.",
+        role: "Brand & Content Strategist. I help build the brand from the concept up: concept development, social media and content strategy, community strategy and creator acquisition.",
         approach: "Shift the question from “What does Brewinsight know?” to “What can Brewinsight give me?”, and make Brewinsight the connector between coffee lovers, creators and cafés.",
         outcome: "A complete strategy: five content pillars, a content toolkit and posting rhythm, a video framework, creator recruitment on Threads and X, and a growth loop. Brewinsight is live and in its growth phase.",
         reflection: "I am increasingly interested in what happens after an idea has been created: how it reaches people and how a community forms around it.",
@@ -476,6 +476,7 @@ window.PORTFOLIO = {
         "The question shifts from what Brewinsight knows to what Brewinsight can give: discovery for coffee lovers, opportunities for creators, visibility for cafés. Brewinsight becomes the connector. We are now in the growth phase, building the audience and the first creator sign-ups.",
       ],
       process: [
+        "It started with the concept: who Brewinsight is for, what it offers each of them and how the brand should sound. Social media, content and community strategy grow out of that, so every channel tells the same story.",
         "Keep the core, expand the system: the editorial grid, the cream, green and orange palette, bold typography and data visualisation stay. Editorial photography, café environments, creators, user-generated content and short-form video are added.",
         "Five content pillars give every post a job: coffee culture for reach and discovery, creator culture for creator acquisition, café × creator collaborations as social proof, coffee intelligence for authority, and community content for engagement and retention.",
         "A deliberate posting rhythm alternates data, cafés, creators, collaborations and community instead of twelve identical graphics. Short-form video follows a simple framework: hook, value, call to action.",
